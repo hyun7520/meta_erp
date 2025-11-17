@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 400px;
+            margin: 20px auto;
+        }
+        td {
+            padding: 10px;
+            vertical-align: top;
+        }
+
+        .icon-cell {
+            rowspan: 2;
+            text-align: center;
+            vertical-align: middle;
+            width: 100px;
+        }
+
+        .company-logo {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: #556B8D;
+        }
+
+        .input-text {
+            width: 150px;
+        }
+
+        #buttons{
+            text-align: right;
+        }
+    </style>
+    <script>
+        function register(){
+            location.href = "/register";
+        }
+    </script>
+</head>
+<body>
+<h1>로그인</h1>
+<form method="post" action="login.mb">
+    <table border="1">
+        <tr>
+            <td rowspan="2" class="icon-cell">
+                <img src="" alt="회사 로고" class="company-logo">
+            </td>
+
+            <td>아이디</td>
+
+            <td><input type="text" name="employee_id" class="input-text"></td>
+        </tr>
+
+        <tr>
+            <td>비번</td>
+            <td><input type="password" name="password"></td>
+        </tr>
+
+        <tr>
+            <td colspan="3" id="buttons">
+                <input type="submit" value="로그인">
+                <input type="button" value="회원가입" onclick="register()">
+            </td>
+        </tr>
+
+        <tr>
+            <input type="button" value="사용자 리스트 출력" onclick="location.href='/showEmployees'">
+        </tr>
+    </table>
+</form>
+</body>
+</html>
