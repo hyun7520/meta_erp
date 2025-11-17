@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>완제품 목록</title>
+</head>
+<body>
+    <div th:fragment="productsTable(products)">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>제품 코드</th>
+                    <th>상품 명</th>
+                    <th>제품 갯수(단위)</th>
+                    <th>제조일</th>
+                    <th>유효기한</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:if="${products.size eq 0}">
+                    <td colspan="6">제조된 내역 없음</td>
+                </tr>
+                <th:block th:each="product : ${products}" th:if="${products.size > 0}">
+                    <tr>
+                        <td th:text="${product.productId}"></td>
+                        <td th:text="${product.serialCode}"></td>
+                        <td th:text="${product.productName}"></td>
+                        <td th:text="|${product.qty}(${product.unit})|"></td>
+                        <td th:text="${product.storageDate}"></td>
+                        <td th:text="${product.shelfLifeDays}"></td>
+                    </tr>
+                </th:block>
+            </tbody>
+        </table>
+        <div th:insert="~{pagination :: pagenation(${products.number}, ${products.totalPages}, '/')}"></div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,11 @@
+.row {
+    display: block;
+}
+
+.col {
+    display: inline-block;
+}
+
+.w-60 {
+    width: 60%;
+}

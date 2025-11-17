@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Navbar</title>
+</head>
+<body>
+    <ul th:fragment="navbar" class="navbar">
+        <li th:href="@{/}">대시보드</li>
+        <li th:href="@{/}" th:if="${session eq 'order'}">사용자 관리</li>
+        <li th:href="@{/}" th:if="${session eq 'order'}">경영</li>
+        <li th:href="@{/}" th:if="${session eq 'make'}">생산</li>
+    </ul>
+</body>
+</html>

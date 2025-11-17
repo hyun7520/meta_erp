@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div th:fragment="pagenation(page, totalPage, href)">
+        <span th:if="${page > 1}">
+            <a th:href="@{${href}(page = ${page - 1})}">&laquo;</a>
+        </span>
+        <span th:each="num : ${#numbers.sequence(0, totalPage)}">
+            <a th:href="@{${href}(page = ${num + 1})}">
+                [[${num + 1}]]
+            </a>
+        </span>
+        <span th:if="${page < totalPage}">
+            <a th:href="@{${href}(page = ${page + 1})}">&raquo;</a>
+        </span>
+    </div>
+</body>
+</html>

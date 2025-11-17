@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.meta.stock.product.mapper.ProductMapper">
+    <select id="getDashProductsList" resultType="com.meta.stock.product.dto.ProductsAmountListBean">
+        select "product_id", "serial_code", "product_name", "qty", "unit", "storage_date", "shelf_life_days"
+        from "Products" p
+        left join "Fixed_Product" fp on p."product_name" = fp."name"
+        left join "Lots" l on p."lots_id" = l."lot_id"
+        order by "product_id" desc
+        offset #{offset} rows fetch next #{limit} rows only
+    </select>
+
+    <select id="getTotalListSize">
+        select count(*) from "Products" p
+        left join "Fixed_Product" fp on p."product_name" = fp."name"
+        left join "Lots" l on p."lots_id" = l."lot_id"
+    </select>
+</mapper>
