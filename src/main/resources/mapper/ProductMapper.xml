@@ -8,7 +8,17 @@
         from "Products" p
         left join "Fixed_Product" fp on p."product_name" = fp."name"
         left join "Lots" l on p."lots_id" = l."lot_id"
-        order by "product_id" desc
+        <where>
+            <choose>
+                <when test="column != null and column != '' and search != null and search != ''">
+                    '"' || ${column} || '"' like '%' || #{search} || '%'
+                </when>
+                <when test="date != null and date != ''">
+                    '"' || storage_date || '"' eq #{date}
+                </when>
+            </choose>
+        </where>
+        order by '"' || #{sort} || '"' desc
         offset #{offset} rows fetch next #{limit} rows only
     </select>
 
