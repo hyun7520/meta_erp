@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>원자재 총 보유량 원그래프</title>
+</head>
+<body>
+    <div th:fragment="pie">
+        <div id="material_total_Pie" class="chart"></div>
+        <div>
+            <div th:text="${#dates.format(#dates.createToday(), 'yyyy-MM-dd HH:mm:ss')}"></div>
+            <button onclick="updateMaterialPieChart()">Refresh</button>
+        </div>
+
+        <script type="text/javascript" th:src="@{/script/graph/materialTotalPie.js}"></script>
+<!--        <script>-->
+<!--            drawMaterialPieChart()-->
+<!--        </script>-->
+    </div>
+</body>
+</html>

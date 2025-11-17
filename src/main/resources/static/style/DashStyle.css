@@ -9,3 +9,8 @@
 .w-60 {
     width: 60%;
 }
+
+.chart {
+    width: 400px;
+    height: 400px;
+}
