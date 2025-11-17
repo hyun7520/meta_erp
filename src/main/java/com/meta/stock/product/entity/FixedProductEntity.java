@@ -1,47 +1,26 @@
 package com.meta.stock.product.entity;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.SequenceGenerator;
 
 @Entity
-@Table(name = "'Fixed_Product'")
 public class FixedProductEntity {
+
     @Id
-    private String productId;
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "fixed_product_gen")
+    @SequenceGenerator(
+            name = "fixed_product_gen",
+            sequenceName = "FP_SEQ",
+            allocationSize = 1
+    )
+    private int fpId;
+    // 제품의 시리얼 코드
     private String serialCode;
+    // 제품 이름
     private String name;
+    // 생산시간
     private int productionTime;
-
-    public void setProductId(String productId) {
-        this.productId = productId;
-    }
-
-    public void setSerialCode(String serialCode) {
-        this.serialCode = serialCode;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setProductionTime(int productionTime) {
-        this.productionTime = productionTime;
-    }
-
-    public String getProductId() {
-        return productId;
-    }
-
-    public String getSerialCode() {
-        return serialCode;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public int getProductionTime() {
-        return productionTime;
-    }
 }

@@ -1,11 +1,11 @@
-package com.meta.stock.product.entity;
+package com.meta.stock.order.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "'Lots'")
+@Table(name = "Lots")
 public class LotsEntity {
     @Id
     private int lotId;
