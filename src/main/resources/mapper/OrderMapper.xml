@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- mybatis 사이트에서 필요한 링크를 찾을 수 있다 -->
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.meta.stock.product.mapper.OrderMapper">
+    <select id="getAllOrders" parameterType="com.meta.stock.product.dto.OrderDto">
+        SELECT order_id, product_id, product_name, request_bu, qty, unit, request_date, deadline, complete
+        FROM order, fixedProduct
+        WHERE order.orderId = fixedProduct.fpId
+    </select>
+</mapper>
