@@ -6,7 +6,7 @@
 
 <mapper namespace="com.meta.stock.product.mapper.OrderMapper">
     <select id="getAllOrders" parameterType="com.meta.stock.product.dto.OrderDto">
-        SELECT order_id, product_id, product_name, request_bu, qty, unit, request_date, deadline, complete
+        SELECT order_id, product_id, product_name, request_by, qty, unit, request_date, deadline, complete
         FROM order, fixedProduct
         WHERE order.orderId = fixedProduct.fpId
     </select>

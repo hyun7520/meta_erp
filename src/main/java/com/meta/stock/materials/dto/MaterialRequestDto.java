@@ -1,6 +1,4 @@
 package com.meta.stock.materials.dto;
 
-public class MaterialDto {
-
-
+public class MaterialRequestDto {
 }

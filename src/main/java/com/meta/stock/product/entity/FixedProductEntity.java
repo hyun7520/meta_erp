@@ -3,7 +3,7 @@ package com.meta.stock.product.entity;
 import jakarta.persistence.*;
 
 @Entity
-public class FixedProduct {
+public class FixedProductEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "fixed_product_gen")

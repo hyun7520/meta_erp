@@ -14,11 +14,11 @@ public class MaterialEntity {
             sequenceName = "MATERIAL_SEQ",
             allocationSize = 1
     )
-    private int material_id;
+    private int materialId;
     // 재료 이름
-    private String material_name;
+    private String materialName;
     // 현 재료의 입고일자, 사용기한을 저장하는 테이블 lots -> 외래키
-    private int lots_id;
+    private int lotsId;
     // 재료별 로스율
     private float loss;
 }

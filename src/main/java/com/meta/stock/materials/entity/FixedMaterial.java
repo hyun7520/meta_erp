@@ -18,6 +18,4 @@ public class FixedMaterial {
     private String materialName;
     // 단위 제품을 만드는데 필요한 수량
     private int qty;
-    // 세는 단위 - 박스로 통일하기로 했다.
-    private String unit;
 }

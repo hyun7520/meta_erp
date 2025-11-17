@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 
 // 생산된 제품
 @Entity
-@Table(name="Product")
+@Table(name="Products")
 public class ProductEntity {
 
     @Id
@@ -14,9 +14,9 @@ public class ProductEntity {
             sequenceName = "PRODUCT_SEQ",
             allocationSize = 1
     )
-    private int productId;
+    private long productId;
     // 제품 이름
     private String productName;
     // 제품의 로트 번호 - 생산된 수량, 유통기한
-    private int lotsId;
+    private long lotsId;
 }
