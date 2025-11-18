@@ -5,8 +5,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
 
 @Entity
+@Table(name = "FixedProduct")
 public class FixedProductEntity {
 
     @Id
@@ -23,4 +25,36 @@ public class FixedProductEntity {
     private String name;
     // 생산시간
     private int productionTime;
+
+    public void setFpId(int fpId) {
+        this.fpId = fpId;
+    }
+
+    public void setSerialCode(String serialCode) {
+        this.serialCode = serialCode;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setProductionTime(int productionTime) {
+        this.productionTime = productionTime;
+    }
+
+    public int getFpId() {
+        return fpId;
+    }
+
+    public String getSerialCode() {
+        return serialCode;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getProductionTime() {
+        return productionTime;
+    }
 }

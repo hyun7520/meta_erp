@@ -23,4 +23,28 @@ public class ProductEntity {
     private String productName;
     // 제품의 로트 번호 - 생산된 수량, 유통기한
     private long lotsId;
+
+    public void setProductId(long productId) {
+        this.productId = productId;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
+
+    public void setLotsId(long lotsId) {
+        this.lotsId = lotsId;
+    }
+
+    public long getProductId() {
+        return productId;
+    }
+
+    public String getProductName() {
+        return productName;
+    }
+
+    public long getLotsId() {
+        return lotsId;
+    }
 }
