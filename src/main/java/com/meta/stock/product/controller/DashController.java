@@ -1,21 +1,28 @@
 package com.meta.stock.product.controller;
 
+import com.meta.stock.materials.dto.MaterialCountsBean;
+import com.meta.stock.materials.service.MaterialService;
 import com.meta.stock.product.dto.ProductsAmountListBean;
 import com.meta.stock.product.service.ProductsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Controller
 public class DashController {
     @Autowired
     private ProductsService productsService;
+    @Autowired
+    private MaterialService materialService;
 
     private final int limit = 5;
 
@@ -44,5 +51,11 @@ public class DashController {
 
         model.addAttribute("products", list);
         return "dashboard/dashboard";
+    }
+
+    @GetMapping("/dash/materials")
+    @ResponseBody
+    public ResponseEntity<List<MaterialCountsBean>> materialCounts(@RequestParam(required = false) String serialCode) {
+        return ResponseEntity.ok(materialService.getDateMaterialTotals(serialCode));
     }
 }

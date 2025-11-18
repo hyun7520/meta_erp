@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.meta.stock.materials.mapper.MaterialMapper">
+    <resultMap id="parseMaterialCounts" type="com.meta.stock.materials.dto.MaterialCountsBean">
+        <result column="material_name" property="materialName" />
+        <result column="total" property="qty" />
+    </resultMap>
+
+    <select id="getDateMaterialTotals" resultMap="parseMaterialCounts">
+        select material_name, sum(qty) as total
+        from materials m
+        left join lots l on m.lots_id = l.lot_id and to_date(shelf_life_days, 'YY/MM/DD') >= sysdate
+        <where>
+            <choose>
+                <when test="serialCode != null and serialCode != ''">
+                    exists (
+                        select 1 from fixed_material fm
+                        join fixed_product fp on fm.fp_id = fp.fp_id
+                        where fm.name = m.material_name and fp.serial_code = #{serialCode}
+                    )
+                </when>
+            </choose>
+        </where>
+        group by material_name
+    </select>
+</mapper>

@@ -9,7 +9,7 @@
         <div id="material_total_Pie" class="chart"></div>
         <div class="refresh_button">
             <div id="material_total_Pie_time" th:text="${#dates.format(#dates.createToday(), 'yyyy-MM-dd HH:mm:ss')}"></div>
-            <button onclick="updateMaterialPieChart()">Refresh</button>
+            <button onclick="drawMaterialPieChart()">Refresh</button>
         </div>
 
         <script type="text/javascript" th:src="@{/script/graph/materialTotalPie.js}"></script>
