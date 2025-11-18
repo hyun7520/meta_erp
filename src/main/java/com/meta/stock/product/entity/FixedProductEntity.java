@@ -14,7 +14,7 @@ public class FixedProductEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "fixed_product_gen")
     @SequenceGenerator(name = "fixed_product_gen", sequenceName = "FP_SEQ", allocationSize = 1)
     @Column(name = "FP_ID")
-    private int fpId;
+    private long fpId;
 
     @Column(name = "SERIAL_CODE")
     private String serialCode;
@@ -40,14 +40,20 @@ public class FixedProductEntity {
     }
 
     // getter & setter
-    public int getFpId() { return fpId; }
-    public void setFpId(int fpId) { this.fpId = fpId; }
+    public long getFpId() { return fpId; }
     public List<FixedMaterialEntity> getMaterials() { return materials; }
-    public void setMaterials(List<FixedMaterialEntity> materials) { this.materials = materials; }
     public String getSerialCode() { return serialCode; }
-    public void setSerialCode(String serialCode) { this.serialCode = serialCode; }
     public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
     public int getProductionTime() { return productionTime; }
+
+    public void setFpId(int fpId) { this.fpId = fpId; }
+    public void setMaterials(List<FixedMaterialEntity> materials) { this.materials = materials; }
+    public void setSerialCode(String serialCode) { this.serialCode = serialCode; }
+    public void setName(String name) { this.name = name; }
     public void setProductionTime(int productionTime) { this.productionTime = productionTime; }
+
+
+
+
+
 }

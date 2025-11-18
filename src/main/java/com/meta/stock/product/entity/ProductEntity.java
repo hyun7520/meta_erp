@@ -21,9 +21,13 @@ public class ProductEntity {
 
     // getter & setter
     public long getProductId() { return productId; }
-    public void setProductId(long productId) { this.productId = productId; }
     public String getProductName() { return productName; }
-    public void setProductName(String productName) { this.productName = productName; }
     public long getLotsId() { return lotsId; }
+
+    public void setProductId(long productId) { this.productId = productId; }
+    public void setProductName(String productName) { this.productName = productName; }
     public void setLotsId(long lotsId) { this.lotsId = lotsId; }
+
+
+
 }

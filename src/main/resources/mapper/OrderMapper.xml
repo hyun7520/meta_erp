@@ -7,7 +7,13 @@
 <mapper namespace="com.meta.stock.product.mapper.OrderMapper">
     <select id="getAllOrders" parameterType="com.meta.stock.product.dto.OrderDto">
         SELECT order_id, product_id, product_name, request_by, qty, unit, request_date, deadline, complete
+        <where>
+            <choose>
+                <when test="keyword=='ongoing'">
+                    complete
+                </when>
+            </choose>
+        </where>
         FROM order, fixedProduct
-        WHERE order.orderId = fixedProduct.fpId
     </select>
 </mapper>

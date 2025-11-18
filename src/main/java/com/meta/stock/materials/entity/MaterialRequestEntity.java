@@ -20,10 +20,10 @@ public class MaterialRequestEntity {
     private MaterialEntity material;
 
     @Column(name = "REQUEST_DATE")
-    private LocalDate requestDate;
+    private String requestDate;
 
     @Column(name = "QTY")
-    private Integer qty;
+    private int qty;
 
     @Column(name = "APPROVED")
     private int approved;   // Oracle은 boolean 대신 0/1 사용
@@ -36,17 +36,25 @@ public class MaterialRequestEntity {
 
     // getter & setter
     public Long getMrId() { return mrId; }
-    public void setMrId(Long mrId) { this.mrId = mrId; }
     public MaterialEntity getMaterial() { return material; }
-    public void setMaterial(MaterialEntity material) { this.material = material; }
-    public LocalDate getRequestDate() { return requestDate; }
-    public void setRequestDate(LocalDate requestDate) { this.requestDate = requestDate; }
-    public Integer getQty() { return qty; }
-    public void setQty(Integer qty) { this.qty = qty; }
+    public String getRequestDate() { return requestDate; }
+    public int getQty() { return qty; }
     public int getApproved() { return approved; }
-    public void setApproved(int approved) { this.approved = approved; }
     public String getApprovedDate() { return approvedDate; }
-    public void setApprovedDate(String approvedDate) { this.approvedDate = approvedDate; }
     public String getNote() { return note; }
+
+    public void setMrId(Long mrId) { this.mrId = mrId; }
+    public void setMaterial(MaterialEntity material) { this.material = material; }
+    public void setRequestDate(String requestDate) { this.requestDate = requestDate; }
+    public void setQty(int qty) { this.qty = qty; }
+    public void setApproved(int approved) { this.approved = approved; }
+    public void setApprovedDate(String approvedDate) { this.approvedDate = approvedDate; }
     public void setNote(String note) { this.note = note; }
+
+
+
+
+
+
+
 }
