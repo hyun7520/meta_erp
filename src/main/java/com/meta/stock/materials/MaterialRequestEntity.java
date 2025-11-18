@@ -17,7 +17,7 @@ public class MaterialRequestEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "mr_seq")
     @SequenceGenerator(name = "mr_seq", sequenceName = "SEQ_MATERIAL_REQUEST", allocationSize = 1)
     @Column(name = "MR_ID")
-    private Long mrId;
+    private long mrId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "MATERIAL_ID")
@@ -31,10 +31,10 @@ public class MaterialRequestEntity {
     private String requestDate;
 
     @Column(name = "QTY")
-    private Integer qty;
+    private int qty;
 
     @Column(name = "APPROVED")
-    private Integer approved;  // Oracle에서는 Boolean 대신 Integer (0, 1, null)
+    private int approved;  // Oracle에서는 Boolean 대신 Integer (0, 1, null)
 // int로 받고 if로 바꾸기
 
     @Column(name = "APPROVED_DATE")
@@ -44,11 +44,11 @@ public class MaterialRequestEntity {
     private String note;
 
 
-    public Long getMrId() {
+    public long getMrId() {
         return mrId;
     }
 
-    public void setMrId(Long mrId) {
+    public void setMrId(long mrId) {
         this.mrId = mrId;
     }
 
@@ -76,20 +76,20 @@ public class MaterialRequestEntity {
         this.requestDate = requestDate;
     }
 
-    public Integer getQty() {
+    public int getQty() {
         return qty;
     }
 
-    public void setQty(Integer qty) {
+    public void setQty(int qty) {
         this.qty = qty;
     }
 
 
-    public Integer  getApproved() {
+    public int  getApproved() {
         return approved;
     }
 
-    public void setApproved(Integer approved) {
+    public void setApproved(int approved) {
         this.approved = approved;
     }
 

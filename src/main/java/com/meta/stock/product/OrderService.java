@@ -38,7 +38,7 @@ public class OrderService {
     // 주문 생성
     @Transactional
     public OrderDTO createOrder(OrderCreateDTO dto) {
-        ProductsEntity product = productRepository.findById(dto.getProductId().longValue())
+        ProductsEntity product = productRepository.findById(Long.valueOf(dto.getProductId()))
                 .orElseThrow(() -> new RuntimeException("제품을 찾을 수 없습니다."));
 
         OrderEntity order = new OrderEntity();
@@ -66,8 +66,8 @@ public class OrderService {
         dto.setComplete(entity.getComplete());
 
         // 제품 이름 조회
-        if (entity.getProductId() != null) {
-            productRepository.findById(entity.getProductId().longValue())
+        if (entity.getProductId() != 0) {
+            productRepository.findById(Long.valueOf(entity.getProductId()))
                     .ifPresent(product -> dto.setProductName(product.getProductName()));
         }
 

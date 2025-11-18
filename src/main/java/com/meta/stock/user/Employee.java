@@ -9,7 +9,7 @@ public class Employee {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "emp_seq")
     @SequenceGenerator(name = "emp_seq", sequenceName = "SEQ_EMPLOYEES", allocationSize = 1)
     @Column(name = "EMPLOYEE_ID")
-    private Long employeeId;
+    private long employeeId;
 
     @Column(name = "NAME")
     private String name;
@@ -21,16 +21,16 @@ public class Employee {
     private String password;
 
     @Column(name = "HIRE_DATE")
-    private String hireDate;  // 👈 LocalDate에서 String으로
+    private String hireDate;
 
     @Column(name = "DEPARTMENT_ID")
-    private Long departmentId;
+    private long departmentId;
 
     @Column(name = "ROLE_ID")
-    private Long roleId;
+    private long roleId;
 
     // Getter
-    public Long getEmployeeId() {
+    public long getEmployeeId() {
         return employeeId;
     }
 
@@ -46,20 +46,20 @@ public class Employee {
         return password;
     }
 
-    public String getHireDate() {  // 👈 String
+    public String getHireDate() {
         return hireDate;
     }
 
-    public Long getDepartmentId() {
+    public long getDepartmentId() {
         return departmentId;
     }
 
-    public Long getRoleId() {
+    public long getRoleId() {
         return roleId;
     }
 
     // Setter
-    public void setEmployeeId(Long employeeId) {
+    public void setEmployeeId(long employeeId) {
         this.employeeId = employeeId;
     }
 
@@ -75,15 +75,15 @@ public class Employee {
         this.password = password;
     }
 
-    public void setHireDate(String hireDate) {  // 👈 String
+    public void setHireDate(String hireDate) {
         this.hireDate = hireDate;
     }
 
-    public void setDepartmentId(Long departmentId) {
+    public void setDepartmentId(long departmentId) {
         this.departmentId = departmentId;
     }
 
-    public void setRoleId(Long roleId) {
+    public void setRoleId(long roleId) {
         this.roleId = roleId;
     }
 }

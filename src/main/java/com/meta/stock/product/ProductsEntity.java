@@ -9,16 +9,16 @@ public class ProductsEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "prod_seq")
     @SequenceGenerator(name = "prod_seq", sequenceName = "SEQ_PRODUCTS", allocationSize = 1)
     @Column(name = "PRODUCT_ID")
-    private Long productId;
+    private long productId;
 
     @Column(name = "PRODUCT_NAME")
     private String productName;
 
     @Column(name = "LOTS_ID")
-    private Long lotsId;
+    private long lotsId;
 
     // Getter
-    public Long getProductId() {
+    public long getProductId() {
         return productId;
     }
 
@@ -26,12 +26,12 @@ public class ProductsEntity {
         return productName;
     }
 
-    public Long getLotsId() {
+    public long getLotsId() {
         return lotsId;
     }
 
     // Setter
-    public void setProductId(Long productId) {
+    public void setProductId(long productId) {
         this.productId = productId;
     }
 
@@ -39,7 +39,7 @@ public class ProductsEntity {
         this.productName = productName;
     }
 
-    public void setLotsId(Long lotsId) {
+    public void setLotsId(long lotsId) {
         this.lotsId = lotsId;
     }
 }

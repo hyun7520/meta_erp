@@ -1,15 +1,15 @@
 package com.meta.stock.product;
 
 public class OrderCreateDTO {
-    private Integer productId;
+    private int productId;
     private String requestBy;
-    private Integer qty;
+    private int qty;
     private String unit;
     private String requestDate;
     private String deadline;
 
     // Getter
-    public Integer getProductId() {
+    public int getProductId() {
         return productId;
     }
 
@@ -17,7 +17,7 @@ public class OrderCreateDTO {
         return requestBy;
     }
 
-    public Integer getQty() {
+    public int getQty() {
         return qty;
     }
 
@@ -34,7 +34,7 @@ public class OrderCreateDTO {
     }
 
     // Setter
-    public void setProductId(Integer productId) {
+    public void setProductId(int productId) {
         this.productId = productId;
     }
 
@@ -42,7 +42,7 @@ public class OrderCreateDTO {
         this.requestBy = requestBy;
     }
 
-    public void setQty(Integer qty) {
+    public void setQty(int qty) {
         this.qty = qty;
     }
 

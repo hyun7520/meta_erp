@@ -9,11 +9,9 @@ public class MaterialRequestApprovalDTO {
     public Long getMrId() {
         return mrId;
     }
-
     public Integer getApproved() {
         return approved;
     }
-
     public String getNote() {
         return note;
     }

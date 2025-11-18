@@ -17,8 +17,9 @@ public class MaterialRequestService {
         this.materialRequestRepository = materialRequestRepository;
     }
 
+    // 미승인 발주 건 조회 (approved = 0)
     public List<MaterialRequestDTO> getPendingRequests() {
-        return materialRequestRepository.findByApprovedIsNull()
+        return materialRequestRepository.findByApproved(0)
                 .stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
@@ -38,7 +39,6 @@ public class MaterialRequestService {
 
         request.setApproved(dto.getApproved());
 
-        // 현재 날짜를 String으로 변환
         LocalDate now = LocalDate.now();
         String approvedDate = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         request.setApprovedDate(approvedDate);
@@ -58,6 +58,7 @@ public class MaterialRequestService {
         dto.setRequestByName(entity.getRequestBy() != null ? entity.getRequestBy().getName() : null);
         dto.setRequestDate(entity.getRequestDate());
         dto.setQty(entity.getQty());
+        dto.setUnit("kg"); // 단위 추가 (DB에 있다면 entity.getUnit()으로 수정)
         dto.setApproved(entity.getApproved());
         dto.setApprovedDate(entity.getApprovedDate());
         dto.setNote(entity.getNote());

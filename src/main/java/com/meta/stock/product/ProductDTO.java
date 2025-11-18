@@ -1,13 +1,13 @@
 package com.meta.stock.product;
 
 public class ProductDTO {
-    private Long productId;
+    private long productId;
     private String productName;
-    private Long lotsId;
-    private Integer productionLoss;
+    private long lotsId;
+    private int productionLoss;
 
     // Getter
-    public Long getProductId() {
+    public long getProductId() {
         return productId;
     }
 
@@ -15,16 +15,16 @@ public class ProductDTO {
         return productName;
     }
 
-    public Long getLotsId() {
+    public long getLotsId() {
         return lotsId;
     }
 
-    public Integer getProductionLoss() {
+    public int getProductionLoss() {
         return productionLoss;
     }
 
     // Setter
-    public void setProductId(Long productId) {
+    public void setProductId(long productId) {
         this.productId = productId;
     }
 
@@ -32,11 +32,11 @@ public class ProductDTO {
         this.productName = productName;
     }
 
-    public void setLotsId(Long lotsId) {
+    public void setLotsId(long lotsId) {
         this.lotsId = lotsId;
     }
 
-    public void setProductionLoss(Integer productionLoss) {
+    public void setProductionLoss(int productionLoss) {
         this.productionLoss = productionLoss;
     }
 }

@@ -14,19 +14,19 @@ public class MaterialEntity {
             allocationSize = 1
     )
     @Column(name = "MATERIALS_ID")
-    private Integer materialsId;
+    private long materialsId;
 
     @Column(name = "MATERIAL_NAME")
     private String materialName;
 
     @Column(name = "LOTS_ID")
-    private Integer lotsId;
+    private long lotsId;
 
     @Column(name = "LOSS")
     private Float loss;
 
     // Getter
-    public Integer getMaterialsId() {
+    public long getMaterialsId() {
         return materialsId;
     }
 
@@ -34,7 +34,7 @@ public class MaterialEntity {
         return materialName;
     }
 
-    public Integer getLotsId() {
+    public long getLotsId() {
         return lotsId;
     }
 
@@ -43,7 +43,7 @@ public class MaterialEntity {
     }
 
     // Setter
-    public void setMaterialsId(Integer materialsId) {
+    public void setMaterialsId(long materialsId) {
         this.materialsId = materialsId;
     }
 
@@ -51,7 +51,7 @@ public class MaterialEntity {
         this.materialName = materialName;
     }
 
-    public void setLotsId(Integer lotsId) {
+    public void setLotsId(long lotsId) {
         this.lotsId = lotsId;
     }
 

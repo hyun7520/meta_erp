@@ -14,16 +14,16 @@ public class OrderEntity {
             allocationSize = 1
     )
     @Column(name = "ORDER_ID")
-    private Integer orderId;
+    private long orderId;
 
     @Column(name = "PRODUCT_ID")
-    private Integer productId;
+    private long productId;
 
     @Column(name = "REQUEST_BY")
     private String requestBy;
 
     @Column(name = "QTY")
-    private Integer qty;
+    private int qty;
 
     @Column(name = "UNIT")
     private String unit;
@@ -35,14 +35,14 @@ public class OrderEntity {
     private String deadline;
 
     @Column(name = "COMPLETE")
-    private Integer complete;  // Oracle: 0=false, 1=true
+    private int complete;  // Oracle: 0=요청 완료, 1=승낙(제조시작) 2= 출하
 
     // Getter
-    public Integer getOrderId() {
+    public long getOrderId() {
         return orderId;
     }
 
-    public Integer getProductId() {
+    public long getProductId() {
         return productId;
     }
 
@@ -50,7 +50,7 @@ public class OrderEntity {
         return requestBy;
     }
 
-    public Integer getQty() {
+    public int getQty() {
         return qty;
     }
 
@@ -66,16 +66,16 @@ public class OrderEntity {
         return deadline;
     }
 
-    public Integer getComplete() {
+    public int getComplete() {
         return complete;
     }
 
     // Setter
-    public void setOrderId(Integer orderId) {
+    public void setOrderId(long orderId) {
         this.orderId = orderId;
     }
 
-    public void setProductId(Integer productId) {
+    public void setProductId(long productId) {
         this.productId = productId;
     }
 
@@ -83,7 +83,7 @@ public class OrderEntity {
         this.requestBy = requestBy;
     }
 
-    public void setQty(Integer qty) {
+    public void setQty(int qty) {
         this.qty = qty;
     }
 
@@ -99,7 +99,7 @@ public class OrderEntity {
         this.deadline = deadline;
     }
 
-    public void setComplete(Integer complete) {
+    public void setComplete(int complete) {
         this.complete = complete;
     }
 }

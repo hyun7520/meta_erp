@@ -1,18 +1,18 @@
 package com.meta.stock.product;
 
 public class OrderDTO {
-    private Integer orderId;
+    private long orderId;
     private String productName;
     private String requestBy;
-    private Integer qty;
+    private int qty;
     private String unit;
     private String requestDate;
     private String deadline;
-    private Integer complete;
+    private int complete;
     private String status; // "대기중", "진행중", "완료"
 
     // Getter
-    public Integer getOrderId() {
+    public long getOrderId() {
         return orderId;
     }
 
@@ -24,7 +24,7 @@ public class OrderDTO {
         return requestBy;
     }
 
-    public Integer getQty() {
+    public int getQty() {
         return qty;
     }
 
@@ -40,7 +40,7 @@ public class OrderDTO {
         return deadline;
     }
 
-    public Integer getComplete() {
+    public int getComplete() {
         return complete;
     }
 
@@ -49,7 +49,7 @@ public class OrderDTO {
     }
 
     // Setter
-    public void setOrderId(Integer orderId) {
+    public void setOrderId(long orderId) {
         this.orderId = orderId;
     }
 
@@ -61,7 +61,7 @@ public class OrderDTO {
         this.requestBy = requestBy;
     }
 
-    public void setQty(Integer qty) {
+    public void setQty(int qty) {
         this.qty = qty;
     }
 
@@ -77,7 +77,7 @@ public class OrderDTO {
         this.deadline = deadline;
     }
 
-    public void setComplete(Integer complete) {
+    public void setComplete(int complete) {
         this.complete = complete;
     }
 

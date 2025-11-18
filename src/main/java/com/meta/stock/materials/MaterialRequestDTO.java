@@ -3,18 +3,18 @@ package com.meta.stock.materials;
 import java.time.LocalDate;
 
 public class MaterialRequestDTO {
-    private Long mrId;
+    private long mrId;
     private String materialName;
     private String requestByName;
     private String requestDate;
-    private Integer qty;
+    private int qty;
     private String unit;
-    private Integer approved;
+    private int approved;
     private String approvedDate;
     private String note;
 
     // Getter
-    public Long getMrId() {
+    public long getMrId() {
         return mrId;
     }
 
@@ -30,7 +30,7 @@ public class MaterialRequestDTO {
         return requestDate;
     }
 
-    public Integer getQty() {
+    public int getQty() {
         return qty;
     }
 
@@ -38,7 +38,7 @@ public class MaterialRequestDTO {
         return unit;
     }
 
-    public Integer getApproved() {
+    public int getApproved() {
         return approved;
     }
 
@@ -67,7 +67,7 @@ public class MaterialRequestDTO {
         this.requestDate = requestDate;
     }
 
-    public void setQty(Integer qty) {
+    public void setQty(int qty) {
         this.qty = qty;
     }
 
@@ -75,7 +75,7 @@ public class MaterialRequestDTO {
         this.unit = unit;
     }
 
-    public void setApproved(Integer approved) {
+    public void setApproved(int approved) {
         this.approved = approved;
     }
 
