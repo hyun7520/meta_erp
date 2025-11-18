@@ -14,12 +14,12 @@ public class OrderService {
     private OrderMapper orderMapper;
 
     @GetMapping("prod/items")
-    public List<OrderDto> getAllOrders(String status) {
-        return orderMapper.getAllOrders(status);
+    public List<OrderDto> findAllOrders(int keyword) {
+        return orderMapper.findAllOrders(keyword);
     }
 
-    public OrderDto findByOrder(int orderId) {
-        return orderMapper.getOrderById(orderId);
+    public OrderDto findOrderById(long orderId) {
+        return orderMapper.findOrderById(orderId);
     }
 
     public String shipOrder(int orderId) {

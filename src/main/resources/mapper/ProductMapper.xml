@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- mybatis 사이트에서 필요한 링크를 찾을 수 있다 -->
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.meta.stock.product.mapper.ProductMapper">
+    <resultMap id="ProductStockResultMap" type="com.meta.stock.product.dto.ProductStockDto">
+        <id property="productId" column="PRODUCT_ID"/>
+        <result property="productName" column="PRODUCT_NAME"/>
+        <result property="lotId" column="LOT_ID"/>
+        <result property="qty" column="QTY"/>
+        <result property="unit" column="UNIT"/>
+        <result property="storageDate" column="STORAGE_DATE"/>
+        <result property="shelfLifeDays" column="SHELF_LIFE_DAYS"/>
+        <result property="note" column="NOTE"/>
+    </resultMap>
+
+    <!-- 전체 완제품 재고 조회 -->
+    <select id="findAllProductStock" resultMap="ProductStockResultMap">
+        SELECT
+        p.PRODUCT_ID,
+        p.PRODUCT_NAME,
+        l.LOT_ID,
+        l.QTY,
+        l.UNIT,
+        l.STORAGE_DATE,
+        l.SHELF_LIFE_DAYS,
+        l.NOTE
+        FROM PRODUCT p
+        JOIN LOTS l ON p.LOTS_ID = l.LOT_ID
+        WHERE l.QTY > 0  <!-- 재고 있는 것만 (선택) -->
+        ORDER BY l.SHELF_LIFE_DAYS ASC  -- 유통기한 임박 순으로 정렬
+    </select>
+
+    <!-- 특정 제품 재고 조회 (productId로) -->
+    <select id="findProductStockById" parameterType="long" resultMap="ProductStockResultMap">
+        SELECT
+        p.PRODUCT_ID,
+        p.PRODUCT_NAME,
+        l.LOT_ID,
+        l.QTY,
+        l.UNIT,
+        l.STORAGE_DATE,
+        l.SHELF_LIFE_DAYS,
+        l.NOTE
+        FROM PRODUCT p
+        JOIN LOTS l ON p.LOTS_ID = l.LOT_ID
+        WHERE p.PRODUCT_ID = #{productId}
+        AND l.QTY > 0
+    </select>
+</mapper>

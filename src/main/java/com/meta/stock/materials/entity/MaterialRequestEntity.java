@@ -1,6 +1,7 @@
 package com.meta.stock.materials.entity;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDate;
 
@@ -13,7 +14,7 @@ public class MaterialRequestEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "mr_seq")
     @SequenceGenerator(name = "mr_seq", sequenceName = "SEQ_MATERIAL_REQUEST", allocationSize = 1)
     @Column(name = "MR_ID")
-    private Long mrId;
+    private long mrId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "MATERIAL_ID")
@@ -26,16 +27,17 @@ public class MaterialRequestEntity {
     private int qty;
 
     @Column(name = "APPROVED")
+    @ColumnDefault("0")
     private int approved;   // Oracle은 boolean 대신 0/1 사용
 
     @Column(name = "APPROVED_DATE")
-    private String approvedDate;   // 또는 LocalDate로 변경 가능
+    private String approvedDate;
 
     @Column(name = "NOTE")
     private String note;
 
     // getter & setter
-    public Long getMrId() { return mrId; }
+    public long getMrId() { return mrId; }
     public MaterialEntity getMaterial() { return material; }
     public String getRequestDate() { return requestDate; }
     public int getQty() { return qty; }
@@ -43,18 +45,11 @@ public class MaterialRequestEntity {
     public String getApprovedDate() { return approvedDate; }
     public String getNote() { return note; }
 
-    public void setMrId(Long mrId) { this.mrId = mrId; }
+    public void setMrId(long mrId) { this.mrId = mrId; }
     public void setMaterial(MaterialEntity material) { this.material = material; }
     public void setRequestDate(String requestDate) { this.requestDate = requestDate; }
     public void setQty(int qty) { this.qty = qty; }
     public void setApproved(int approved) { this.approved = approved; }
     public void setApprovedDate(String approvedDate) { this.approvedDate = approvedDate; }
     public void setNote(String note) { this.note = note; }
-
-
-
-
-
-
-
 }

@@ -27,7 +27,4 @@ public class ProductEntity {
     public void setProductId(long productId) { this.productId = productId; }
     public void setProductName(String productName) { this.productName = productName; }
     public void setLotsId(long lotsId) { this.lotsId = lotsId; }
-
-
-
 }

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- mybatis 사이트에서 필요한 링크를 찾을 수 있다 -->
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.meta.stock.materials.mapper.MaterialMapper">
+    <resultMap id="MaterialRequestResultMap" type="com.meta.stock.materials.dto.MaterialRequestDto">
+        <id property="mrId" column="MR_ID"/>
+        <result property="materialName" column="MATERIAL_NAME"></result>
+        <result property="materialId" column="MATERIAL_ID"/>
+        <result property="qty" column="LOTS_ID"/>
+        <result property="requestDate" column="REQUEST_DATE"></result>
+        <result property="approved" column="APPROVED"></result>
+        <result property="approvedDate" column="APPROVED_DATE"></result>
+        <result property="note" column="NOTE"></result>
+    </resultMap>
+
+    <resultMap id="MaterialRequirementMap" type="com.meta.stock.materials.dto.MaterialRequirementDto">
+        <result property="materialName" column="MATERIAL_NAME"/>
+        <result property="requiredQty" column="REQUIRED_QTY"/>
+        <result property="unit" column="UNIT"/>
+    </resultMap>
+
+    <select id="findAllRequests" resultMap="MaterialRequestResultMap">
+        SELECT m.MR_ID, m.MATERIAL_ID, f.MATERIAL_NAME, m.QTY, m.APPROVED, m.APPROVED_DATE, m.REQUEST_DATE, m.NOTE
+        FROM MATERIAL_REQUEST m
+        JOIN MATERIAL f
+        ON m.MATERIAL_ID = f.MATERIAL_ID
+    </select>
+
+    <select id="calculateRequiredMaterials" parameterType="map" resultMap="MaterialRequirementMap">
+        SELECT
+        fm.MATERIAL_NAME,
+        fm.QTY * #{qty} AS REQUIRED_QTY,
+        fm.UNIT
+        FROM FIXED_MATERIAL fm
+        WHERE fm.FP_ID = #{productId}
+    </select>
+
+    <!-- 현재 재고 조회 (같은 이름 재료 합계) -->
+    <select id="getCurrentStock" parameterType="string" resultType="int">
+        SELECT COALESCE(SUM(l.QTY), 0)
+        FROM MATERIAL m
+        JOIN LOTS l ON m.LOTS_ID = l.LOT_ID
+        WHERE m.MATERIAL_NAME = #{materialName}
+    </select>
+</mapper>

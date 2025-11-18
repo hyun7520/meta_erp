@@ -5,15 +5,55 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.meta.stock.product.mapper.OrderMapper">
-    <select id="getAllOrders" parameterType="com.meta.stock.product.dto.OrderDto">
-        SELECT order_id, product_id, product_name, request_by, qty, unit, request_date, deadline, complete
+    <resultMap id="ProductResultMap" type="com.meta.stock.product.dto.ProductDto">
+        <id property="productId" column="PRODUCT_ID"/>
+        <result property="productName" column="PRODUCT_NAME"/>
+        <result property="lotsId" column="LOTS_ID"/>
+    </resultMap>
+
+    <!-- OrderDto 매핑 + ProductDto 포함 -->
+    <resultMap id="OrderResultMap" type="com.meta.stock.product.dto.OrderDto">
+        <id property="orderId" column="ORDER_ID"/>
+        <result property="requestBy" column="REQUEST_BY"/>
+        <result property="qty" column="QTY"/>
+        <result property="unit" column="UNIT"/>
+        <result property="requestDate" column="REQUEST_DATE"/>
+        <result property="deadline" column="DEADLINE"/>
+        <result property="complete" column="COMPLETE"/>
+
+        <association property="productDto" javaType="com.meta.stock.product.dto.ProductDto" resultMap="ProductResultMap"/>
+    </resultMap>
+
+    <!-- 전체 주문 조회 (JOIN) -->
+    <select id="findAllOrders" resultMap="OrderResultMap">
+        SELECT
+        o.ORDER_ID,
+        o.REQUEST_BY,
+        o.QTY,
+        o.UNIT,
+        o.REQUEST_DATE,
+        o.DEADLINE,
+        o.COMPLETE,
+        p.PRODUCT_ID,
+        p.PRODUCT_NAME,
+        p.LOTS_ID
+        FROM ORDERS o
+        JOIN PRODUCT p ON o.PRODUCT_ID = p.PRODUCT_ID
         <where>
-            <choose>
-                <when test="keyword=='ongoing'">
-                    complete
-                </when>
-            </choose>
+            <if test="keyword != null and keyword != ''">
+                o.COMPLETE = #{keyword}
+            </if>
         </where>
-        FROM order, fixedProduct
+        ORDER BY o.ORDER_ID DESC
+    </select>
+
+    <!-- 특정 주문 조회 (예: ID로) -->
+    <select id="findOrderById" parameterType="long" resultMap="OrderResultMap">
+        SELECT
+        o.ORDER_ID, o.REQUEST_BY, o.QTY, o.UNIT, o.REQUEST_DATE, o.DEADLINE, o.COMPLETE,
+        p.PRODUCT_ID, p.PRODUCT_NAME, p.LOTS_ID
+        FROM ORDERS o
+        JOIN PRODUCT p ON o.PRODUCT_ID = p.PRODUCT_ID
+        WHERE o.ORDER_ID = #{orderId}
     </select>
 </mapper>

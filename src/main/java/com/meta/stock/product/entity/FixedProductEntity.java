@@ -51,9 +51,4 @@ public class FixedProductEntity {
     public void setSerialCode(String serialCode) { this.serialCode = serialCode; }
     public void setName(String name) { this.name = name; }
     public void setProductionTime(int productionTime) { this.productionTime = productionTime; }
-
-
-
-
-
 }

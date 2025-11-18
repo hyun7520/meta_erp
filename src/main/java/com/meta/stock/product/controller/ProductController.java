@@ -4,6 +4,7 @@ import com.meta.stock.materials.dto.MaterialRequestDto;
 import com.meta.stock.materials.service.MaterialService;
 import com.meta.stock.product.dto.OrderDto;
 import com.meta.stock.product.dto.ProductDto;
+import com.meta.stock.product.dto.ProductStockDto;
 import com.meta.stock.product.service.OrderService;
 import com.meta.stock.product.service.PredictService;
 import com.meta.stock.product.service.ProductService;
@@ -30,21 +31,21 @@ public class ProductController {
     // 생산 페이지 로드
     @GetMapping("product")
     public String getAllProducts(Model model) {
-        // lots 테이블 join products table by lot 번호
-        List<ProductDto> foundProducts = productService.getAllProducts();
-        // 전체 주문 조회 - 기본 조건(현재 진행중인 경우만)
-        List<OrderDto> foundOrders = orderService.getAllOrders("ongoing");
-        // 재료 요청 라스트 조회
-        List<MaterialRequestDto> materialRequests = materialService.getMaterialRequests();
+        // 로트 + 프로덕트: 재고가 있는 모든 제품들만 조회
+        List<ProductStockDto> productStock = productService.findAllProductStock();
+        // 진행중인 주문 조회
+        List<OrderDto> ongoingOrders = orderService.findAllOrders(0);
+        // 재료 요청 리스트 조회
+        List<MaterialRequestDto> materialRequests = materialService.getMaterialRequests(0);
         // 페이지 로드 시 예측 모델 호출 부족한 재고가 있는지 확인
         // return 값 고민해보기
         // List<PredictionDto> prediction = predictService.doPrediction();
 
-        model.addAttribute("foundProducts", foundProducts);
-        model.addAttribute("foundOrders", foundOrders);
+        model.addAttribute("foundProducts", productStock);
+        model.addAttribute("foundOrders", ongoingOrders);
         model.addAttribute("materialRequests", materialRequests);
         // model.addAttribute("prediction", prediction);
 
-        return "product_main";
+        return "productionMain";
     }
 }

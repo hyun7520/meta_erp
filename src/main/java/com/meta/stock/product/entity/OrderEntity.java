@@ -1,6 +1,7 @@
 package com.meta.stock.product.entity;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.util.Date;
 
@@ -34,6 +35,7 @@ public class OrderEntity {
     private String deadline;
 
     @Column(name = "COMPLETE")
+    @ColumnDefault("0")
     private int complete;
 
     // getter & setter
@@ -44,7 +46,7 @@ public class OrderEntity {
     public String getUnit() { return unit; }
     public String getRequestDate() { return requestDate; }
     public String getDeadline() { return deadline; }
-    public int isComplete() { return complete; }
+    public int getComplete() { return complete; }
 
     public void setOrderId(int orderId) { this.orderId = orderId; }
     public void setProductId(ProductEntity product) { this.product = product; }

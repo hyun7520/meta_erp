@@ -8,7 +8,7 @@ import java.util.List;
 @Mapper
 public interface OrderMapper {
 
-    List<OrderDto> getAllOrders(String status);
+    List<OrderDto> findAllOrders(int keyword);
 
-    OrderDto getOrderById(int orderId);
+    OrderDto findOrderById(long orderId);
 }

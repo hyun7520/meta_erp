@@ -2,16 +2,24 @@ package com.meta.stock.materials.service;
 
 import com.meta.stock.materials.dto.MaterialDto;
 import com.meta.stock.materials.dto.MaterialRequestDto;
+import com.meta.stock.materials.dto.MaterialRequirementDto;
+import com.meta.stock.materials.mapper.MaterialMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class MaterialService {
 
+    @Autowired
+    private MaterialMapper materialMapper;
+
     // 재료 요청 조회
-    public List<MaterialRequestDto> getMaterialRequests() {
-        return null;
+    public List<MaterialRequestDto> getMaterialRequests(int keyword) {
+        return materialMapper.findAllRequests(keyword);
     }
     
     // 세부 재료 요청 조회
@@ -36,5 +44,17 @@ public class MaterialService {
 
     public List<MaterialDto> getAllMaterials() {
         return null;
+    }
+
+
+    public List<MaterialRequirementDto> calculateRequiredMaterials(long productId, int qty) {
+        Map<String, Object> param = new HashMap<>();
+        param.put("productId", productId);
+        param.put("qty", qty);
+        return materialMapper.calculateRequiredMaterials(param);  // ← 이제 List<DTO> 반환!
+    }
+
+    public int getCurrentStock(String materialName) {
+        return materialMapper.getCurrentStock(materialName);
     }
 }

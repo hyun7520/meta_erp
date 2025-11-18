@@ -23,7 +23,7 @@ public class FixedMaterialEntity {
     @Column(name = "QTY")
     private int qty;
 
-    @Column(name = "UNIT", nullable = false, length = 20)
+    @Column(name = "UNIT")
     private String unit;
 
     public long getFmId() { return fmId; }
