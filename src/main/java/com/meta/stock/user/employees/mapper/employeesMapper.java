@@ -4,6 +4,7 @@ import com.meta.stock.user.employees.dto.employeesDto;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface employeesMapper {
@@ -13,11 +14,13 @@ public interface employeesMapper {
 
     int selectCountById(String id);
 
-    List<employeesDto> selectAll();
+    List<employeesDto> selectAll(Map<String, Object> params);
 
     employeesDto selectEmployeeById(int employeeId);
 
     void updateEmployee(employeesDto employee);
 
     void deleteEmployee(int employeeId);
+
+    int countTotalEmployees(Map<String, Object> params);
 }

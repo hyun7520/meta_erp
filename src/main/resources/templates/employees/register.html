@@ -4,6 +4,124 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <style>
+        body {
+            font-family: 'Malgun Gothic', '맑은 고딕', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            line-height: 1.6;
+            margin: 0;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* 폼을 화면 중앙에 배치 */
+        }
+
+        /* 컨테이너 역할 (폼과 제목을 감싸는 역할) */
+        body > h1, form {
+            max-width: 600px;
+            width: 100%;
+            margin-top: 20px;
+            padding: 25px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #17a2b8; /* 청록색 계열 (리스트 페이지와 동일) */
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #17a2b8;
+            font-size: 28px;
+        }
+
+        /* --- 폼 (테이블) 스타일 --- */
+        form table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0 auto;
+            border: 1px solid #dee2e6;
+        }
+
+        form table tr:nth-child(even) {
+            background-color: #f8f9fa; /* 짝수 행 배경색 */
+        }
+
+        form table td {
+            padding: 12px 15px;
+            border: 1px solid #dee2e6;
+            font-size: 14px;
+        }
+
+        form table td:first-child {
+            width: 100px;
+            background-color: #e9f7f9; /* 제목 셀 배경색 */
+            font-weight: 600;
+            color: #495057;
+            text-align: center;
+        }
+
+        /* --- 입력 요소 스타일 --- */
+        input[type="text"], input[type="password"], input[type="date"], select, #idInput, #emailPrefix {
+            padding: 8px 10px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.3s;
+            box-sizing: border-box; /* 패딩이 너비를 증가시키지 않도록 */
+        }
+
+        input:focus, select:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+
+        /* 이메일 입력 필드 너비 조정 */
+        #emailPrefix {
+            width: 150px;
+        }
+        #emailDomain {
+            width: 120px;
+        }
+
+        /* 부서/직책 드롭다운 너비 조정 */
+        #departmentSelect, #roleSelect {
+            width: 180px;
+        }
+
+        /* --- 버튼 스타일 --- */
+        input[type="submit"], input[type="button"] {
+            padding: 8px 15px;
+            font-weight: bold;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        /* 중복체크 버튼 */
+        input[type="button"] {
+            background-color: #6c757d; /* 회색 */
+            color: white;
+            margin-left: 5px;
+        }
+
+        input[type="button"]:hover {
+            background-color: #5a6268;
+        }
+
+        /* 사원 등록 버튼 (폼 하단) */
+        input[type="submit"] {
+            background-color: #28a745; /* 녹색 */
+            color: white;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #1e7e34;
+        }
+
         .err {
             color: red;
             font-size: 0.9em;

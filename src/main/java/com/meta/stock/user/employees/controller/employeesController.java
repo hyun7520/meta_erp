@@ -14,11 +14,14 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Controller
 public class employeesController {
@@ -95,44 +98,98 @@ public class employeesController {
 
     @GetMapping(value = "updateEmployee")
     public String updateEmployee(@RequestParam(value = "employee_id") int employee_id,
+                                 @RequestParam(value = "whatColumn",required = false) String whatColumn,
+                                 @RequestParam(value = "keyword",required = false) String keyword,
+                                 @RequestParam(value = "page",defaultValue = "1") int page,
                               Model model, HttpSession session){
         employeesDto employee = employeesMapper.selectEmployeeById(employee_id);
         model.addAttribute("employee",employee);
+
+        model.addAttribute("whatColumn",whatColumn);
+        model.addAttribute("keyword",keyword);
+        model.addAttribute("page",page);
         return "employees/updateEmployee";
     }
 
     @PostMapping(value = "/updateEmployeeProc")
     public String updateSongProc(@ModelAttribute("employee") @Valid employeesDto employee,
+                                 @RequestParam(value = "whatColumn",required = false) String whatColumn,
+                                 @RequestParam(value = "keyword",required = false) String keyword,
+                                 @RequestParam(value = "page",defaultValue = "1") int page,
                                  BindingResult bResult, Model model){
+        model.addAttribute("whatColumn",whatColumn);
+        model.addAttribute("keyword",keyword);
+        model.addAttribute("page",page);
+
         if(bResult.hasErrors())
             return "employees/updateEmployee";
 
         employeesMapper.updateEmployee(employee);
-        return "redirect:/showEmployees";
+        String encodeKeyword = keyword != null ? URLEncoder.encode(keyword, StandardCharsets.UTF_8) : "";
+        return "redirect:/showEmployees?page="+page+"&whatColumn="+whatColumn+"&keyword="+encodeKeyword;
     }
 
     @GetMapping(value = "/deleteEmployee")
     public String deleteEmployee(@RequestParam(value = "employee_id") int employee_id,
+                                 @RequestParam(value = "whatColumn",required = false) String whatColumn,
+                                 @RequestParam(value = "keyword",required = false) String keyword,
+                                 @RequestParam(value = "page", defaultValue = "1") int page,
                                  Model model, HttpSession session){
 
         employeesMapper.deleteEmployee(employee_id);
 
-        return "redirect:/showEmployees";
+        int limit = 7;
+        int offset = (page - 1) * limit;
+        Map<String, Object> params = new HashMap<>();
+        params.put("whatColumn", whatColumn);
+        params.put("keyword", keyword);
+        params.put("offset", offset);
+        params.put("limit", limit);
+
+        int totalCount = employeesMapper.countTotalEmployees(params);
+        if(totalCount % limit == 0) {
+            page = page - 1;
+        }
+
+        String encodeKeyword = keyword != null ? URLEncoder.encode(keyword, StandardCharsets.UTF_8) : "";
+        return "redirect:/showEmployees?page="+page+"&whatColumn="+whatColumn+"&keyword="+encodeKeyword;
     }
 
     @GetMapping(value = "/showEmployees")
-    public String showEmployees(Model model){
-        List<employeesDto> elist = employeesMapper.selectAll();
-        model.addAttribute("elist",elist);
+    public String showEmployees(Model model,
+                                @RequestParam(value = "whatColumn",required = false)String whatColumn,
+                                @RequestParam(value = "keyword",required = false)String keyword,
+                                @RequestParam(value = "page", defaultValue = "1")int page){
+        int limit = 7;
+        int offset = (page-1)*limit;
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("whatColumn", whatColumn);
+        params.put("keyword", keyword);
+        params.put("offset", offset);
+        params.put("limit", limit);
+
+        List<employeesDto> elist = employeesMapper.selectAll(params);
+
+        int totalCount = employeesMapper.countTotalEmployees(params);
+
+        int totalPage = (int)Math.ceil((double)totalCount/limit);
 
         Map<Integer, String> departmentMap = new HashMap<>();
         departmentMap.put(100,"경영");
         departmentMap.put(200,"생산");
-        model.addAttribute("departmentMap",departmentMap);
 
         Map<Integer, String> roleMap = new HashMap<>();
         roleMap.put(1,"사원");
         roleMap.put(2,"감독관");
+
+        model.addAttribute("elist",elist);
+        model.addAttribute("totalCount",totalCount);
+        model.addAttribute("totalPage",totalPage);
+        model.addAttribute("page",page);
+        model.addAttribute("whatColumn",whatColumn);
+        model.addAttribute("keyword",keyword);
+        model.addAttribute("departmentMap",departmentMap);
         model.addAttribute("roleMap",roleMap);
 
         return "employees/employeesList";

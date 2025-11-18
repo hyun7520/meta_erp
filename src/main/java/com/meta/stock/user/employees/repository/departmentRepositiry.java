@@ -1,12 +1,14 @@
 package com.meta.stock.user.employees.repository;
 
 import com.meta.stock.user.employees.entity.Department;
+import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class departmentRepositiry {
     @Autowired
     departmentEntityRepository departmentEntityRepository;
 
+    @Test
     public void insertDepartment(){
         Department department = new Department();
         department.setDepartment_id(100);
