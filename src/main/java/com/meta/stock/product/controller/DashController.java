@@ -2,7 +2,9 @@ package com.meta.stock.product.controller;
 
 import com.meta.stock.materials.dto.MaterialCountsBean;
 import com.meta.stock.materials.service.MaterialService;
+import com.meta.stock.product.dto.ProductDemandBean;
 import com.meta.stock.product.dto.ProductsAmountListBean;
+import com.meta.stock.product.service.GraphService;
 import com.meta.stock.product.service.ProductsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -23,6 +25,8 @@ public class DashController {
     private ProductsService productsService;
     @Autowired
     private MaterialService materialService;
+    @Autowired
+    private GraphService graphService;
 
     private final int limit = 5;
 
@@ -57,5 +61,11 @@ public class DashController {
     @ResponseBody
     public ResponseEntity<List<MaterialCountsBean>> materialCounts(@RequestParam(required = false) String serialCode) {
         return ResponseEntity.ok(materialService.getDateMaterialTotals(serialCode));
+    }
+
+    @GetMapping("/dash/demands")
+    @ResponseBody
+    public ResponseEntity<List<ProductDemandBean>> productDemands() {
+        return ResponseEntity.ok(graphService.getList());
     }
 }

@@ -1,20 +1,8 @@
-let chart;
+let pieChart;
 
 document.addEventListener("DOMContentLoaded", () => {
     drawMaterialPieChart();
 });
-
-const calcDrawDate = () => {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = `${now.getMonth() + 1}`.padStart(2, "0");
-    const date = `${now.getDate()}`.padStart(2, "0");
-
-    const hour = now.getHours();
-    const minute = now.getMinutes();
-    const seconds = now.getSeconds();
-    return `${year}-${month}-${date} ${hour}:${minute}:${seconds}`
-}
 
 const drawPie = (data, product = '') => {
     const option = {
@@ -45,12 +33,12 @@ const drawPie = (data, product = '') => {
         ]
     };
 
-    chart.setOption(option);
+    pieChart.setOption(option);
 }
 
 const drawMaterialPieChart = (serialCode = '', product = '') => {
     const chartDom = document.getElementById('material_total_Pie');
-    chart = echarts.init(chartDom);
+    pieChart = echarts.init(chartDom);
 
     fetch(`/dash/materials?serialCode=${serialCode}`, {method: 'GET'})
         .then(response => response.json())
@@ -58,7 +46,8 @@ const drawMaterialPieChart = (serialCode = '', product = '') => {
             const data = json.map(obj => ({name: obj['materialName'], value: obj['qty']}));
             drawPie(data, product);
 
+            const now = new Date();
             let drawTime = document.getElementById("material_total_Pie_time")
-            drawTime.innerText = calcDrawDate();
+            drawTime.innerText = calcDrawDate(now);
         });
 }

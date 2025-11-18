@@ -5,18 +5,21 @@
     <title>창고 관리</title>
     <link rel="stylesheet" type="text/css" th:href="@{/style/DashStyle.css}" />
     <script src="https://cdn.jsdelivr.net/npm/echarts@6.0.0/dist/echarts.min.js"></script>
+    <script type="text/javascript" th:src="@{/script/baseJS.js}"></script>
 </head>
 <body>
     <div th:insert="~{navbar :: navbar}"></div>
     <div>
         <div class="row">
             <div class="col w-60">진행도</div>
-            <div class="col">출하량 및 출하 예상</div>
+<!--            <div class="col">출하량 및 출하 예상</div>-->
+            <div th:insert="~{dashboard/demandqtyLine :: line}" class="col"></div>
         </div>
         <div class="row">
             <div th:insert="~{dashboard/productsTable :: productsTable(${products})}" class="col w-60"></div>
             <div class="col">
-                <div class="row">각 제품별/원자재별? 로스율</div>
+<!--                <div class="row">각 제품별/원자재별? 로스율</div>-->
+                <div th:insert="~{dashboard/lossGraph :: graph}" class="row"></div>
                 <div th:insert="~{dashboard/materialTotal :: pie}" class="row"></div>
             </div>
         </div>
