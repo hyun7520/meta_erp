@@ -10,6 +10,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import org.hibernate.annotations.ColumnDefault;
 
 // 재료 요청서
 @Entity
@@ -20,7 +21,7 @@ public class MaterialRequestEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "mr_seq")
     @SequenceGenerator(name = "mr_seq", sequenceName = "SEQ_MATERIAL_REQUEST", allocationSize = 1)
     @Column(name = "MR_ID")
-    private Long mrId;
+    private long mrId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "MATERIAL_ID")
@@ -33,6 +34,7 @@ public class MaterialRequestEntity {
     private int qty;
 
     @Column(name = "APPROVED")
+    @ColumnDefault("0")
     private int approved;   // Oracle은 boolean 대신 0/1 사용
 
     @Column(name = "APPROVED_DATE")

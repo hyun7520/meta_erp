@@ -13,7 +13,7 @@ import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "FixedMaterial")
+@Table(name = "FIXED_MATERIAL")
 public class FixedMaterialEntity {
 
     @Id
@@ -32,7 +32,7 @@ public class FixedMaterialEntity {
     @Column(name = "QTY")
     private int qty;
 
-    @Column(name = "UNIT", nullable = false, length = 20)
+    @Column(name = "UNIT")
     private String unit;
 
     public long getFmId() {

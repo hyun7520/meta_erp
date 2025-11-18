@@ -1,5 +1,6 @@
 package com.meta.stock.product.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -8,22 +9,22 @@ import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "FixedProduct")
+@Table(name = "FIXED_PRODUCT")
 public class FixedProductEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "fixed_product_gen")
-    @SequenceGenerator(
-            name = "fixed_product_gen",
-            sequenceName = "FP_SEQ",
-            allocationSize = 1
-    )
+    @SequenceGenerator(name = "fixed_product_gen", sequenceName = "FP_SEQ", allocationSize = 1)
+    @Column(name = "FP_ID")
     private long fpId;
-    // 제품의 시리얼 코드
+
+    @Column(name = "SERIAL_CODE")
     private String serialCode;
-    // 제품 이름
+
+    @Column(name = "NAME")
     private String name;
-    // 생산시간
+
+    @Column(name = "PRODUCTION_TIME")
     private int productionTime;
 
     public long getFpId() {

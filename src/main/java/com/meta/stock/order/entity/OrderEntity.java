@@ -11,16 +11,17 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import org.hibernate.annotations.ColumnDefault;
 
 @Entity
-@Table(name = "ORDERS")   // 예약어 회피 + 복수형
+@Table(name = "ORDERS")
 public class OrderEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "order_gen")
     @SequenceGenerator(name = "order_gen", sequenceName = "ORDER_SEQ", allocationSize = 1)
     @Column(name = "ORDER_ID")
-    private int orderId;
+    private long orderId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PRODUCT_ID", nullable = false)
@@ -42,9 +43,10 @@ public class OrderEntity {
     private String deadline;
 
     @Column(name = "COMPLETE")
-    private boolean complete;
+    @ColumnDefault("0")
+    private int complete;
 
-    public int getOrderId() {
+    public long getOrderId() {
         return orderId;
     }
 
@@ -72,11 +74,11 @@ public class OrderEntity {
         return deadline;
     }
 
-    public boolean isComplete() {
+    public int getComplete() {
         return complete;
     }
 
-    public void setOrderId(int orderId) {
+    public void setOrderId(long orderId) {
         this.orderId = orderId;
     }
 
@@ -104,7 +106,7 @@ public class OrderEntity {
         this.deadline = deadline;
     }
 
-    public void setComplete(boolean complete) {
+    public void setComplete(int complete) {
         this.complete = complete;
     }
 }

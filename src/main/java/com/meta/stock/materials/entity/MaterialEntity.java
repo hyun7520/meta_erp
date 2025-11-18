@@ -9,7 +9,7 @@ import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "Material")
+@Table(name = "MATERIAL")
 public class MaterialEntity {
 
     @Id
