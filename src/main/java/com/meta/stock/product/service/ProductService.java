@@ -29,4 +29,8 @@ public class ProductService {
     public List<MaterialDto> getMaterialStatus(@PathVariable int productId) {
         return null;
     }
+
+    public int getCurrentProductStock(long productId) {
+        return productMapper.getCurrentProductStock(productId);
+    }
 }
