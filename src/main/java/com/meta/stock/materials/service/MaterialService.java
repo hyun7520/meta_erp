@@ -33,4 +33,8 @@ public class MaterialService {
     public MaterialDto getMaterialById(int materialId) {
         return null;
     }
+
+    public List<MaterialDto> getAllMaterials() {
+        return null;
+    }
 }

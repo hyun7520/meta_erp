@@ -1,5 +1,6 @@
 package com.meta.stock.product.service;
 
+import com.meta.stock.materials.dto.MaterialDto;
 import com.meta.stock.product.dto.ProductDto;
 import com.meta.stock.product.mapper.OrderMapper;
 import com.meta.stock.product.dto.OrderDto;
@@ -12,9 +13,6 @@ import java.util.List;
 @Service
 public class ProductService {
 
-    @Autowired
-    private ProductService productService;
-
     public List<ProductDto> getAllProducts() {
         return null;
     }
@@ -24,6 +22,6 @@ public class ProductService {
     }
 
     public List<MaterialDto> getMaterialStatus(@PathVariable int productId) {
-        return productService.getMaterialStatus(productId);
+        return null;
     }
 }

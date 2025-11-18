@@ -4,32 +4,53 @@ import jakarta.persistence.*;
 
 import java.util.Date;
 
-// 제품 주문서
 @Entity
-@Table(name="Order")
+@Table(name = "ORDERS")   // 예약어 회피 + 복수형
 public class OrderEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "order_gen")
-    @SequenceGenerator(
-            name = "order_gen",
-            sequenceName = "ORDER_SEQ",
-            allocationSize = 1
-    )
-    // 주문서 고유 번호
+    @SequenceGenerator(name = "order_gen", sequenceName = "ORDER_SEQ", allocationSize = 1)
+    @Column(name = "ORDER_ID")
     private int orderId;
-    // 재품 번호 - fixed_product 외래키
-    private int productId;
-    // 주문한 회사
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "PRODUCT_ID", nullable = false)
+    private ProductEntity product;
+
+    @Column(name = "REQUEST_BY")
     private String requestBy;
-    // 주문 수량
+
+    @Column(name = "QTY")
     private int qty;
-    // 주문 단위
+
+    @Column(name = "UNIT")
     private String unit;
-    // 요청 일자
+
+    @Column(name = "REQUEST_DATE")
     private Date requestDate;
-    // 기한
+
+    @Column(name = "DEADLINE")
     private Date deadline;
-    // 주문 완료 여부
+
+    @Column(name = "COMPLETE")
     private boolean complete;
+
+    // getter & setter
+    public int getOrderId() { return orderId; }
+    public void setOrderId(int orderId) { this.orderId = orderId; }
+    public ProductEntity getProduct() { return product; }
+    public void setProductId(ProductEntity product) { this.product = product; }
+    public String getRequestBy() { return requestBy; }
+    public void setRequestBy(String requestBy) { this.requestBy = requestBy; }
+    public int getQty() { return qty; }
+    public void setQty(int qty) { this.qty = qty; }
+    public String getUnit() { return unit; }
+    public void setUnit(String unit) { this.unit = unit; }
+    public Date getRequestDate() { return requestDate; }
+    public void setRequestDate(Date requestDate) { this.requestDate = requestDate; }
+    public Date getDeadline() { return deadline; }
+    public void setDeadline(Date deadline) { this.deadline = deadline; }
+    public boolean isComplete() { return complete; }
+    public void setComplete(boolean complete) { this.complete = complete; }
 }

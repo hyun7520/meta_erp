@@ -4,19 +4,26 @@ import jakarta.persistence.*;
 
 // 생산된 제품
 @Entity
-@Table(name="Products")
+@Table(name = "PRODUCT")
 public class ProductEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "product_gen")
-    @SequenceGenerator(
-            name = "product_gen",
-            sequenceName = "PRODUCT_SEQ",
-            allocationSize = 1
-    )
+    @SequenceGenerator(name = "product_gen", sequenceName = "PRODUCT_SEQ", allocationSize = 1)
+    @Column(name = "PRODUCT_ID")
     private long productId;
-    // 제품 이름
+
+    @Column(name = "PRODUCT_NAME")
     private String productName;
-    // 제품의 로트 번호 - 생산된 수량, 유통기한
+
+    @Column(name = "LOTS_ID")
     private long lotsId;
+
+    // getter & setter
+    public long getProductId() { return productId; }
+    public void setProductId(long productId) { this.productId = productId; }
+    public String getProductName() { return productName; }
+    public void setProductName(String productName) { this.productName = productName; }
+    public long getLotsId() { return lotsId; }
+    public void setLotsId(long lotsId) { this.lotsId = lotsId; }
 }

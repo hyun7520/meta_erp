@@ -1,7 +1,6 @@
 package com.meta.stock.product.controller;
 
 import com.meta.stock.materials.dto.MaterialRequestDto;
-import com.meta.stock.materials.entity.MaterialRequest;
 import com.meta.stock.materials.service.MaterialService;
 import com.meta.stock.product.dto.OrderDto;
 import com.meta.stock.product.dto.ProductDto;
@@ -12,8 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -41,12 +38,12 @@ public class ProductController {
         List<MaterialRequestDto> materialRequests = materialService.getMaterialRequests();
         // 페이지 로드 시 예측 모델 호출 부족한 재고가 있는지 확인
         // return 값 고민해보기
-        List<PredictionDto> prediction = predictService.doPrediction();
+        // List<PredictionDto> prediction = predictService.doPrediction();
 
         model.addAttribute("foundProducts", foundProducts);
         model.addAttribute("foundOrders", foundOrders);
         model.addAttribute("materialRequests", materialRequests);
-        model.addAttribute("prediction", prediction);
+        // model.addAttribute("prediction", prediction);
 
         return "product_main";
     }

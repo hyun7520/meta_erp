@@ -21,4 +21,8 @@ public class OrderService {
     public OrderDto findByOrder(int orderId) {
         return orderMapper.getOrderById(orderId);
     }
+
+    public String shipOrder(int orderId) {
+        return null;
+    }
 }
