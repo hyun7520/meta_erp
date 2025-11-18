@@ -11,6 +11,18 @@
 }
 
 .chart {
-    width: 400px;
-    height: 400px;
+    width: 500px;
+    height: 300px;
+}
+
+.refresh_button {
+    color: grey;
+    font-size: small;
+    display: flex;
+    justify-content: end;
+}
+
+.refresh_button button {
+    color: black;
+    margin: 0 5px;
 }

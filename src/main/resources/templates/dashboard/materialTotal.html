@@ -7,8 +7,8 @@
 <body>
     <div th:fragment="pie">
         <div id="material_total_Pie" class="chart"></div>
-        <div>
-            <div th:text="${#dates.format(#dates.createToday(), 'yyyy-MM-dd HH:mm:ss')}"></div>
+        <div class="refresh_button">
+            <div id="material_total_Pie_time" th:text="${#dates.format(#dates.createToday(), 'yyyy-MM-dd HH:mm:ss')}"></div>
             <button onclick="updateMaterialPieChart()">Refresh</button>
         </div>
 

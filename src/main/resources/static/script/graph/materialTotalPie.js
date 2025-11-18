@@ -12,6 +12,18 @@ document.addEventListener("DOMContentLoaded", () => {
     drawMaterialPieChart();
 });
 
+const calcDrawDate = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = `${now.getMonth() + 1}`.padStart(2, "0");
+    const date = `${now.getDate()}`.padStart(2, "0");
+
+    const hour = now.getHours();
+    const minute = now.getMinutes();
+    const seconds = now.getSeconds();
+    return `${year}-${month}-${date} ${hour}:${minute}:${seconds}`
+}
+
 const drawPie = (data) => {
     const option = {
         title: {
@@ -44,21 +56,24 @@ const drawPie = (data) => {
     chart.setOption(option);
 }
 
-function drawMaterialPieChart() {
+const drawMaterialPieChart = () => {
     const chartDom = document.getElementById('material_total_Pie');
     chart = echarts.init(chartDom);
 
     drawPie(base)
+    let drawTime = document.getElementById("material_total_Pie_time")
+    drawTime.innerText = calcDrawDate();
 }
 
-function updateMaterialPieChart() {
+const updateMaterialPieChart = () => {
     if (!chart) return;
     let newData = [...base];
     base.forEach(({name, value}, index) => {
         newData[(index + 1) % base.length] = {name: name, value: value}
     })
     base = newData
-    console.log(base)
 
     drawPie(base)
+    let drawTime = document.getElementById("material_total_Pie_time")
+    drawTime.innerText = calcDrawDate();
 }
