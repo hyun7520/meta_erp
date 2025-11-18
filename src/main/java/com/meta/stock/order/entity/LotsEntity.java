@@ -8,38 +8,14 @@ import jakarta.persistence.Table;
 @Table(name = "Lots")
 public class LotsEntity {
     @Id
-    private int lotId;
+    private long lotId;
     private int qty;
     private String unit;
     private String storageDate;
     private String shelfLifeDays;
     private String note;
 
-    public void setLotId(int lotId) {
-        this.lotId = lotId;
-    }
-
-    public void setQty(int qty) {
-        this.qty = qty;
-    }
-
-    public void setUnit(String unit) {
-        this.unit = unit;
-    }
-
-    public void setStorageDate(String storageDate) {
-        this.storageDate = storageDate;
-    }
-
-    public void setShelfLifeDays(String shelfLifeDays) {
-        this.shelfLifeDays = shelfLifeDays;
-    }
-
-    public void setNote(String note) {
-        this.note = note;
-    }
-
-    public int getLotId() {
+    public long getLotId() {
         return lotId;
     }
 
@@ -61,5 +37,29 @@ public class LotsEntity {
 
     public String getNote() {
         return note;
+    }
+
+    public void setLotId(long lotId) {
+        this.lotId = lotId;
+    }
+
+    public void setQty(int qty) {
+        this.qty = qty;
+    }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
+    }
+
+    public void setStorageDate(String storageDate) {
+        this.storageDate = storageDate;
+    }
+
+    public void setShelfLifeDays(String shelfLifeDays) {
+        this.shelfLifeDays = shelfLifeDays;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
     }
 }

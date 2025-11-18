@@ -18,7 +18,7 @@ public class FixedProductEntity {
             sequenceName = "FP_SEQ",
             allocationSize = 1
     )
-    private int fpId;
+    private long fpId;
     // 제품의 시리얼 코드
     private String serialCode;
     // 제품 이름
@@ -26,23 +26,7 @@ public class FixedProductEntity {
     // 생산시간
     private int productionTime;
 
-    public void setFpId(int fpId) {
-        this.fpId = fpId;
-    }
-
-    public void setSerialCode(String serialCode) {
-        this.serialCode = serialCode;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setProductionTime(int productionTime) {
-        this.productionTime = productionTime;
-    }
-
-    public int getFpId() {
+    public long getFpId() {
         return fpId;
     }
 
@@ -56,5 +40,21 @@ public class FixedProductEntity {
 
     public int getProductionTime() {
         return productionTime;
+    }
+
+    public void setFpId(long fpId) {
+        this.fpId = fpId;
+    }
+
+    public void setSerialCode(String serialCode) {
+        this.serialCode = serialCode;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setProductionTime(int productionTime) {
+        this.productionTime = productionTime;
     }
 }

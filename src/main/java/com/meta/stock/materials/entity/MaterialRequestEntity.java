@@ -11,9 +11,11 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
+// 재료 요청서
 @Entity
 @Table(name = "MATERIAL_REQUEST")
 public class MaterialRequestEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "mr_seq")
     @SequenceGenerator(name = "mr_seq", sequenceName = "SEQ_MATERIAL_REQUEST", allocationSize = 1)
@@ -24,53 +26,20 @@ public class MaterialRequestEntity {
     @JoinColumn(name = "MATERIAL_ID")
     private MaterialEntity material;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "REQUEST_BY")
-//    private Employee requestBy;
-
     @Column(name = "REQUEST_DATE")
     private String requestDate;
 
     @Column(name = "QTY")
-    private Integer qty;
+    private int qty;
 
     @Column(name = "APPROVED")
-    private Integer approved;  // Oracle에서는 Boolean 대신 Integer (0, 1, null)
-// int로 받고 if로 바꾸기
+    private int approved;   // Oracle은 boolean 대신 0/1 사용
 
     @Column(name = "APPROVED_DATE")
     private String approvedDate;
 
     @Column(name = "NOTE")
     private String note;
-
-    public void setMrId(Long mrId) {
-        this.mrId = mrId;
-    }
-
-    public void setMaterial(MaterialEntity material) {
-        this.material = material;
-    }
-
-    public void setRequestDate(String requestDate) {
-        this.requestDate = requestDate;
-    }
-
-    public void setQty(Integer qty) {
-        this.qty = qty;
-    }
-
-    public void setApproved(Integer approved) {
-        this.approved = approved;
-    }
-
-    public void setApprovedDate(String approvedDate) {
-        this.approvedDate = approvedDate;
-    }
-
-    public void setNote(String note) {
-        this.note = note;
-    }
 
     public Long getMrId() {
         return mrId;
@@ -84,11 +53,11 @@ public class MaterialRequestEntity {
         return requestDate;
     }
 
-    public Integer getQty() {
+    public int getQty() {
         return qty;
     }
 
-    public Integer getApproved() {
+    public int getApproved() {
         return approved;
     }
 
@@ -98,5 +67,33 @@ public class MaterialRequestEntity {
 
     public String getNote() {
         return note;
+    }
+
+    public void setMrId(Long mrId) {
+        this.mrId = mrId;
+    }
+
+    public void setMaterial(MaterialEntity material) {
+        this.material = material;
+    }
+
+    public void setRequestDate(String requestDate) {
+        this.requestDate = requestDate;
+    }
+
+    public void setQty(int qty) {
+        this.qty = qty;
+    }
+
+    public void setApproved(int approved) {
+        this.approved = approved;
+    }
+
+    public void setApprovedDate(String approvedDate) {
+        this.approvedDate = approvedDate;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
     }
 }

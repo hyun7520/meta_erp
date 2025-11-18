@@ -1,46 +1,33 @@
 package com.meta.stock.materials.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
 
 @Entity
+@Table(name = "Material")
 public class MaterialEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "material_gen")
-    @SequenceGenerator(
-            name = "material_gen",
-            sequenceName = "MATERIAL_SEQ",
-            allocationSize = 1
-    )
-    private int materialId;
-    // 재료 이름
+    @SequenceGenerator(name = "material_gen", sequenceName = "MATERIAL_SEQ", allocationSize = 1)
+    @Column(name = "MATERIAL_ID")
+    private long materialId;
+
+    @Column(name = "MATERIAL_NAME")
     private String materialName;
-    // 현 재료의 입고일자, 사용기한을 저장하는 테이블 lots -> 외래키
-    private int lotsId;
-    // 재료별 로스율
+
+    @Column(name = "LOTS_ID")
+    private long lotsId;
+
+    @Column(name = "LOSS")
     private float loss;
 
-    public void setMaterialId(int materialId) {
-        this.materialId = materialId;
-    }
-
-    public void setMaterialName(String materialName) {
-        this.materialName = materialName;
-    }
-
-    public void setLotsId(int lotsId) {
-        this.lotsId = lotsId;
-    }
-
-    public void setLoss(float loss) {
-        this.loss = loss;
-    }
-
-    public int getMaterialId() {
+    public long getMaterialId() {
         return materialId;
     }
 
@@ -48,11 +35,27 @@ public class MaterialEntity {
         return materialName;
     }
 
-    public int getLotsId() {
+    public long getLotsId() {
         return lotsId;
     }
 
     public float getLoss() {
         return loss;
+    }
+
+    public void setMaterialId(long materialId) {
+        this.materialId = materialId;
+    }
+
+    public void setMaterialName(String materialName) {
+        this.materialName = materialName;
+    }
+
+    public void setLotsId(long lotsId) {
+        this.lotsId = lotsId;
+    }
+
+    public void setLoss(float loss) {
+        this.loss = loss;
     }
 }

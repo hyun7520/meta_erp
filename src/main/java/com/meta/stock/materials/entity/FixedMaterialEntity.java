@@ -1,9 +1,14 @@
 package com.meta.stock.materials.entity;
 
+import com.meta.stock.product.entity.FixedProductEntity;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
@@ -13,24 +18,49 @@ public class FixedMaterialEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "fixed_material_gen")
-    @SequenceGenerator(
-            name = "fixed_material_gen",
-            sequenceName = "FM_SEQ",
-            allocationSize = 1
-    )
-    private int fmId;
-    // 재료가 사용되는 제품의 아이디 - 외래키
-    private int fpId;
+    @SequenceGenerator(name = "fixed_material_gen", sequenceName = "FM_SEQ", allocationSize = 1)
+    @Column(name = "FM_ID")
+    private long fmId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "FP_ID", nullable = false)
+    private FixedProductEntity fixedProduct;
+
+    @Column(name = "MATERIAL_NAME")
     private String materialName;
-    // 단위 제품을 만드는데 필요한 수량
+
+    @Column(name = "QTY")
     private int qty;
 
-    public void setFmId(int fmId) {
+    @Column(name = "UNIT", nullable = false, length = 20)
+    private String unit;
+
+    public long getFmId() {
+        return fmId;
+    }
+
+    public FixedProductEntity getFixedProduct() {
+        return fixedProduct;
+    }
+
+    public String getMaterialName() {
+        return materialName;
+    }
+
+    public int getQty() {
+        return qty;
+    }
+
+    public String getUnit() {
+        return unit;
+    }
+
+    public void setFmId(long fmId) {
         this.fmId = fmId;
     }
 
-    public void setFpId(int fpId) {
-        this.fpId = fpId;
+    public void setFixedProduct(FixedProductEntity fixedProduct) {
+        this.fixedProduct = fixedProduct;
     }
 
     public void setMaterialName(String materialName) {
@@ -41,19 +71,7 @@ public class FixedMaterialEntity {
         this.qty = qty;
     }
 
-    public int getFmId() {
-        return fmId;
-    }
-
-    public int getFpId() {
-        return fpId;
-    }
-
-    public String getMaterialName() {
-        return materialName;
-    }
-
-    public int getQty() {
-        return qty;
+    public void setUnit(String unit) {
+        this.unit = unit;
     }
 }
