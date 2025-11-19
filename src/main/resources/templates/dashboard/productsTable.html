@@ -5,12 +5,12 @@
     <title>완제품 목록</title>
 </head>
 <body>
-    <div th:fragment="productsTable(products)">
+    <div th:fragment="productsTable(products, page, totalPage)">
         <form th:action="@{/}">
             <select name="column">
                 <option value="" th:selected="${param.column eq null or param.column eq ''}">검색 조건 선택</option>
-                <option value="productName" th:selected="${param.column eq 'productName'}">제품 명</option>
-                <option value="serialCode" th:selected="${param.column eq 'serialCode'}">제품 코드</option>
+                <option value="product_name" th:selected="${param.column eq 'product_name'}">제품 명</option>
+                <option value="serial_code" th:selected="${param.column eq 'serial_code'}">제품 코드</option>
             </select>
             <input type="text" name="search" th:value="${param.search}" />
             <label>
@@ -21,16 +21,15 @@
         </form>
         <form th:action="@{/}">
             <select name="sort">
-                <option value="productId" th:selected="${param.sort eq null or param.sort eq 'productId'}">ID</option>
-                <option value="storageDate" th:selected="${param.sort eq 'storageDate'}">제조일</option>
-                <option value="shelfLifeDays" th:selected="${param.sort eq 'shelfLifeDays'}">유효기한</option>
+                <option value="product_id" th:selected="${param.sort eq null or param.sort eq 'productId'}">ID</option>
+                <option value="storage_date" th:selected="${param.sort eq 'storageDate'}">제조일</option>
+                <option value="shelf_life_days" th:selected="${param.sort eq 'shelfLifeDays'}">유효기한</option>
             </select>
             <input type="submit" value="정렬" />
         </form>
         <table>
             <thead>
                 <tr>
-                    <th>ID</th>
                     <th>제품 코드</th>
                     <th>상품 명</th>
                     <th>제품 갯수(단위)</th>
@@ -44,7 +43,6 @@
                 </tr>
                 <th:block th:each="product : ${products}" th:if="${products.size > 0}">
                     <tr>
-                        <td th:text="${product.productId}"></td>
                         <td th:text="${product.serialCode}"></td>
                         <td th:text="${product.productName}"></td>
                         <td th:text="|${product.qty}(${product.unit})|"></td>
@@ -54,7 +52,7 @@
                 </th:block>
             </tbody>
         </table>
-        <div th:insert="~{pagination :: pagenation(${products.number}, ${products.totalPages}, '/')}"></div>
+        <div th:insert="~{pagination :: pagenation(${page}, ${totalPage}, '/')}"></div>
     </div>
 </body>
 </html>

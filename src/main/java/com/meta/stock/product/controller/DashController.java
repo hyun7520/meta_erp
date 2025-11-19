@@ -55,9 +55,13 @@ public class DashController {
         param.put("limit", limit);
         param.put("page", page);
 
-        Page<ProductsAmountListBean> list = productsService.getList(param);
+        List<ProductsAmountListBean> list = productsService.getDashTable(param);
+        int totalCount = productsService.getDashTableTotal(param);
+        int totalPage = (int) Math.ceil((double) totalCount / limit);
 
         model.addAttribute("products", list);
+        model.addAttribute("page", page);
+        model.addAttribute("totalPage", totalPage);
         return "dashboard/dashboard";
     }
 

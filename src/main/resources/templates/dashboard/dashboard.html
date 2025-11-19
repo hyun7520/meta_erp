@@ -17,7 +17,7 @@
             <div th:insert="~{dashboard/demandqtyLine :: line}" class="col"></div>
         </div>
         <div class="row">
-            <div th:insert="~{dashboard/productsTable :: productsTable(${products})}" class="col w-60"></div>
+            <div th:insert="~{dashboard/productsTable :: productsTable(${products}, ${page}, ${totalPage})}" class="col w-60"></div>
             <div class="col">
                 <div th:insert="~{dashboard/lossGraph :: graph}" class="row"></div>
                 <div th:insert="~{dashboard/materialTotal :: pie}" class="row"></div>

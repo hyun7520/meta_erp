@@ -3,7 +3,15 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.meta.stock.product.mapper.ProductMapper">
-    <select id="getDashProductsList" resultType="com.meta.stock.product.dto.ProductsAmountListBean">
+    <resultMap id="parseDashProductsList" type="com.meta.stock.product.dto.ProductsAmountListBean">
+        <result property="productId" column="product_id" />
+        <result property="serialCode" column="serial_code" />
+        <result property="productName" column="product_name" />
+        <result property="storageDate" column="storage_date" />
+        <result property="shelfLifeDays" column="shelf_life_days" />
+    </resultMap>
+
+    <select id="getDashProductsList" resultMap="parseDashProductsList">
         select product_id, serial_code, product_name, qty, unit, storage_date, shelf_life_days
         from product p
         left join fixed_product fp on p.product_name = fp.name
