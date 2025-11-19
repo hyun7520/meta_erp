@@ -1,18 +1,18 @@
 .flow-container {
     width: 100%;
+    height: 100%;
     display: flex;
-    flex-direction: column;
+    flex-wrap: wrap;
     align-items: center;
 }
 
 .flow-wrapper {
     position: relative;
-    width: 95%;
+    width: 100%;
     max-width: 1400px;
     display: flex;
     justify-content: space-between;
-    padding: 3rem 1rem;
-    border: 1px solid black;
+    padding: 30px 10px;
     box-sizing: border-box;
 }
 
@@ -37,10 +37,12 @@
 }
 
 .mini-box {
-    width: clamp(130px, 12vw, 180px);
-    height: clamp(130px, 12vw, 180px);
+    transform: translateY(-8px) scale(1.03);
+    width: 150px;
+    height: 150px;
     background: white;
     border-radius: 6px;
+    box-shadow: 0 10px 20px rgba(0,0,0,.15);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -51,7 +53,9 @@
     z-index: 1;
 }
 
-.mini-box:hover { transform: translateY(-8px) scale(1.03); box-shadow: 0 10px 20px rgba(0,0,0,.15);}
+.mini-box:hover {
+    box-shadow: 0 10px 20px lightskyblue;
+}
 
 /* 상단 아이콘 박스 */
 .mini-top {
@@ -63,16 +67,6 @@
     color: #7d1aff;
 }
 /* 중앙 텍스트 */
-.center-text { margin-top: .7rem; text-align: center; font-size: 1rem; }
-.count { color: #d64242; font-weight: bold; }
-/* Refresh 영역 */
-.refresh-area { width: 95%; max-width: 1400px; margin-top: 1rem; display: flex; gap: 1rem; justify-content: end; }
-.refresh-btn { background:#4a4a4a; color:#fff; border:none; padding:.5rem 1rem; border-radius:4px; cursor:pointer; }
-.refresh-btn:hover { background:#000; }
+.center-text { margin-top: 10px; text-align: center; font-size: 12px; }
+.count { color: red; font-weight: bold; }
 
-/* refresh 아이콘 기본 상태 */
-@keyframes rotateIcon {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-}
-.refresh-time { color:#777; }

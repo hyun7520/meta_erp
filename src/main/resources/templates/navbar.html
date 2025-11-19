@@ -5,11 +5,20 @@
     <title>Navbar</title>
 </head>
 <body>
-    <ul th:fragment="navbar" class="navbar">
-        <li th:href="@{/}">대시보드</li>
-        <li th:href="@{/}" th:if="${session eq 'order'}">사용자 관리</li>
-        <li th:href="@{/}" th:if="${session eq 'order'}">경영</li>
-        <li th:href="@{/}" th:if="${session eq 'make'}">생산</li>
-    </ul>
+    <div th:fragment="navbar(mainTitle, subTitle)" class="navbar">
+        <div class="logo" th:onclick="|location.href='@{/}'|">
+            <img src="/file/logo.png" alt="회사로고">
+        </div>
+        <div class="navbar-text">
+            <h1 th:text="${mainTitle}" th:onclick="|location.href='@{/}'|"></h1>
+            <p th:text="${subTitle}" class="subtitle"></p>
+        </div>
+        <div class="navbar-taps">
+            <a th:href="@{/}">대시보드</a>
+            <a th:href="@{/}" th:if="${session eq 'order'}">사용자 관리</a>
+            <a th:href="@{/}" th:if="${session eq 'order'}">경영</a>
+            <a th:href="@{/}" th:if="${session eq 'make'}">생산</a>
+        </div>
+    </div>
 </body>
 </html>

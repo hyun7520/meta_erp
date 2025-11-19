@@ -7,9 +7,11 @@
 <body>
     <div th:fragment="graph">
         <div id="material_loss_Graph" class="chart"></div>
-        <div class="refresh_button">
-            <div id="material_loss_Graph_time" th:text="${#dates.format(#dates.createToday(), 'yyyy-MM-dd HH:mm:ss')}"></div>
-            <button>Refresh</button>
+        <div class="refresh-area">
+            <span class="refresh-time" id="material_loss_Graph_time"></span>
+            <button class="refresh-btn">
+                <i class="fa-solid fa-rotate-right"></i>
+            </button>
         </div>
     </div>
 </body>

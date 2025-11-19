@@ -74,7 +74,9 @@ const drawLine = (data, labels) => {
             name: 'demand'
         },
         grid: {
-            right: 140
+            top: 100,
+            right: 100,
+            bottom: 0,
         },
         series: seriesList
     };
@@ -98,7 +100,7 @@ const drawDemandLineChart = () => {
             drawLine(data, [...labels]);
 
             const now = new Date();
-            let drawTime = document.getElementById("product_demand_Line_time")
+            const drawTime = document.getElementById("product_demand_Line_time")
             drawTime.innerText = calcDrawDate(now);
         });
 

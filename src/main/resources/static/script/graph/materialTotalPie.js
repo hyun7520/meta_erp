@@ -21,6 +21,7 @@ const drawPie = (data, product = '') => {
             {
                 type: 'pie',
                 radius: '50%',
+                center: ['55%', '60%'],
                 data: data,
                 emphasis: {
                     itemStyle: {
@@ -47,7 +48,7 @@ const drawMaterialPieChart = (serialCode = '', product = '') => {
             drawPie(data, product);
 
             const now = new Date();
-            let drawTime = document.getElementById("material_total_Pie_time")
+            const drawTime = document.getElementById("material_total_Pie_time")
             drawTime.innerText = calcDrawDate(now);
         });
 }
