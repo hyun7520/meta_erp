@@ -33,6 +33,8 @@ function renderTimeline(items) {
     items.forEach(({label, count, key}) => {
         const box = document.createElement("div");
         box.className = "mini-box";
+        if (count > 5) box.className += " box-over";
+        else if (count === 0) box.className += " box-none";
 
         const icon = document.createElement("div");
         icon.className = "mini-top";

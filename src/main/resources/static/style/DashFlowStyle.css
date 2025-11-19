@@ -57,6 +57,14 @@
     box-shadow: 0 10px 20px lightskyblue;
 }
 
+.box-none:hover {
+    box-shadow: 0 10px 20px rgba(0, 0, 0, .5);
+}
+
+.box-over:hover {
+    box-shadow: 0 10px 20px deeppink;
+}
+
 /* 상단 아이콘 박스 */
 .mini-top {
     width: 75%; height: clamp(40px, 5vw, 60px);
