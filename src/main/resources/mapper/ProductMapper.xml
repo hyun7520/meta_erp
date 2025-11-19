@@ -51,10 +51,13 @@
     </select>
 
     <select id="getCurrentProductStock" parameterType="long" resultType="int">
-        SELECT COALESCE(SUM(l.QTY), 0)
+        SELECT COALESCE(SUM(l.QTY), 0) AS TOTAL_STOCK
+        FROM LOTS l
+        WHERE l.NOTE = (
+        SELECT p.PRODUCT_NAME
         FROM PRODUCT p
-        JOIN LOTS l ON p.LOTS_ID = l.LOT_ID
         WHERE p.PRODUCT_ID = #{productId}
-        AND l.QTY > 0  <!-- 재고 0인 로트 제외 (선택) -->
+        )
+        AND l.QTY > 0
     </select>
 </mapper>

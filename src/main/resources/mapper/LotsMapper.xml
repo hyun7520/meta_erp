@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- mybatis 사이트에서 필요한 링크를 찾을 수 있다 -->
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.meta.stock.order.mapper.LotsMapper">
+    <!-- 유통기한 빠른 순 로트 조회 (재고 있는 것만) -->
+    <select id="findLotsByProductIdOrderByExpiry" resultType="com.meta.stock.order.dto.LotStockDto">
+        SELECT
+            LOT_ID AS lotId,
+            QTY AS qty
+        FROM LOTS
+            WHERE NOTE = (
+            SELECT PRODUCT_NAME
+            FROM PRODUCT
+            WHERE PRODUCT_ID = #{productId}
+            )
+        AND QTY > 0
+        ORDER BY TO_DATE(SHELF_LIFE_DAYS, 'YYYY-MM-DD') ASC
+    </select>
+
+    <!-- 로트 재고 업데이트 -->
+    <update id="updateLotQty">
+        UPDATE LOTS
+        SET QTY = #{newQty}
+        WHERE LOT_ID = #{lotId}
+    </update>
+
+    <!-- 재고 0인 로트 삭제 -->
+    <delete id="deleteZeroLot">
+        DELETE FROM LOTS WHERE LOT_ID = #{lotId} AND QTY = 0
+    </delete>
+</mapper>

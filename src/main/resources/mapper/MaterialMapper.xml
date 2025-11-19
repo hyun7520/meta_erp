@@ -27,6 +27,11 @@
         FROM MATERIAL_REQUEST m
         JOIN MATERIAL f
         ON m.MATERIAL_ID = f.MATERIAL_ID
+        <where>
+            <if test="keyword != null and keyword != ''">
+                m.APPROVED = #{keyword}
+            </if>
+        </where>
     </select>
 
     <select id="calculateRequiredMaterials" parameterType="map" resultMap="MaterialRequirementMap">

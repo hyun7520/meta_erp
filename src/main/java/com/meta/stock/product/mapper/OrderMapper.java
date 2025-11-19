@@ -11,4 +11,7 @@ public interface OrderMapper {
     List<OrderDto> findAllOrders(int keyword);
 
     OrderDto findOrderById(long orderId);
+
+    void updateOrderStatus(Long orderId, int status);
+
 }

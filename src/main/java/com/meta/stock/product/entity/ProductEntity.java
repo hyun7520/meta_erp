@@ -1,6 +1,10 @@
 package com.meta.stock.product.entity;
 
+import com.meta.stock.order.entity.LotsEntity;
 import jakarta.persistence.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 // 생산된 제품
 @Entity

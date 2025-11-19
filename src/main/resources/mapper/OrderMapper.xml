@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!-- mybatis 사이트에서 필요한 링크를 찾을 수 있다 -->
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
@@ -56,4 +55,10 @@
         JOIN PRODUCT p ON o.PRODUCT_ID = p.PRODUCT_ID
         WHERE o.ORDER_ID = #{orderId}
     </select>
+
+    <update id="updateOrderStatus">
+        UPDATE ORDERS
+        SET COMPLETE = #{status}
+        WHERE ORDER_ID = #{orderId}
+    </update>
 </mapper>

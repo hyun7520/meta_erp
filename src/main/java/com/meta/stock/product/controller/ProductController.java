@@ -34,7 +34,7 @@ public class ProductController {
         // 로트 + 프로덕트: 재고가 있는 모든 제품들만 조회
         List<ProductStockDto> productStock = productService.findAllProductStock();
         // 진행중인 주문 조회
-        List<OrderDto> ongoingOrders = orderService.findAllOrders(0);
+        List<OrderDto> ongoingOrders = orderService.findAllOrders(1);
         // 재료 요청 리스트 조회
         List<MaterialRequestDto> materialRequests = materialService.getMaterialRequests(0);
         // 페이지 로드 시 예측 모델 호출 부족한 재고가 있는지 확인
