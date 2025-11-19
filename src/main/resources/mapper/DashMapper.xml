@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.meta.stock.order.mapper.DashMapper">
+    <resultMap id="parseRequestFlow" type="com.meta.stock.order.dto.DashFlowBean">
+        <result property="orderRequest" column="order_request" />
+        <result property="metrialRequest" column="metrial_request" />
+        <result property="metrialRequestClear" column="metrial_request_clear" />
+        <result property="productionReady" column="production_ready" />
+        <result property="todayDelivered" column="today_delivered" />
+    </resultMap>
+
+    <select id="getRequestFlow" resultMap="parseRequestFlow">
+        <![CDATA[
+            select
+                (select count(*) from orders where complete = 0) as order_request,
+                (select count(*) from material_request where approved is null or approved = 0) as metrial_request,
+                (select count(*) from production_request where start_date is not null and end_date is null) as metrial_request_clear,
+                (select count(*) from orders where complete = 1) as production_ready,
+                (select count(*) from orders where complete = 2 and deadline <= sysdate) as today_delivered
+            from dual
+        ]]>
+    </select>
+</mapper>

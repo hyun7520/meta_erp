@@ -1,5 +1,5 @@
 .row {
-    display: block;
+    display: flex;
 }
 
 .col {

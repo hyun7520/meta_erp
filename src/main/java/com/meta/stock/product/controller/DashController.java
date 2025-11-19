@@ -2,6 +2,8 @@ package com.meta.stock.product.controller;
 
 import com.meta.stock.materials.dto.MaterialCountsBean;
 import com.meta.stock.materials.service.MaterialService;
+import com.meta.stock.order.dto.DashFlowBean;
+import com.meta.stock.order.service.DashService;
 import com.meta.stock.product.dto.ProductDemandBean;
 import com.meta.stock.product.dto.ProductsAmountListBean;
 import com.meta.stock.product.service.GraphService;
@@ -26,7 +28,9 @@ public class DashController {
     @Autowired
     private MaterialService materialService;
     @Autowired
-    private GraphService graphService;
+    private GraphService graphService; // graph 값 입력 service 생성시 대체 예정
+    @Autowired
+    private DashService dashService;
 
     private final int limit = 5;
 
@@ -55,6 +59,11 @@ public class DashController {
 
         model.addAttribute("products", list);
         return "dashboard/dashboard";
+    }
+
+    @GetMapping("/dash/flow")
+    public ResponseEntity<DashFlowBean> dashFlow() {
+        return ResponseEntity.ok(dashService.getDashFlowBean());
     }
 
     @GetMapping("/dash/materials")
