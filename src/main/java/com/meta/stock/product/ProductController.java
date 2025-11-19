@@ -1,36 +1,27 @@
 package com.meta.stock.product;
 
+import com.meta.stock.product.DTO.ProductDTO;
+import com.meta.stock.product.Service.ProductService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/products")
 public class ProductController {
 
-    private final ProductRepository productRepository;
+    private final ProductService productService;
 
-    public ProductController(ProductRepository productRepository) {
-        this.productRepository = productRepository;
+    // 생성자
+    public ProductController(ProductService productService) {
+        this.productService = productService;
     }
 
     // 전체 제품 목록 조회
     @GetMapping
-    public ResponseEntity<List<ProductDTO>> getAllProducts() {
-        List<ProductDTO> products = productRepository.findAll()
-                .stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(products);
-    }
-
-    // Entity -> DTO 변환
-    private ProductDTO convertToDTO(ProductsEntity entity) {
-        ProductDTO dto = new ProductDTO();
-        dto.setProductId(entity.getProductId());
-        dto.setProductName(entity.getProductName());
-        dto.setLotsId(entity.getLotsId());
-        return dto;
+    public ResponseEntity<List<ProductDTO.Response>> getAllProducts() {
+        List<ProductDTO.Response> responses = productService.getAllProducts();
+        return ResponseEntity.ok(responses);
     }
 }
