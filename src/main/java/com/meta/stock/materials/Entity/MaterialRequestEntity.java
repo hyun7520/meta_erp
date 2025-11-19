@@ -1,4 +1,4 @@
-package com.meta.stock.materials;
+package com.meta.stock.materials.Entity;
 
 import com.meta.stock.user.Employee;
 import jakarta.persistence.*;
@@ -8,7 +8,6 @@ import jakarta.persistence.*;
 //얼마나 필요하며 (qty, unit)
 //승인 상태는? (approved: null=미승인, 0=반려, 1=승인)
 
-import java.time.LocalDate;
 
 @Entity
 @Table(name = "MATERIAL_REQUEST")

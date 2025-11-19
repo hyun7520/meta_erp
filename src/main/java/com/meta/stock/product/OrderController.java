@@ -1,5 +1,8 @@
 package com.meta.stock.product;
 
+import com.meta.stock.product.DTO.OrderCreateDTO;
+import com.meta.stock.product.DTO.OrderDTO;
+import com.meta.stock.product.DTO.TopProductDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -31,5 +34,14 @@ public class OrderController {
     @PostMapping
     public ResponseEntity<OrderDTO> createOrder(@RequestBody OrderCreateDTO dto) {
         return ResponseEntity.ok(orderService.createOrder(dto));
+    }
+    // 최근 한 달간 가장 많이 주문된 상품 조회
+    @GetMapping("/top-product")
+    public ResponseEntity<TopProductDTO> getTopProduct() {
+        TopProductDTO topProduct = orderService.getTopProductLastMonth();
+        if (topProduct == null) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(topProduct);
     }
 }

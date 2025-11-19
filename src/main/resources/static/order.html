@@ -32,6 +32,7 @@
             color: white;
             display: flex;
             align-items: center;
+            justify-content: space-between;
             gap: 20px;
         }
 
@@ -48,21 +49,109 @@
             object-fit: contain;
         }
 
-        .header-text {
-            flex: 1;
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
         }
 
-        .header h1 {
+        .header-text h1 {
             font-size: 24px;
             font-weight: 700;
             margin-bottom: 4px;
             letter-spacing: -0.5px;
         }
 
-        .header .subtitle {
+        .header-text .subtitle {
             font-size: 14px;
             opacity: 0.9;
             font-weight: 400;
+        }
+
+        /* 네비게이션 버튼 (헤더 중앙) */
+        .header-nav {
+            display: flex;
+            gap: 8px;
+        }
+
+        .nav-btn {
+            padding: 20px 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 20px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .nav-btn.active {
+            background: white;
+            color: #2A9D8F;
+            border-color: white;
+        }
+
+        /* 시간 & 로그인 상태 배너 */
+        .status-banner {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 12px 20px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            min-width: 220px;
+        }
+
+        .current-time {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .user-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            color: #506D84;
+        }
+
+        .user-info-text {
+            flex: 1;
+        }
+
+        .user-name {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .user-role {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.8);
         }
 
         .content-wrapper {
@@ -250,39 +339,6 @@
         @keyframes pulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.5; }
-        }
-
-        .btn {
-            padding: 9px 18px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 600;
-            transition: all 0.2s ease;
-            margin-right: 8px;
-        }
-
-        .btn-edit {
-            background: #3B82F6;
-            color: white;
-        }
-
-        .btn-edit:hover {
-            background: #2563EB;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-        }
-
-        .btn-delete {
-            background: #F5A3A3;
-            color: #7F1D1D;
-        }
-
-        .btn-delete:hover {
-            background: #F28B8B;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
         }
 
         .loading {
@@ -522,17 +578,136 @@
             font-size: 14px;
             color: #6B7280;
         }
+        /* ==============================================
+   인기 상품 배너 (Top Product Banner)
+   - 최근 한 달간 가장 많이 주문된 상품 표시
+   ============================================== */
+.top-product-banner {
+    background: linear-gradient(135deg, #2A9D8F 20%, #F5A3A3 100%);
+    border-radius: 16px;
+    padding: 24px 32px;
+    margin-bottom: 28px;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+    animation: slideDown 0.5s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.banner-content {
+    flex: 1;
+}
+
+.banner-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    backdrop-filter: blur(10px);
+}
+
+.banner-title {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.banner-subtitle {
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+.banner-stats {
+    display: flex;
+    gap: 32px;
+    align-items: center;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-value {
+    font-size: 32px;
+    font-weight: 700;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.stat-label {
+    font-size: 12px;
+    opacity: 0.8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.banner-icon {
+    font-size: 64px;
+    opacity: 0.8;
+    animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
     </style>
 </head>
 <body>
 <div class="container">
     <div class="header">
-        <div class="logo">
-            <img src="/logo.png" alt="회사로고">
+        <div class="header-left">
+            <div class="logo">
+                <img src="/logo.png" alt="회사로고" onerror="this.style.display='none'">
+            </div>
+            <div class="header-text">
+                <h1>완제품 발주 요청</h1>
+                <p class="subtitle">고객사 주문 : 완제품 발주 관리</p>
+            </div>
         </div>
-        <div class="header-text">
-            <h1>완제품 발주 요청</h1>
-            <p class="subtitle">고객사 주문 : 완제품 발주 관리</p>
+
+        <div class="header-nav">
+            <a href="/order.html" class="nav-btn active">
+                📋 완제품 발주 요청
+            </a>
+            <a href="/material_request.html" class="nav-btn">
+                📦 원재료 발주 허가
+            </a>
+        </div>
+
+        <div class="status-banner">
+            <div class="current-time" id="currentTime">
+                🕐 2025-11-18 10:30:45
+            </div>
+            <div class="user-status">
+                <div class="user-avatar" id="userAvatar">홍</div>
+                <div class="user-info-text">
+                    <div class="user-name" id="userName">홍길동</div>
+                    <div class="user-role" id="userRole">경영팀 · 매니저</div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -544,17 +719,40 @@
             </button>
         </div>
 
+        <div id="topProductBanner" style="display: none;" class="top-product-banner">
+            <div class="banner-content">
+                <div class="banner-label">
+                    최대 매출 상품
+                </div>
+                <div class="banner-title" id="bannerProductName">-</div>
+                <div class="banner-subtitle">한 달 사이 판매율이 높은 제품</div>
+            </div>
+            <div class="banner-stats">
+                <div class="stat-item">
+                    <span class="stat-value" id="bannerTotalQty">0</span>
+                    <span class="stat-label" id="bannerUnit">개</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="bannerOrderCount">0</span>
+                    <span class="stat-label">주문 건수</span>
+                </div>
+            </div>
+            <div class="banner-icon">
+                <img src="/logo.png" alt="회사로고" onerror="this.style.display='none'">
+            </div>
+        </div>
+
         <div class="tabs">
-            <button class="tab active" onclick="showTab('pending')">
+            <button class="tab active" onclick="window.showTab('pending')">
                 대기중 <span class="tab-count">0</span>
             </button>
-            <button class="tab" onclick="showTab('approved')">
-                승인됨 <span class="tab-count">0</span>
+            <button class="tab" onclick="window.showTab('in-progress')">
+                생산시작 <span class="tab-count">0</span>
             </button>
-            <button class="tab" onclick="showTab('rejected')">
-                반려됨 <span class="tab-count">0</span>
+            <button class="tab" onclick="window.showTab('completed')">
+                생산완료 <span class="tab-count">0</span>
             </button>
-            <button class="tab" onclick="showTab('all')">
+            <button class="tab" onclick="window.showTab('all')">
                 전체 <span class="tab-count">0</span>
             </button>
         </div>
@@ -574,8 +772,6 @@
                     <th>요청일</th>
                     <th>납기일</th>
                     <th>상태</th>
-                    <th>비고</th>
-                    <th>작업</th>
                 </tr>
                 </thead>
                 <tbody id="tableBody"></tbody>
@@ -589,7 +785,6 @@
     </div>
 </div>
 
-<!-- 새 발주 요청 모달 -->
 <div id="orderModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
@@ -601,9 +796,6 @@
                     <label for="productId">완제품 <span class="required">*</span></label>
                     <select id="productId" required>
                         <option value="">선택하세요</option>
-                        <option value="1">제품A</option>
-                        <option value="2">제품B</option>
-                        <option value="3">제품C</option>
                     </select>
                 </div>
 
@@ -622,11 +814,6 @@
                         <input type="date" id="dueDate" required>
                     </div>
                 </div>
-
-                <div class="form-group">
-                    <label for="note">비고</label>
-                    <textarea id="note" placeholder="추가 요청사항을 입력하세요"></textarea>
-                </div>
             </form>
         </div>
         <div class="modal-footer">
@@ -637,16 +824,44 @@
 </div>
 
 <script>
-    let currentTab = 'incomplete';
+    let currentTab = 'pending';
     let currentPage = 1;
     let itemsPerPage = 5;
     let allData = [];
     let products = [];
 
-    window.onload = function() {
-        loadProducts();
-        loadData('incomplete');
-    };
+window.onload = function() {
+    updateTime();
+    setInterval(updateTime, 1000);
+    loadUserInfo();
+    loadProducts();
+    loadTopProduct(); // 추가
+    loadData('pending');
+};
+
+    // 현재 시간 업데이트
+    function updateTime() {
+        const now = new Date();
+        const formatted = now.getFullYear() + '-' +
+            String(now.getMonth() + 1).padStart(2, '0') + '-' +
+            String(now.getDate()).padStart(2, '0') + ' ' +
+            String(now.getHours()).padStart(2, '0') + ':' +
+            String(now.getMinutes()).padStart(2, '0') + ':' +
+            String(now.getSeconds()).padStart(2, '0');
+        document.getElementById('currentTime').innerHTML = '🕐 ' + formatted;
+    }
+
+    // 사용자 정보 로드
+    function loadUserInfo() {
+        const userInfo = JSON.parse(sessionStorage.getItem('userInfo') || '{}');
+        if (userInfo.name) {
+            document.getElementById('userName').textContent = userInfo.name;
+            document.getElementById('userAvatar').textContent = userInfo.name.charAt(0);
+            const department = userInfo.department || '경영팀';
+            const role = userInfo.role || '매니저';
+            document.getElementById('userRole').textContent = `${department} · ${role}`;
+        }
+    }
 
     // 제품 목록 불러오기
     function loadProducts() {
@@ -684,23 +899,20 @@
         document.getElementById('content').style.display = 'none';
         document.getElementById('empty').style.display = 'none';
 
-        const url = type === 'incomplete'
-            ? '/api/orders/incomplete'
-            : '/api/orders';
-
-        fetch(url)
+        fetch('/api/orders')
             .then(response => response.json())
             .then(data => {
                 document.getElementById('loading').style.display = 'none';
 
-                // 탭에 따라 필터링
-                let filteredData = data;
-                if (type === 'all') {
-                    filteredData = data;
-                } else if (type === 'incomplete') {
+                let filteredData = [];
+                if (type === 'pending') {
                     filteredData = data.filter(item => item.complete === 0);
-                } else if (type === 'complete') {
+                } else if (type === 'in-progress') {
                     filteredData = data.filter(item => item.complete === 1);
+                } else if (type === 'completed') {
+                    filteredData = data.filter(item => item.complete === 2);
+                } else {
+                    filteredData = data;
                 }
 
                 allData = filteredData;
@@ -712,7 +924,7 @@
                     renderPage();
                 }
 
-                updateTabCounts();
+                updateTabCounts(data);
             })
             .catch(error => {
                 console.error('Error:', error);
@@ -739,24 +951,24 @@
 
             let statusBadge = '';
             if (item.complete === 0) {
-                statusBadge = '<span class="status-badge status-pending">진행중</span>';
-            } else {
-                statusBadge = '<span class="status-badge status-approved">완료</span>';
+                statusBadge = '<span class="status-badge status-rejected">대기중</span>';
+            } else if (item.complete === 1) {
+                statusBadge = '<span class="status-badge status-pending">생산시작</span>';
+            } else if (item.complete === 2) {
+                statusBadge = '<span class="status-badge status-approved">생산완료</span>';
             }
-
+            //이것도 지워도 되긴 한데 우선 내비두기
             let actionButtons = '<span style="color: #9CA3AF;">-</span>';
 
-            row.innerHTML = `
-                <td><strong>${item.orderId}</strong></td>
-                <td>${item.productName || '-'}</td>
-                <td>${item.requestBy || '-'}</td>
-                <td><span class="qty-unit">${item.qty} ${item.unit || '개'}</span></td>
-                <td>${item.requestDate || '-'}</td>
-                <td>${item.deadline || '-'}</td>
-                <td>${statusBadge}</td>
-                <td>-</td>
-                <td>${actionButtons}</td>
-            `;
+                row.innerHTML = `
+    <td><strong>${item.orderId}</strong></td>
+    <td>${item.productName || '-'}</td>
+    <td>${item.requestBy || '-'}</td>
+    <td><span class="qty-unit">${item.qty} ${item.unit || '개'}</span></td>
+    <td>${item.requestDate || '-'}</td>
+    <td>${item.deadline || '-'}</td>
+    <td>${statusBadge}</td>
+`;
 
             tbody.appendChild(row);
         });
@@ -776,12 +988,45 @@
         prevBtn.onclick = () => goToPage(currentPage - 1);
         pagination.appendChild(prevBtn);
 
-        for (let i = 1; i <= totalPages; i++) {
+        const startPage = Math.max(1, currentPage - 2);
+        const endPage = Math.min(totalPages, currentPage + 2);
+
+        if (startPage > 1) {
+            const firstBtn = document.createElement('button');
+            firstBtn.className = 'pagination-btn';
+            firstBtn.textContent = '1';
+            firstBtn.onclick = () => goToPage(1);
+            pagination.appendChild(firstBtn);
+
+            if (startPage > 2) {
+                const dots = document.createElement('span');
+                dots.className = 'pagination-info';
+                dots.textContent = '...';
+                pagination.appendChild(dots);
+            }
+        }
+
+        for (let i = startPage; i <= endPage; i++) {
             const pageBtn = document.createElement('button');
             pageBtn.className = 'pagination-btn' + (i === currentPage ? ' active' : '');
             pageBtn.textContent = i;
             pageBtn.onclick = () => goToPage(i);
             pagination.appendChild(pageBtn);
+        }
+
+        if (endPage < totalPages) {
+            if (endPage < totalPages - 1) {
+                const dots = document.createElement('span');
+                dots.className = 'pagination-info';
+                dots.textContent = '...';
+                pagination.appendChild(dots);
+            }
+
+            const lastBtn = document.createElement('button');
+            lastBtn.className = 'pagination-btn';
+            lastBtn.textContent = totalPages;
+            lastBtn.onclick = () => goToPage(totalPages);
+            pagination.appendChild(lastBtn);
         }
 
         const nextBtn = document.createElement('button');
@@ -803,24 +1048,25 @@
         document.getElementById('content').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
-    function updateTabCounts() {
-        fetch('/api/orders')
-            .then(response => response.json())
-            .then(data => {
-                const tabs = document.querySelectorAll('.tab-count');
-                const incompleteCount = data.filter(item => item.complete === 0).length;
-                const completeCount = data.filter(item => item.complete === 1).length;
+    function updateTabCounts(allOrders) {
+        const tabs = document.querySelectorAll('.tab-count');
+        const pendingCount = allOrders.filter(item => item.complete === 0).length;
+        const inProgressCount = allOrders.filter(item => item.complete === 1).length;
+        const completedCount = allOrders.filter(item => item.complete === 2).length;
 
-                tabs[0].textContent = incompleteCount;
-                tabs[1].textContent = completeCount;
-                tabs[2].textContent = data.length;
-            })
-            .catch(error => console.error('카운트 업데이트 실패:', error));
+        tabs[0].textContent = pendingCount;
+        tabs[1].textContent = inProgressCount;
+        tabs[2].textContent = completedCount;
+        tabs[3].textContent = allOrders.length;
     }
 
     function openNewOrderModal() {
         document.getElementById('modalTitle').innerHTML = '➕ 새 발주 요청';
         document.getElementById('orderForm').reset();
+
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('dueDate').value = today;
+
         document.getElementById('orderModal').style.display = 'block';
     }
 
@@ -828,11 +1074,12 @@
         document.getElementById('orderModal').style.display = 'none';
     }
 
-    function submitOrder() {
-        const productId = document.getElementById('productId').value;
-        const clientName = document.getElementById('clientName').value;
-        const quantity = document.getElementById('quantity').value;
-        const dueDate = document.getElementById('dueDate').value;
+function submitOrder() {
+    const productId = document.getElementById('productId').value;
+    const clientName = document.getElementById('clientName').value;
+    const quantity = document.getElementById('quantity').value;
+    const dueDate = document.getElementById('dueDate').value;
+
 
         if (!productId || !clientName || !quantity || !dueDate) {
             alert('필수 항목을 모두 입력해주세요.');
@@ -840,13 +1087,13 @@
         }
 
         const orderData = {
-            productId: parseInt(productId),
-            requestBy: clientName,
-            qty: parseInt(quantity),
-            unit: '개',
-            requestDate: new Date().toISOString().split('T')[0],
-            deadline: dueDate
-        };
+        productId: parseInt(productId),
+        requestBy: clientName,
+        qty: parseInt(quantity),
+        unit: '개',
+        requestDate: new Date().toISOString().split('T')[0],
+        deadline: dueDate
+    };
 
         fetch('/api/orders', {
             method: 'POST',
@@ -871,6 +1118,29 @@
             closeOrderModal();
         }
     }
+    // 인기 상품 로드
+function loadTopProduct() {
+    fetch('/api/orders/top-product')
+        .then(response => {
+            if (response.status === 204) {
+                // 데이터가 없을 경우
+                return null;
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data) {
+                document.getElementById('topProductBanner').style.display = 'flex';
+                document.getElementById('bannerProductName').textContent = data.productName;
+                document.getElementById('bannerTotalQty').textContent = data.totalQty.toLocaleString();
+                document.getElementById('bannerUnit').textContent = data.unit || '개';
+                document.getElementById('bannerOrderCount').textContent = data.orderCount;
+            }
+        })
+        .catch(error => {
+            console.error('인기 상품 로드 실패:', error);
+        });
+}
 </script>
 </body>
 </html>

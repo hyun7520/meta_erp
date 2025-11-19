@@ -1,6 +1,4 @@
-package com.meta.stock.materials;
-
-import java.time.LocalDate;
+package com.meta.stock.materials.DTO;
 
 public class MaterialRequestDTO {
     private long mrId;

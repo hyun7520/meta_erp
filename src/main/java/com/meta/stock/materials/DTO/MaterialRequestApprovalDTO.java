@@ -1,4 +1,4 @@
-package com.meta.stock.materials;
+package com.meta.stock.materials.DTO;
 
 public class MaterialRequestApprovalDTO {
     private Long mrId;

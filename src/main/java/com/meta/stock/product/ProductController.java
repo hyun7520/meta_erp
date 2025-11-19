@@ -1,5 +1,7 @@
 package com.meta.stock.product;
 
+import com.meta.stock.product.DTO.ProductDTO;
+import com.meta.stock.product.Entity.ProductsEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;

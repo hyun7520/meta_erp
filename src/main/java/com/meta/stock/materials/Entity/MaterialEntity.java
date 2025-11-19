@@ -1,4 +1,4 @@
-package com.meta.stock.materials;
+package com.meta.stock.materials.Entity;
 
 import jakarta.persistence.*;
 
@@ -23,7 +23,7 @@ public class MaterialEntity {
     private long lotsId;
 
     @Column(name = "LOSS")
-    private Float loss;
+    private float loss;
 
     // Getter
     public long getMaterialsId() {

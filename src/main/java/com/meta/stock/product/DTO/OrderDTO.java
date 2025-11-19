@@ -1,4 +1,4 @@
-package com.meta.stock.product;
+package com.meta.stock.product.DTO;
 
 public class OrderDTO {
     private long orderId;

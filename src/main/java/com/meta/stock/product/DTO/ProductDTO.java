@@ -1,21 +1,10 @@
-package com.meta.stock.product;
+package com.meta.stock.product.DTO;
 
-import jakarta.persistence.*;
-
-@Entity
-@Table(name = "PRODUCTS")
-public class ProductsEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "prod_seq")
-    @SequenceGenerator(name = "prod_seq", sequenceName = "SEQ_PRODUCTS", allocationSize = 1)
-    @Column(name = "PRODUCT_ID")
+public class ProductDTO {
     private long productId;
-
-    @Column(name = "PRODUCT_NAME")
     private String productName;
-
-    @Column(name = "LOTS_ID")
     private long lotsId;
+    private int productionLoss;
 
     // Getter
     public long getProductId() {
@@ -30,6 +19,10 @@ public class ProductsEntity {
         return lotsId;
     }
 
+    public int getProductionLoss() {
+        return productionLoss;
+    }
+
     // Setter
     public void setProductId(long productId) {
         this.productId = productId;
@@ -41,5 +34,9 @@ public class ProductsEntity {
 
     public void setLotsId(long lotsId) {
         this.lotsId = lotsId;
+    }
+
+    public void setProductionLoss(int productionLoss) {
+        this.productionLoss = productionLoss;
     }
 }

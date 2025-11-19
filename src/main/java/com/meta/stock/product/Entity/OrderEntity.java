@@ -1,6 +1,7 @@
-package com.meta.stock.product;
+package com.meta.stock.product.Entity;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Table(name = "ORDERS")  // 테이블 이름 대문자
@@ -35,6 +36,7 @@ public class OrderEntity {
     private String deadline;
 
     @Column(name = "COMPLETE")
+    @ColumnDefault("0")
     private int complete;  // Oracle: 0=요청 완료, 1=승낙(제조시작) 2= 출하
 
     // Getter

@@ -1,4 +1,4 @@
-package com.meta.stock.materials;
+package com.meta.stock.materials.DTO;
 
 import lombok.Data;
 import java.time.LocalDate;
