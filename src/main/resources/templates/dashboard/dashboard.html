@@ -21,7 +21,7 @@
                 </div>
             </div>
             <div class="row">
-                <div th:insert="~{dashboard/productsTable :: productsTable(${products}, ${page}, ${totalPage})}" class="fragement-box w-60"></div>
+                <div th:insert="~{dashboard/productsTable :: productsTable}" class="fragement-box w-60"></div>
                 <div class="w-40">
                     <div th:insert="~{dashboard/lossGraph :: graph}" class="fragement-box"></div>
                     <div th:insert="~{dashboard/materialTotal :: pie}" class="fragement-box"></div>

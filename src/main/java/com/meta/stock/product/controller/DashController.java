@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -36,33 +37,61 @@ public class DashController {
 
     @GetMapping("/")
     private String dashboard(
-            Model model,
-            @RequestParam(required = false) String column,
-            @RequestParam(required = false) String search,
-            @RequestParam(value = "start_date", required = false) String date,
-            @RequestParam(defaultValue = "productId") String sort,
+//            Model model
+//            @RequestParam(required = false) String column,
+//            @RequestParam(required = false) String search,
+//            @RequestParam(value = "start_date", required = false) String date,
+//            @RequestParam(defaultValue = "productId") String sort,
+//            @RequestParam(defaultValue = "1") int page
+    ) {
+//        int offset = (page - 1) * limit;
+//
+//        Map<String, Object> param = new HashMap<>();
+//        param.put("column", column);
+//        param.put("search", search);
+//        param.put("date", date);
+//        param.put("sort", sort);
+//
+//        param.put("offset", offset);
+//        param.put("limit", limit);
+//        param.put("page", page);
+//
+//        List<ProductsAmountListBean> list = productsService.getDashTable(param);
+//        int totalCount = productsService.getDashTableTotal(param);
+//        int totalPage = (int) Math.ceil((double) totalCount / limit);
+//
+//        model.addAttribute("products", list);
+//        model.addAttribute("page", page);
+//        model.addAttribute("totalPage", totalPage);
+        return "dashboard/dashboard";
+    }
+
+    @GetMapping("/dash/table")
+    private ResponseEntity<Map<String, Object>> dashTable(
+            @RequestBody Map<String, Object> param,
             @RequestParam(defaultValue = "1") int page
     ) {
         int offset = (page - 1) * limit;
-
-        Map<String, Object> param = new HashMap<>();
-        param.put("column", column);
-        param.put("search", search);
-        param.put("date", date);
-        param.put("sort", sort);
-
-        param.put("offset", offset);
-        param.put("limit", limit);
         param.put("page", page);
+        param.put("limit", limit);
+        param.put("offset", offset);
+
+        Map<String, Object> pageData = new HashMap<>();
 
         List<ProductsAmountListBean> list = productsService.getDashTable(param);
         int totalCount = productsService.getDashTableTotal(param);
         int totalPage = (int) Math.ceil((double) totalCount / limit);
 
-        model.addAttribute("products", list);
-        model.addAttribute("page", page);
-        model.addAttribute("totalPage", totalPage);
-        return "dashboard/dashboard";
+        pageData.put("list", list);
+        pageData.put("page", page);
+        pageData.put("totalPage", totalPage);
+
+        pageData.put("column", param.get("column"));
+        pageData.put("search", param.get("search"));
+        pageData.put("date", param.get("date"));
+        pageData.put("sort", param.get("sort"));
+
+        return ResponseEntity.ok(pageData);
     }
 
     @GetMapping("/dash/flow")

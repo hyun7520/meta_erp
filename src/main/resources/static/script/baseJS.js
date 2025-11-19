@@ -8,3 +8,32 @@ const calcDrawDate = (inputDate) => {
     const seconds = inputDate.getSeconds();
     return `${year}-${month}-${date} ${hour}:${minute}:${seconds}`
 }
+
+const renderPagination = (currentPage, totalPage, callback) => {
+    const pagination = document.getElementById('pagination');
+    pagination.innerHTML = '';
+
+    if (totalPage <= 1) return;
+
+    const prevBtn = document.createElement('button');
+    prevBtn.className = 'pagination-btn';
+    prevBtn.innerHTML = '‹';
+    prevBtn.disabled = currentPage === 1;
+    prevBtn.onclick = () => callback(currentPage - 1);
+    pagination.appendChild(prevBtn);
+
+    for (let num = 1; num <= totalPage; num++) {
+        const pageBtn = document.createElement('button');
+        pageBtn.className = 'pagination-btn' + (num === currentPage ? ' active' : '');
+        pageBtn.textContent = num;
+        pageBtn.onclick = () => callback(num);
+        pagination.appendChild(pageBtn);
+    }
+
+    const nextBtn = document.createElement('button');
+    nextBtn.className = 'pagination-btn';
+    nextBtn.innerHTML = '›';
+    nextBtn.disabled = currentPage === totalPage;
+    nextBtn.onclick = () => callback(currentPage + 1);
+    pagination.appendChild(nextBtn);
+}

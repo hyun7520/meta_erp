@@ -5,54 +5,45 @@
     <title>완제품 목록</title>
 </head>
 <body>
-    <div th:fragment="productsTable(products, page, totalPage)">
-        <form th:action="@{/}">
-            <select name="column">
-                <option value="" th:selected="${param.column eq null or param.column eq ''}">검색 조건 선택</option>
-                <option value="product_name" th:selected="${param.column eq 'product_name'}">제품 명</option>
-                <option value="serial_code" th:selected="${param.column eq 'serial_code'}">제품 코드</option>
-            </select>
-            <input type="text" name="search" th:value="${param.search}" />
-            <label>
-                제조 기한 :
-                <input type="date" name="start_date" th:value="${param.start_dat}" />
-            </label>
-            <input type="submit" value="검색" />
-        </form>
-        <form th:action="@{/}">
-            <select name="sort">
-                <option value="product_id" th:selected="${param.sort eq null or param.sort eq 'productId'}">ID</option>
-                <option value="storage_date" th:selected="${param.sort eq 'storageDate'}">제조일</option>
-                <option value="shelf_life_days" th:selected="${param.sort eq 'shelfLifeDays'}">유효기한</option>
-            </select>
-            <input type="submit" value="정렬" />
-        </form>
+    <div th:fragment="productsTable" class="content">
+<!--        <form th:action="@{/}">-->
+<!--            <select name="column">-->
+<!--                <option value="" th:selected="${param.column eq null or param.column eq ''}">검색 조건 선택</option>-->
+<!--                <option value="product_name" th:selected="${param.column eq 'product_name'}">제품 명</option>-->
+<!--                <option value="serial_code" th:selected="${param.column eq 'serial_code'}">제품 코드</option>-->
+<!--            </select>-->
+<!--            <input type="text" name="search" th:value="${param.search}" />-->
+<!--            <label>-->
+<!--                제조 기한 :-->
+<!--                <input type="date" name="start_date" th:value="${param.start_dat}" />-->
+<!--            </label>-->
+<!--            <input type="submit" value="검색" />-->
+<!--        </form>-->
+<!--        <form th:action="@{/}">-->
+<!--            <select name="sort">-->
+<!--                <option value="product_id" th:selected="${param.sort eq null or param.sort eq 'productId'}">ID</option>-->
+<!--                <option value="storage_date" th:selected="${param.sort eq 'storageDate'}">제조일</option>-->
+<!--                <option value="shelf_life_days" th:selected="${param.sort eq 'shelfLifeDays'}">유효기한</option>-->
+<!--            </select>-->
+<!--            <input type="submit" value="정렬" />-->
+<!--        </form>-->
         <table>
             <thead>
                 <tr>
                     <th>제품 코드</th>
                     <th>상품 명</th>
                     <th>제품 갯수(단위)</th>
+                    <th>제품 상태</th>
                     <th>제조일</th>
                     <th>유효기한</th>
+                    <th>-</th>
                 </tr>
             </thead>
-            <tbody>
-                <tr th:if="${products.size eq 0}">
-                    <td colspan="6">제조된 내역 없음</td>
-                </tr>
-                <th:block th:each="product : ${products}" th:if="${products.size > 0}">
-                    <tr>
-                        <td th:text="${product.serialCode}"></td>
-                        <td th:text="${product.productName}"></td>
-                        <td th:text="|${product.qty}(${product.unit})|"></td>
-                        <td th:text="${product.storageDate}"></td>
-                        <td th:text="${product.shelfLifeDays}"></td>
-                    </tr>
-                </th:block>
-            </tbody>
+            <tbody id="dash_table_body"></tbody>
         </table>
-        <div th:insert="~{pagination :: pagenation(${page}, ${totalPage}, '/')}"></div>
+        <div class="pagination" id="pagination"></div>
+
+        <script type="text/javascript" th:src="@{/script/dashTable.js}"></script>
     </div>
 </body>
 </html>
