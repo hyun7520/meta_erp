@@ -13,7 +13,7 @@
 
     <select id="getDashProductsList" resultMap="parseDashProductsList">
         select product_id, serial_code, product_name, qty, unit, storage_date, shelf_life_days
-        from product p
+        from products p
         left join fixed_product fp on p.product_name = fp.name
         left join lots l on p.lots_id = l.lot_id
         <where>
@@ -31,7 +31,7 @@
     </select>
 
     <select id="getTotalListSize">
-        select count(*) from product p
+        select count(*) from products p
         left join fixed_product fp on p.product_name = fp.name
         left join lots l on p.lots_id = l.lot_id
         <where>
