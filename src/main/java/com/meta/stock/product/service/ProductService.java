@@ -19,11 +19,9 @@ public class ProductService {
     public List<ProductStockDto> findTotalProductStock() {
         return productMapper.findTotalProductStock();
     }
-
     public List<ProductDto> getProductsByPRId(long orderId) {
         return productMapper.getProductsByPRId(orderId);
     }
-
     public int getCurrentProductStock(long productId) {
         return productMapper.getCurrentProductStock(productId);
     }

@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ProductionRequestRepository extends JpaRepository<ProductionRequestEntity, Integer> {
 
-    ProductionRequestEntity findProductRequestById(long orderId);
+    ProductionRequestEntity findProductRequestByPrId(long prId);
 }

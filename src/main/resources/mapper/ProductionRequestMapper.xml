@@ -15,6 +15,7 @@
         <id property="prId" column="PR_ID"/>
         <result property="managementEmployee" column="MANAGEMENT_EMPLOYEE"/>
         <result property="productionEmployee" column="PRODUCTION_EMPLOYEEE"/>
+        <result property="productName" column="PRODUCT_NAME"/>
         <result property="toCompany" column="TO_COMPANY"/>
         <result property="targetQty" column="TARGET_QTY"/>
         <result property="plannedQty" column="PLANNED_QTY"/>
@@ -29,18 +30,30 @@
         <!-- <association property="productDto" javaType="com.meta.stock.product.dto.ProductDto" resultMap="ProductResultMap"/> -->
     </resultMap>
 
-    <!-- 진행중인 주문 조회 (JOIN) -->
+    <!-- 진행중인 주문 조회 (JOIN)-->
     <select id="findOngoingProductRequests" resultMap="ProductRequestMap">
+        select pr.*, p.PRODUCT_NAME as PRODUCT_NAME
+        from Production_Request pr
+        JOIN products p
+        ON pr.PR_ID = p.PR_ID
+        WHERE pr.PRODUCTION_START_DATE is not null
     </select>
 
-    // 전체 주문 조회
+
+    <!-- 전체 주문 조회 -->
     <select id="findAllProductRequests" resultMap="ProductRequestMap">
+        select pr.*, p.PRODUCT_NAME as PRODUCT_NAME
+        from Production_Request pr
+        JOIN products p
+        ON pr.PR_ID = p.PR_ID
     </select>
 
-    <!-- 특정 주문 조회 (ID로) -->
+    <!-- 특정 주문 조회 (ID로)
     <select id="findProductRequestById" resultMap="ProductRequestMap">
     </select>
 
     <update id="updateProductRequestDetails">
     </update>
+     -->
+
 </mapper>

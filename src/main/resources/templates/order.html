@@ -12,6 +12,7 @@
         <thead class="table-primary">
         <tr>
             <th>주문ID</th>
+            <th>경영 담당자</th>
             <th>제품명</th>
             <th>거래처</th>
             <th>수량</th>
@@ -21,17 +22,17 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="order : ${orders}">
-            <td th:text="${order.pr_id}"></td>
+        <tr th:each="order : ${productRequests}">
+            <td th:text="${order.prId}"></td>
+            <td th:text="${order.managementEmployee}"></td>
             <td th:text="${order.productDto.productName}"></td>
-            <td th:text="${order.requestBy}"></td>
-            <td th:text="${order.qty}"></td>
+            <td th:text="${order.toCompany}"></td>
+            <td th:text="${order.targetQty}"></td>
             <td th:text="${order.deadline}"></td>
             <td>
-                <span th:switch="${order.complete}">
-                    <span th:case="0" class="badge bg-secondary">미수주</span>
-                    <span th:case="1" class="badge bg-success">수주</span>
-                    <span th:case="2" class="badge bg-primary">완료</span>
+                <span th:switch="${order.productionStartDate}">
+                    <span th:case="${null}" class="badge bg-secondary">미수주</span>
+                    <span th:case="*" class="badge bg-success">수주</span>
                 </span>
             </td>
             <td>

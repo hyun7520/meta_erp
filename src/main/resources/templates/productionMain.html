@@ -36,7 +36,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="stock : ${foundProducts}">
+                    <tr th:each="stock : ${totalProductStock}">
                         <td th:text="${stock.productName}">부대찌개</td>
                         <td th:text="${stock.lotId}">101</td>
                         <td th:text="${stock.qty}">480</td>
@@ -48,7 +48,7 @@
                             <span class="badge bg-success">정상</span>
                         </td>
                     </tr>
-                    <tr th:if="${foundProducts.isEmpty()}">
+                    <tr th:if="${totalProductStock.isEmpty()}">
                         <td colspan="8" class="text-center text-muted">재고가 없습니다.</td>
                     </tr>
                     </tbody>
@@ -60,7 +60,7 @@
     <!-- 2. 진행 중인 주문 (COMPLETE = 0) -->
     <div class="card mb-4 shadow-sm">
         <div class="card-header bg-info text-white">
-            <h5 class="mb-0">진행 중인 주문 (<span th:text="${foundOrders.size()}">0</span>건)</h5>
+            <h5 class="mb-0">진행 중인 주문 (<span th:text="${productRequests.size()}">0</span>건)</h5>
             <a href="/order" class="btn btn-warning btn-lg ms-3">전체 주문</a>
         </div>
         <div class="card-body p-0">
@@ -77,20 +77,18 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="order : ${foundOrders}">
-                        <td th:text="${order.pr_id}">1</td>
-                        <td th:text="${order.productDto.productName}">부대찌개</td>
-                        <td th:text="${order.requestBy}">거래처A</td>
-                        <td th:text="${order.qty}">120</td>
+                    <tr th:each="order : ${productRequests}">
+                        <td th:text="${order.prId}">1</td>
+                        <td th:text="${order.productName}">부대찌개</td>
+                        <td th:text="${order.toCompany}">거래처A</td>
+                        <td th:text="${order.targetQty}">120</td>
                         <td th:text="${order.deadline}">2025-11-20</td>
                         <td>
-                            <!-- 해당 제품의 총 재고 계산 -->
-                            <!-- 로직 추가할 것 -->
-                            <span th:if="${totalStock < order.qty}" class="badge badge-low ms-2">부족!</span>
-                            <span th:if="${totalStock >= order.qty}" class="badge bg-success ms-2">충분</span>
+                            <span th:if="${order.completedQty < order.plannedQty}" class="badge badge-low ms-2">부족!</span>
+                            <span th:if="${order.completedQty >= order.plannedQty}" class="badge bg-success ms-2">충분</span>
                         </td>
                     </tr>
-                    <tr th:if="${foundOrders.isEmpty()}">
+                    <tr th:if="${productRequests.isEmpty()}">
                         <td colspan="6" class="text-center text-muted">진행 중인 주문이 없습니다.</td>
                     </tr>
                     </tbody>

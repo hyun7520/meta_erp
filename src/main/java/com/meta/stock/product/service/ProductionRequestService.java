@@ -46,8 +46,8 @@ public class ProductionRequestService {
     }
 
     // id로 production request 생산 시작
-    public void acceptProductionRequest(long orderId) {
-        ProductionRequestEntity productionRequest = productionRequestRepository.findProductRequestById(orderId);
+    public void acceptProductionRequest(long prId) {
+        ProductionRequestEntity productionRequest = productionRequestRepository.findProductRequestByPrId(prId);
         productionRequest.setProductionStartDate(String.valueOf(LocalDate.now()));
         productionRequestRepository.save(productionRequest);
     }
@@ -100,6 +100,7 @@ public class ProductionRequestService {
         productionRequestMapper.updateOrderStatus(orderId, 2);
     }
 
+    // 요청에 따른 제품을 만들기 위해 필요한 재료 
     public List<MaterialRequirementDto> calculateStock(List<MaterialRequirementDto> requirements) {
         requirements.forEach(req -> {
             int stock = materialService.getCurrentStock(req.getMaterialName());
@@ -109,6 +110,7 @@ public class ProductionRequestService {
         return requirements;
     }
 
+    // 요청을 완료하기까지 남은 제품을 만들기 위해 필요한 재료
     public List<MaterialRequirementDto> calculateRemaining(List<MaterialRequirementDto> remaining) {
         remaining.forEach(req -> {
             int stock = materialService.getCurrentStock(req.getMaterialName());

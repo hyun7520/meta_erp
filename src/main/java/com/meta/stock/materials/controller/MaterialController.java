@@ -23,19 +23,18 @@ public class MaterialController {
     @GetMapping("material")
     public String getAllMaterials(Model model) {
 
-        List<MaterialDto> materials = materialService.getAllMaterials();
-        List<MaterialRequestDto> materialRequests = materialService.findAllMaterialRequests();
-        model.addAttribute("materials", materials);
-        model.addAttribute("materialRequests", materialRequests);
-        
+        List<MaterialRequestDto> mrDto = materialService.findAllMaterialRequests();
+
+        model.addAttribute("mrDto", mrDto);
+
         return "material";
     }
 
     // 특정 재료 상세 정보 조회
     @GetMapping("material/{materialId}")
-    public String getMaterialById(@PathVariable int materialId) {
+    public String getMaterialById(@PathVariable int mrId) {
 
-        MaterialDto foundMaterial = materialService.getMaterialById(materialId);
+        MaterialDto foundMaterial = materialService.getMaterialRequestById(mrId);
 
         return null;
     }

@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class MaterialService {
@@ -25,6 +27,15 @@ public class MaterialService {
     // 전체 재료 요청 조회
     public List<MaterialRequestDto> findAllMaterialRequests() {
         return materialMapper.findAllMaterialRequests();
+    }
+
+    // 요청한 재료에 대한 정보 조회
+    public List<MaterialRequestDto> getAllMaterialRequests(List<MaterialRequestDto> mrDto) {
+        Set<Long> mrIds = mrDto.stream()
+                .map(MaterialRequestDto::getMrId)
+                .collect(Collectors.toSet());
+
+        return materialMapper.getAllMaterialRequests();
     }
 
     // 진행상황에 따른 요청 조회
@@ -43,7 +54,7 @@ public class MaterialService {
     }
 
     // 상세 재료 정보 조회
-    public MaterialDto getMaterialById(int materialId) {
+    public MaterialDto getMaterialRequestById(int materialId) {
         return null;
     }
 
@@ -58,5 +69,4 @@ public class MaterialService {
     public int getCurrentStock(String materialName) {
         return materialMapper.getCurrentStock(materialName);
     }
-    
 }

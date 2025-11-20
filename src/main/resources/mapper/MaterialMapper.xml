@@ -1,59 +1,30 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!-- mybatis 사이트에서 필요한 링크를 찾을 수 있다 -->
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.meta.stock.materials.mapper.MaterialMapper">
-    <resultMap id="MaterialRequestResultMap" type="com.meta.stock.materials.dto.MaterialRequestDto">
-        <id property="mrId" column="MR_ID"/>
-        <result property="materialName" column="MATERIAL_NAME"></result>
+    <resultMap id="MaterialRequestMap" type="com.meta.stock.materials.dto.MaterialRequestDto">
+        <result property="mrId" column="MR_ID"/>
         <result property="materialId" column="MATERIAL_ID"/>
-        <result property="qty" column="LOTS_ID"/>
-        <result property="requestDate" column="REQUEST_DATE"></result>
-        <result property="approved" column="APPROVED"></result>
-        <result property="approvedDate" column="APPROVED_DATE"></result>
-        <result property="note" column="NOTE"></result>
-    </resultMap>
-
-    <resultMap id="MaterialRequirementMap" type="com.meta.stock.materials.dto.MaterialRequirementDto">
         <result property="materialName" column="MATERIAL_NAME"/>
-        <result property="requiredQty" column="REQUIRED_QTY"/>
-        <result property="unit" column="UNIT"/>
+        <result property="requestBy" column="REQUEST_BY"/>
+        <result property="qty" column="QTY"/>
+        <result property="requestDate" column="REQUEST_DATE"/>
+        <result property="approved" column="APPROVED"/>
+        <result property="approvedDate" column="APPROVED_DATE"/>
+        <result property="note" column="NOTE"/>
     </resultMap>
 
-    <select id="getAllMaterials" resultType="com.meta.stock.materials.dto.MaterialDto">
-        SELECT
-        m.MATERIAL_NAME,
-        SUM(l.QTY) AS totalQty,
-        ROUND(AVG(m.LOSS), 2) AS avgLossRate
-        FROM MATERIAL m
-        JOIN LOTS l ON m.LOTS_ID = l.LOT_ID
-        WHERE l.QTY > 0
-        GROUP BY m.MATERIAL_NAME
-        ORDER BY totalQty DESC
+    <select id="findOngoingMaterialRequests" resultMap="MaterialRequestMap">
+        SELECT mr.*, m.MATERIAL_NAME
+        FROM MATERIAL_REQUEST mr
+        JOIN MATERIALS m ON mr.MR_ID = m.MR_ID
+        WHERE mr.APPROVED = 0
+        ORDER BY mr.REQUEST_DATE DESC
     </select>
 
-    <select id="getAllMaterialRequests" resultMap="MaterialRequestResultMap">
-        SELECT m.MR_ID, m.MATERIAL_ID, f.MATERIAL_NAME, m.QTY, m.APPROVED, m.APPROVED_DATE, m.REQUEST_DATE, m.NOTE
-        FROM MATERIAL_REQUEST m
-        JOIN MATERIAL f
-        ON m.MATERIAL_ID = f.MATERIAL_ID
-    </select>
-
-    <select id="findAllRequests" resultMap="MaterialRequestResultMap">
-        SELECT m.MR_ID, m.MATERIAL_ID, f.MATERIAL_NAME, m.QTY, m.APPROVED, m.APPROVED_DATE, m.REQUEST_DATE, m.NOTE
-        FROM MATERIAL_REQUEST m
-        JOIN MATERIAL f
-        ON m.MATERIAL_ID = f.MATERIAL_ID
-        <where>
-            <if test="keyword != null and keyword != ''">
-                m.APPROVED = #{keyword}
-            </if>
-        </where>
-    </select>
-
-    <select id="calculateRequiredMaterials" parameterType="map" resultMap="MaterialRequirementMap">
+    <select id="calculateRequiredMaterials" resultType="com.meta.stock.materials.dto.MaterialRequirementDto">
         SELECT
         fm.MATERIAL_NAME,
         fm.QTY * #{qty} AS REQUIRED_QTY,

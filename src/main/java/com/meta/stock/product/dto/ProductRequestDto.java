@@ -8,6 +8,7 @@ public class ProductRequestDto {
     private long prId;
     private long managementEmployee;
     private long productionEmployee;
+    private String productName;
     private String toCompany;
     private int targetQty;
     private int plannedQty;
@@ -22,6 +23,7 @@ public class ProductRequestDto {
     public long getPrId() {return prId;}
     public long getManagementEmployee() {return managementEmployee;}
     public long getProductionEmployee() {return productionEmployee;}
+    public String getProductName() {return productName;}
     public String getToCompany() {return toCompany;}
     public int getTargetQty() {return targetQty;}
     public int getPlannedQty() {return plannedQty;}
@@ -36,6 +38,7 @@ public class ProductRequestDto {
     public void setPrId(long prId) {this.prId = prId;}
     public void setManagementEmployee(long managementEmployee) {this.managementEmployee = managementEmployee;}
     public void setProductionEmployee(long productionEmployee) {this.productionEmployee = productionEmployee;}
+    public void setProductName(String productName) {this.productName = productName;}
     public void setToCompany(String toCompany) {this.toCompany = toCompany;}
     public void setTargetQty(int targetQty) {this.targetQty = targetQty;}
     public void setPlannedQty(int plannedQty) {this.plannedQty = plannedQty;}

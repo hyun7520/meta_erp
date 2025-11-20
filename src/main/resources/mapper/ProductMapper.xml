@@ -5,8 +5,8 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.meta.stock.product.mapper.ProductMapper">
-    <resultMap id="ProductStockResultMap" type="com.meta.stock.product.dto.ProductStockDto">
-        <id property="productId" column="PRODUCT_ID"/>
+    <resultMap id="ProductStockMap" type="com.meta.stock.product.dto.ProductStockDto">
+        <result property="productId" column="PRODUCT_ID"/>
         <result property="productName" column="PRODUCT_NAME"/>
         <result property="lotId" column="LOT_ID"/>
         <result property="qty" column="QTY"/>
@@ -17,24 +17,17 @@
     </resultMap>
 
     <!-- 전체 완제품 재고 조회 -->
-    <select id="findTotalProductStock" resultMap="ProductStockResultMap">
+    <select id="findTotalProductStock" resultMap="ProductStockMap">
         SELECT
-        p.PRODUCT_ID,
-        p.PRODUCT_NAME,
-        l.LOT_ID,
-        l.QTY,
-        l.UNIT,
-        l.STORAGE_DATE,
-        l.SHELF_LIFE_DAYS,
-        l.NOTE
-        FROM PRODUCT p
+        p.PRODUCT_NAME AS PRODUCT_NAME,
+        SUM(l.QTY) AS QTY
+        FROM PRODUCTS p
         JOIN LOTS l ON p.LOTS_ID = l.LOT_ID
-        WHERE l.QTY > 0  <!-- 재고 있는 것만 (선택) -->
-        ORDER BY l.SHELF_LIFE_DAYS ASC  -- 유통기한 임박 순으로 정렬
+        GROUP BY p.PRODUCT_NAME
     </select>
 
     <!-- 특정 제품 재고 조회 (productId로) -->
-    <select id="findProductStockById" parameterType="long" resultMap="ProductStockResultMap">
+    <select id="findProductStockById" parameterType="long" resultMap="ProductStockMap">
         SELECT
         p.PRODUCT_ID,
         p.PRODUCT_NAME,
@@ -59,11 +52,11 @@
         GROUP BY p.PRODUCT_NAME
     </select>
 
-    <select id="findAllProductStockByProduct" parameterType="long" resultMap="ProductStockResultMap">
+    <select id="findAllProductStockByProduct" parameterType="long" resultMap="ProductStockMap">
 
     </select>
 
-    <select id="findTotalRequiredStock" parameterType="long" resultMap="ProductStockResultMap">
+    <select id="findTotalRequiredStock" parameterType="long" resultMap="ProductStockMap">
 
     </select>
 </mapper>

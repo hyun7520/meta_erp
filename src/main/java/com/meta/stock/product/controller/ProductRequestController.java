@@ -31,7 +31,6 @@ public class ProductRequestController {
     // 검색 기능 추가할 것
     @GetMapping("pr")
     public String findAllRequests(Model model) {
-        // keyword - 0: 대기, 1: 수주, 2: 완료
         List<ProductRequestDto> productRequests = productionRequestService.findAllProductionRequests();
         model.addAttribute("productRequests", productRequests);
         return "order";

@@ -20,4 +20,6 @@ public interface MaterialMapper {
     List<MaterialRequirementDto> calculateRequiredMaterials(Map<String, Object> param);
 
     List<MaterialDto> getAllMaterials();
+
+    List<MaterialRequestDto> getAllMaterialRequests();
 }
