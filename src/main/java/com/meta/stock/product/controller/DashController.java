@@ -68,10 +68,20 @@ public class DashController {
 
     @GetMapping("/dash/table")
     private ResponseEntity<Map<String, Object>> dashTable(
-            @RequestBody Map<String, Object> param,
+            @RequestParam(required = false) String column,
+            @RequestParam(required = false) String search,
+            @RequestParam(value = "start_date", required = false) String date,
+            @RequestParam(defaultValue = "product_id") String sort,
             @RequestParam(defaultValue = "1") int page
     ) {
         int offset = (page - 1) * limit;
+
+        Map<String, Object> param = new HashMap<>();
+        param.put("column", column);
+        param.put("search", search);
+        param.put("date", date);
+        param.put("sort", sort);
+
         param.put("page", page);
         param.put("limit", limit);
         param.put("offset", offset);
@@ -86,10 +96,10 @@ public class DashController {
         pageData.put("page", page);
         pageData.put("totalPage", totalPage);
 
-        pageData.put("column", param.get("column"));
-        pageData.put("search", param.get("search"));
-        pageData.put("date", param.get("date"));
-        pageData.put("sort", param.get("sort"));
+        pageData.put("column", column);
+        pageData.put("search", search);
+        pageData.put("date", date);
+        pageData.put("sort", sort);
 
         return ResponseEntity.ok(pageData);
     }

@@ -26,7 +26,7 @@
                 </when>
             </choose>
         </where>
-        order by #{sort} desc
+        order by ${sort} desc
         offset #{offset} rows fetch next #{limit} rows only
     </select>
 

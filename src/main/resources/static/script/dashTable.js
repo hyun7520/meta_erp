@@ -1,12 +1,8 @@
-let page = 1;
-const dataParam = {
-    column: '',
-    search: '',
-    date: '',
-    sort: 'product_id',
-};
+const GET_TABLE_API = "/dash/table";
 
-document.addEventListener("DOMContentLoaded", () => {
+let page = 1;
+
+window.addEventListener("load", () => {
     renderDashTable();
 });
 
@@ -14,7 +10,7 @@ const renderTable = ({list, page, totalPage, ...data}) => {
     const tbody = document.getElementById('dash_table_body');
     tbody.innerHTML = '';
 
-    data.forEach(item => {
+    list.forEach(item => {
         const row = document.createElement('tr');
 
         // 사용가능 / 판매완료 / 폐기예정
@@ -23,7 +19,7 @@ const renderTable = ({list, page, totalPage, ...data}) => {
         const isToday =
             (today.getFullYear() === lifeEndDay.getFullYear())
             && (today.getMonth() === lifeEndDay.getMonth())
-            &&  (today.getDate() === lifeEndDay.getDate());
+            &&  (today.getDate() - 3 === lifeEndDay.getDate());
 
         let statusBadge = '';
         if (item.qty === 0) {
@@ -34,8 +30,6 @@ const renderTable = ({list, page, totalPage, ...data}) => {
             statusBadge = '<span class="status-badge status-approved">출하 가능</span>';
         }
 
-        const actionButtons = '<span style="color: #9CA3AF;">-</span>';
-
         row.innerHTML = `
             <td>${item.serialCode}</td>
             <td>${item.productName}</td>
@@ -43,7 +37,6 @@ const renderTable = ({list, page, totalPage, ...data}) => {
             <td>${statusBadge}</td>
             <td>${item.storageDate}</td>
             <td>${item.shelfLifeDays}</td>
-            <td>${actionButtons}</td>
         `;
 
         tbody.appendChild(row);
@@ -54,16 +47,20 @@ const movePage = (pageNum) => {
     renderDashTable(pageNum);
 }
 
+const parseParams = (page, column = '', search = '', date = '', sort = 'product_id') => {
+    return `page=${page}&column=${column}&search=${search}&start_date=${date}&sort=${sort}`
+}
+
 const renderDashTable = (page = 1) => {
-    fetch(
-        `/dash/table?page=${page}`,
-        {
-            method: 'GET',
-            body: dataParam
-        }
-    ).then(response => response.json())
-     .then(data => {
-         renderTable(data);
-         renderPagination(data.page, data.totalPage, movePage)
-     });
+    const getLink = GET_TABLE_API + "?" + parseParams(page);
+    fetch(getLink, {method: 'GET'})
+        .then(response => response.json())
+        .then(data => {
+            renderTable(data);
+            renderPagination(data.page, data.totalPage, movePage)
+
+            const now = new Date();
+            const drawTime = document.getElementById("products_table_refresh_time")
+            drawTime.innerText = calcDrawDate(now);
+        });
 }
