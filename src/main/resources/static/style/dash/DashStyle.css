@@ -34,3 +34,34 @@
 }
 
 [id$="_time"] { color:#777; }
+
+.search-group {
+    display: flex;
+    justify-content: end;
+    align-items: baseline;
+}
+
+.search-group div {
+    margin: 0 10px;
+}
+
+.label_form_group {
+    display: flex;
+    align-items: baseline;
+}
+
+.label_form_group label {
+    width: 80px;
+    padding-right: 10px;
+}
+
+.sort-group {
+    margin: 10px 0;
+    display: flex;
+    justify-content: end;
+    align-items: baseline;
+}
+
+.sort-group .form-group {
+    margin-right: 10px;
+}

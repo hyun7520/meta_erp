@@ -1,6 +1,11 @@
 const GET_TABLE_API = "/dash/table";
 
-let page = 1;
+const params = {
+    column: '',
+    search: '',
+    date: '',
+    sort: 'product_id'
+};
 
 window.addEventListener("load", () => {
     renderDashTable();
@@ -47,12 +52,12 @@ const movePage = (pageNum) => {
     renderDashTable(pageNum);
 }
 
-const parseParams = (page, column = '', search = '', date = '', sort = 'product_id') => {
+const parseParams = (page, {column, search, date, sort}) => {
     return `page=${page}&column=${column}&search=${search}&start_date=${date}&sort=${sort}`
 }
 
 const renderDashTable = (page = 1) => {
-    const getLink = GET_TABLE_API + "?" + parseParams(page);
+    const getLink = GET_TABLE_API + "?" + parseParams(page, params);
     fetch(getLink, {method: 'GET'})
         .then(response => response.json())
         .then(data => {
@@ -63,4 +68,21 @@ const renderDashTable = (page = 1) => {
             const drawTime = document.getElementById("products_table_refresh_time")
             drawTime.innerText = calcDrawDate(now);
         });
+}
+
+const dashSearch = () => {
+    const column = document.getElementsByName("column").item(0).selectedOptions.item(0)
+    const search = document.getElementsByName("search").item(0)
+    const date = document.getElementsByName("start_date").item(0)
+
+    params.column = column.value;
+    params.search = search.value;
+    params.date = date.value;
+    renderDashTable();
+}
+
+const dashSort = () => {
+    const sortKey = document.getElementsByName("sort").item(0).selectedOptions.item(0).value;
+    params.sort = sortKey;
+    renderDashTable();
 }
