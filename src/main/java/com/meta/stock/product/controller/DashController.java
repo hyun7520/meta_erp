@@ -36,33 +36,7 @@ public class DashController {
     private final int limit = 5;
 
     @GetMapping("/")
-    private String dashboard(
-//            Model model
-//            @RequestParam(required = false) String column,
-//            @RequestParam(required = false) String search,
-//            @RequestParam(value = "start_date", required = false) String date,
-//            @RequestParam(defaultValue = "productId") String sort,
-//            @RequestParam(defaultValue = "1") int page
-    ) {
-//        int offset = (page - 1) * limit;
-//
-//        Map<String, Object> param = new HashMap<>();
-//        param.put("column", column);
-//        param.put("search", search);
-//        param.put("date", date);
-//        param.put("sort", sort);
-//
-//        param.put("offset", offset);
-//        param.put("limit", limit);
-//        param.put("page", page);
-//
-//        List<ProductsAmountListBean> list = productsService.getDashTable(param);
-//        int totalCount = productsService.getDashTableTotal(param);
-//        int totalPage = (int) Math.ceil((double) totalCount / limit);
-//
-//        model.addAttribute("products", list);
-//        model.addAttribute("page", page);
-//        model.addAttribute("totalPage", totalPage);
+    private String dashboard() {
         return "dashboard/dashboard";
     }
 
@@ -72,6 +46,7 @@ public class DashController {
             @RequestParam(required = false) String search,
             @RequestParam(value = "start_date", required = false) String date,
             @RequestParam(defaultValue = "product_id") String sort,
+            @RequestParam(defaultValue = "desc") String order,
             @RequestParam(defaultValue = "1") int page
     ) {
         int offset = (page - 1) * limit;
@@ -81,6 +56,7 @@ public class DashController {
         param.put("search", search);
         param.put("date", date);
         param.put("sort", sort);
+        param.put("order", order);
 
         param.put("page", page);
         param.put("limit", limit);
@@ -100,6 +76,7 @@ public class DashController {
         pageData.put("search", search);
         pageData.put("date", date);
         pageData.put("sort", sort);
+        pageData.put("order", order);
 
         return ResponseEntity.ok(pageData);
     }

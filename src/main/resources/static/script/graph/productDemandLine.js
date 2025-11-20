@@ -92,11 +92,10 @@ const drawDemandLineChart = () => {
         .then(response => response.json())
         .then(json => {
             const labels = new Set();
-            const data = json.map(({name, demandAmount, date}) => {
-                labels.add(name.trim())
-                return {date: date.trim(), product: name.trim(), demand: demandAmount}
+            const data = json.map(({name, demand, requestDate}) => {
+                labels.add(name)
+                return {date: requestDate.split(" ")[0], product: name, demand: demand}
             })
-            data.sort((a, b) => a.date.localeCompare(b.date));
             drawLine(data, [...labels]);
 
             const now = new Date();

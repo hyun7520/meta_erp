@@ -2,36 +2,36 @@ package com.meta.stock.product.dto;
 
 public class ProductDemandBean {
     private String name;
-    private String date;
-    private float demandAmount;
+    private String requestDate;
+    private float demand;
 
-    public ProductDemandBean(String name, String date, float demandAmount) {
+    public ProductDemandBean(String name, String requestDate, float demand) {
         this.name = name;
-        this.date = date;
-        this.demandAmount = demandAmount;
+        this.requestDate = requestDate;
+        this.demand = demand;
     }
 
     public String getName() {
         return name;
     }
 
-    public String getDate() {
-        return date;
+    public String getRequestDate() {
+        return requestDate;
     }
 
-    public float getDemandAmount() {
-        return demandAmount;
+    public float getDemand() {
+        return demand;
     }
 
     public void setName(String name) {
         this.name = name;
     }
 
-    public void setDate(String date) {
-        this.date = date;
+    public void setRequestDate(String requestDate) {
+        this.requestDate = requestDate;
     }
 
-    public void setDemandAmount(float demandAmount) {
-        this.demandAmount = demandAmount;
+    public void setDemand(float demand) {
+        this.demand = demand;
     }
 }

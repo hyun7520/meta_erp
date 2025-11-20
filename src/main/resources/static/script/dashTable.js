@@ -1,17 +1,19 @@
 const GET_TABLE_API = "/dash/table";
 
-const params = {
+let params = {
+    page: 1,
     column: '',
     search: '',
     date: '',
-    sort: 'product_id'
+    sort: 'product_id',
+    order: 'desc',
 };
 
 window.addEventListener("load", () => {
-    renderDashTable();
+    renderDashTable(params);
 });
 
-const renderTable = ({list, page, totalPage, ...data}) => {
+const renderTable = (list) => {
     const tbody = document.getElementById('dash_table_body');
     tbody.innerHTML = '';
 
@@ -49,20 +51,29 @@ const renderTable = ({list, page, totalPage, ...data}) => {
 }
 
 const movePage = (pageNum) => {
-    renderDashTable(pageNum);
+    params.page = pageNum;
+    renderDashTable(params);
 }
 
-const parseParams = (page, {column, search, date, sort}) => {
-    return `page=${page}&column=${column}&search=${search}&start_date=${date}&sort=${sort}`
+const parseParams = ({page, column, search, date, sort, order}) => {
+    page = page || 1;
+    column = column || '';
+    search = search || '';
+    date = date || '';
+    sort = sort || 'product_id';
+    order = order || 'desc';
+    return `page=${page}&column=${column}&search=${search}&start_date=${date}&sort=${sort}&order=${order}`
 }
 
-const renderDashTable = (page = 1) => {
-    const getLink = GET_TABLE_API + "?" + parseParams(page, params);
+const renderDashTable = (param) => {
+    const getLink = GET_TABLE_API + "?" + parseParams(param);
     fetch(getLink, {method: 'GET'})
         .then(response => response.json())
-        .then(data => {
-            renderTable(data);
-            renderPagination(data.page, data.totalPage, movePage)
+        .then(({list, page, totalPage, ...data}) => {
+            params = {...data}
+
+            renderTable(list);
+            renderPagination(page, totalPage, movePage)
 
             const now = new Date();
             const drawTime = document.getElementById("products_table_refresh_time")
@@ -78,11 +89,16 @@ const dashSearch = () => {
     params.column = column.value;
     params.search = search.value;
     params.date = date.value;
-    renderDashTable();
+    renderDashTable(params);
 }
 
-const dashSort = () => {
+const dashSort = (isDescending) => {
     const sortKey = document.getElementsByName("sort").item(0).selectedOptions.item(0).value;
     params.sort = sortKey;
-    renderDashTable();
+    params.order = isDescending ? 'desc' : 'asc';
+    renderDashTable(params);
+}
+
+const reset = () => {
+    renderDashTable({});
 }

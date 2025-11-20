@@ -26,8 +26,17 @@
                 </when>
             </choose>
         </where>
-        order by ${sort} desc
+        order by ${sort} ${order}
         offset #{offset} rows fetch next #{limit} rows only
+    </select>
+
+    <select id="getDashProductDemand">
+        select product_name as name, request_date as requestDate, sum(qty) as demand
+        from production_request pr
+        join products p on pr.pr_id = p.pr_id
+        left join lots l on p.lots_id = l.lot_id
+        group by product_name, request_date
+        order by request_date asc
     </select>
 
     <select id="getTotalListSize">

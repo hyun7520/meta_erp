@@ -22,12 +22,45 @@ const renderPagination = (currentPage, totalPage, callback) => {
     prevBtn.onclick = () => callback(currentPage - 1);
     pagination.appendChild(prevBtn);
 
-    for (let num = 1; num <= totalPage; num++) {
+    const startPage = Math.max(1, currentPage - 2);
+    const endPage = Math.min(totalPage, currentPage + 2);
+
+    if (startPage > 1) {
+        const firstBtn = document.createElement('button');
+        firstBtn.className = 'pagination-btn';
+        firstBtn.textContent = '1';
+        firstBtn.onclick = () => callback(1);
+        pagination.appendChild(firstBtn);
+
+        if (startPage > 2) {
+            const dots = document.createElement('span');
+            dots.className = 'pagination-info';
+            dots.textContent = '...';
+            pagination.appendChild(dots);
+        }
+    }
+
+    for (let num = startPage; num <= endPage; num++) {
         const pageBtn = document.createElement('button');
         pageBtn.className = 'pagination-btn' + (num === currentPage ? ' active' : '');
         pageBtn.textContent = num;
         pageBtn.onclick = () => callback(num);
         pagination.appendChild(pageBtn);
+    }
+
+    if (endPage < totalPage) {
+        if (endPage < totalPage - 1) {
+            const dots = document.createElement('span');
+            dots.className = 'pagination-info';
+            dots.textContent = '...';
+            pagination.appendChild(dots);
+        }
+
+        const lastBtn = document.createElement('button');
+        lastBtn.className = 'pagination-btn';
+        lastBtn.textContent = totalPage;
+        lastBtn.onclick = () => callback(totalPage);
+        pagination.appendChild(lastBtn);
     }
 
     const nextBtn = document.createElement('button');
