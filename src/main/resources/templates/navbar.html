@@ -14,10 +14,28 @@
             <p th:text="${subTitle}" class="subtitle"></p>
         </div>
         <div class="navbar-taps">
-            <a th:href="@{/}">대시보드</a>
-            <a th:href="@{/}" th:if="${session eq 'order'}">사용자 관리</a>
-            <a th:href="@{/}" th:if="${session eq 'order'}">경영</a>
-            <a th:href="@{/}" th:if="${session eq 'make'}">생산</a>
+            <a href="/order.html" class="nav-btn active">
+                📋 완제품 발주 요청
+            </a>
+            <a href="/material_request.html" class="nav-btn">
+                📦 원재료 발주 허가
+            </a>
+            <a th:href="${'/product'}" class="nav-btn">
+                생산
+            </a>
+        </div>
+
+        <div class="status-banner">
+            <div class="current-time" id="currentTime">
+                🕐 2025-11-18 10:30:45
+            </div>
+            <div class="user-status">
+                <div class="user-avatar" id="userAvatar">홍</div>
+                <div class="user-info-text">
+                    <div class="user-name" id="userName" th:text="${'이름'}"></div>
+                    <div class="user-role" id="userRole" th:text="${'부서  ·  지위'}"></div>
+                </div>
+            </div>
         </div>
     </div>
 </body>
