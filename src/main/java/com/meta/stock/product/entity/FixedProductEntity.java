@@ -11,44 +11,31 @@ import java.util.List;
 public class FixedProductEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "fixed_product_gen")
-    @SequenceGenerator(name = "fixed_product_gen", sequenceName = "FP_SEQ", allocationSize = 1)
-    @Column(name = "FP_ID")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "fp_seq")
+    @SequenceGenerator(name = "fp_seq", sequenceName = "FP_SEQ", allocationSize = 1)
+    @Column(name = "fp_id")
     private long fpId;
 
-    @Column(name = "SERIAL_CODE")
+    @Column(name = "serial_code", length = 255)
     private String serialCode;
 
-    @Column(name = "NAME")
+    @Column(name = "name", length = 100)
     private String name;
 
-    @Column(name = "PRODUCTION_TIME")
-    private int productionTime;
+    @Column(name = "life_time")
+    private int lifeTime;   // 유효기간(일)
 
-    // OneToMany 양방향 (자식에서 mappedBy로 연결)
     @OneToMany(mappedBy = "fixedProduct", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FixedMaterialEntity> materials = new ArrayList<>();
 
-    public void addMaterial(FixedMaterialEntity material) {
-        materials.add(material);
-        material.setFixedProduct(this);
-    }
-
-    public void removeMaterial(FixedMaterialEntity material) {
-        materials.remove(material);
-        material.setFixedProduct(null);
-    }
-
     // getter & setter
     public long getFpId() { return fpId; }
-    public List<FixedMaterialEntity> getMaterials() { return materials; }
     public String getSerialCode() { return serialCode; }
     public String getName() { return name; }
-    public int getProductionTime() { return productionTime; }
+    public int getLifeTime() { return lifeTime; }
 
-    public void setFpId(int fpId) { this.fpId = fpId; }
-    public void setMaterials(List<FixedMaterialEntity> materials) { this.materials = materials; }
+    public void setFpId(long fpId) { this.fpId = fpId; }
     public void setSerialCode(String serialCode) { this.serialCode = serialCode; }
     public void setName(String name) { this.name = name; }
-    public void setProductionTime(int productionTime) { this.productionTime = productionTime; }
+    public void setProductionTime(int lifeTime) { this.lifeTime = this.lifeTime; }
 }

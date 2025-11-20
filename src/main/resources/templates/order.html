@@ -22,7 +22,7 @@
         </thead>
         <tbody>
         <tr th:each="order : ${orders}">
-            <td th:text="${order.orderId}"></td>
+            <td th:text="${order.pr_id}"></td>
             <td th:text="${order.productDto.productName}"></td>
             <td th:text="${order.requestBy}"></td>
             <td th:text="${order.qty}"></td>
@@ -35,7 +35,7 @@
                 </span>
             </td>
             <td>
-                <a th:href="@{order/{id}(id=${order.orderId})}" class="btn btn-sm btn-outline-primary">상세</a>
+                <a th:href="@{order/{id}(id=${order.pr_id})}" class="btn btn-sm btn-outline-primary">상세</a>
             </td>
         </tr>
         </tbody>

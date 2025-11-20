@@ -15,7 +15,7 @@
     <!-- 주문 기본 정보 -->
     <div class="card mb-4">
         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-            <h4 class="mb-0">주문 ID: <span th:text="${order.orderId}"></span></h4>
+            <h4 class="mb-0">주문 ID: <span th:text="${order.pr_id}"></span></h4>
             <span th:switch="${order.complete}">
                 <span th:case="0" class="badge bg-secondary fs-6">미수주</span>
                 <span th:case="1" class="badge bg-warning fs-6">수주 완료</span>
@@ -118,14 +118,14 @@
         <div th:switch="${order.complete}">
             <!-- 미수주 상태 -->
             <div th:case="0">
-                <form th:action="@{/order/accept/{id}(id=${order.orderId})}" method="post" style="display:inline;">
+                <form th:action="@{/order/accept/{id}(id=${order.pr_id})}" method="post" style="display:inline;">
                     <button type="submit" class="btn btn-success btn-lg">주문 수주</button>
                 </form>
             </div>
 
             <!-- 수주 완료 상태 -->
             <div th:case="1">
-                <form th:action="@{/order/ship/{id}(id=${order.orderId})}" method="post" style="display:inline;">
+                <form th:action="@{/order/ship/{id}(id=${order.pr_id})}" method="post" style="display:inline;">
                     <button type="submit" class="btn btn-primary btn-lg"
                             th:disabled="${currentProductStock < order.qty}">
                         제품 출하
@@ -134,7 +134,7 @@
                 <span th:if="${currentProductStock < order.qty}" class="text-danger ms-3">
                     ※ 재고 부족으로 출하 불가
                 </span>
-                <form th:action="@{/order/decline/{id}(id=${order.orderId})}" method="post" style="display:inline;">
+                <form th:action="@{/order/decline/{id}(id=${order.pr_id})}" method="post" style="display:inline;">
                     <button type="submit" class="btn btn-danger btn-lg ms-3">드랍</button>
                 </form>
                 <a th:href="@{/order}" class="btn btn-secondary btn-lg ms-3">목록</a>

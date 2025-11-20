@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.meta.stock.product.mapper.ProductionRequestMapper">
+    <resultMap id="ProductResultMap" type="com.meta.stock.product.dto.ProductDto">
+        <id property="productId" column="PRODUCT_ID"/>
+        <result property="productName" column="PRODUCT_NAME"/>
+        <result property="lotsId" column="LOTS_ID"/>
+    </resultMap>
+
+    <!-- OrderDto 매핑 + ProductDto 포함 -->
+    <resultMap id="ProductRequestMap" type="com.meta.stock.product.dto.ProductRequestDto">
+        <id property="prId" column="PR_ID"/>
+        <result property="managementEmployee" column="MANAGEMENT_EMPLOYEE"/>
+        <result property="productionEmployee" column="PRODUCTION_EMPLOYEEE"/>
+        <result property="toCompany" column="TO_COMPANY"/>
+        <result property="targetQty" column="TARGET_QTY"/>
+        <result property="plannedQty" column="PLANNED_QTY"/>
+        <result property="completedQty" column="COMPLETED_QTY"/>
+        <result property="unit" column="UNIT"/>
+        <result property="requestDate" column="REQUEST_DATE"/>
+        <result property="productionStartDate" column="PRODUCTION_START_DATE"/>
+        <result property="deadline" column="DEADLINE"/>
+        <result property="endDate" column="END_DATE"/>
+        <result property="note" column="NOTE"/>
+
+        <!-- <association property="productDto" javaType="com.meta.stock.product.dto.ProductDto" resultMap="ProductResultMap"/> -->
+    </resultMap>
+
+    <!-- 진행중인 주문 조회 (JOIN) -->
+    <select id="findOngoingProductRequests" resultMap="ProductRequestMap">
+    </select>
+
+    // 전체 주문 조회
+    <select id="findAllProductRequests" resultMap="ProductRequestMap">
+    </select>
+
+    <!-- 특정 주문 조회 (ID로) -->
+    <select id="findProductRequestById" resultMap="ProductRequestMap">
+    </select>
+
+    <update id="updateProductRequestDetails">
+    </update>
+</mapper>

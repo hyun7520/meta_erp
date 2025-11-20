@@ -22,6 +22,25 @@
         <result property="unit" column="UNIT"/>
     </resultMap>
 
+    <select id="getAllMaterials" resultType="com.meta.stock.materials.dto.MaterialDto">
+        SELECT
+        m.MATERIAL_NAME,
+        SUM(l.QTY) AS totalQty,
+        ROUND(AVG(m.LOSS), 2) AS avgLossRate
+        FROM MATERIAL m
+        JOIN LOTS l ON m.LOTS_ID = l.LOT_ID
+        WHERE l.QTY > 0
+        GROUP BY m.MATERIAL_NAME
+        ORDER BY totalQty DESC
+    </select>
+
+    <select id="getAllMaterialRequests" resultMap="MaterialRequestResultMap">
+        SELECT m.MR_ID, m.MATERIAL_ID, f.MATERIAL_NAME, m.QTY, m.APPROVED, m.APPROVED_DATE, m.REQUEST_DATE, m.NOTE
+        FROM MATERIAL_REQUEST m
+        JOIN MATERIAL f
+        ON m.MATERIAL_ID = f.MATERIAL_ID
+    </select>
+
     <select id="findAllRequests" resultMap="MaterialRequestResultMap">
         SELECT m.MR_ID, m.MATERIAL_ID, f.MATERIAL_NAME, m.QTY, m.APPROVED, m.APPROVED_DATE, m.REQUEST_DATE, m.NOTE
         FROM MATERIAL_REQUEST m

@@ -3,32 +3,29 @@ package com.meta.stock.materials.entity;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "MATERIAL")
+@Table(name = "MATERIALS")
 public class MaterialEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "material_gen")
-    @SequenceGenerator(name = "material_gen", sequenceName = "MATERIAL_SEQ", allocationSize = 1)
-    @Column(name = "MATERIAL_ID")
-    private long materialId;
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "materials_seq")
+    @SequenceGenerator(name = "materials_seq", sequenceName = "materials_seq", allocationSize = 1)
+    @Column(name = "materials_id")
+    private Long materialsId;
 
-    @Column(name = "MATERIAL_NAME")
+    @Column(name = "material_name", length = 50)
     private String materialName;
 
-    @Column(name = "LOTS_ID")
-    private long lotsId;
+    @Column(name = "lots_id")
+    private Long lotsId;
 
-    @Column(name = "LOSS")
-    private float loss;
+    @Column(name = "mr_id")
+    private Long mrId;
 
-    // getter & setter
-    public long getMaterialId() { return materialId; }
+    public long getMaterialsId() { return materialsId; }
     public String getMaterialName() { return materialName; }
     public long getLotsId() { return lotsId; }
-    public float getLoss() { return loss; }
 
-    public void setMaterialId(int materialId) { this.materialId = materialId; }
+    public void setMaterialId(long materialsId) { this.materialsId = materialsId; }
     public void setMaterialName(String materialName) { this.materialName = materialName; }
-    public void setLotsId(int lotsId) { this.lotsId = lotsId; }
-    public void setLoss(float loss) { this.loss = loss; }
+    public void setLotsId(long lotsId) { this.lotsId = lotsId; }
 }

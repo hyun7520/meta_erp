@@ -8,7 +8,13 @@ import java.util.List;
 
 @Mapper
 public interface ProductMapper {
-    List<ProductStockDto> findAllProductStock();
+    List<ProductStockDto> findTotalProductStock();
 
     int getCurrentProductStock(long productId);
+
+    List<ProductDto> getProductsByPRId(long productRequestId);
+
+    List<ProductStockDto> findAllProductStockByProduct();
+
+    List<ProductStockDto> findTotalRequiredStock();
 }

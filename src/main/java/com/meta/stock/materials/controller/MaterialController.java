@@ -1,6 +1,8 @@
 package com.meta.stock.materials.controller;
 
 import com.meta.stock.materials.dto.MaterialDto;
+import com.meta.stock.materials.dto.MaterialRequestDto;
+import com.meta.stock.materials.dto.MaterialRequirementDto;
 import com.meta.stock.materials.service.MaterialService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,13 +19,16 @@ public class MaterialController {
     @Autowired
     private MaterialService materialService;
 
-    // 전체 재료 조회
+    // 전체 재료 요청 조회
     @GetMapping("material")
-    public String getAllMaterials() {
+    public String getAllMaterials(Model model) {
 
         List<MaterialDto> materials = materialService.getAllMaterials();
-
-        return null;
+        List<MaterialRequestDto> materialRequests = materialService.findAllMaterialRequests();
+        model.addAttribute("materials", materials);
+        model.addAttribute("materialRequests", materialRequests);
+        
+        return "material";
     }
 
     // 특정 재료 상세 정보 조회
@@ -48,7 +53,7 @@ public class MaterialController {
                                          @RequestParam List<Integer> materials,
                                          Model model) {
 
-        List<MaterialDto> materialList =  materialService.getMaterials(materials);
+        List<MaterialDto> materialList =  materialService.getAllMaterials();
         model.addAttribute(materialList);
 
         return "material_request";

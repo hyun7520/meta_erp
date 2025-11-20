@@ -7,19 +7,26 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "LOTS")
 public class LotsEntity {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "lots_gen")
-    @SequenceGenerator(name = "lots_gen", sequenceName = "LOTS_SEQ", allocationSize = 1)
-    private long lotId;
-    @Column(name = "QTY")
-    private int qty;
-    @Column(name = "UNIT")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "lot_seq")
+    @SequenceGenerator(name = "lot_seq", sequenceName = "lot_seq", allocationSize = 1)
+    @Column(name = "lot_id")
+    private Long lotId;
+
+    @Column(name = "qty")
+    private Integer qty;
+
+    @Column(name = "unit", length = 20)
     private String unit;
-    @Column(name = "STORAGE_DATE")
+
+    @Column(name = "storage_date")
     private String storageDate;
-    @Column(name = "SHELF_LIFE_DAYS")
+
+    @Column(name = "shelf_life_days")
     private String shelfLifeDays;
-    @Column(name = "NOTE")
+
+    @Column(name = "note", length = 255)
     private String note;
 
     public long getLotId() {return lotId;}

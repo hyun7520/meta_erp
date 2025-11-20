@@ -4,73 +4,75 @@ import com.meta.stock.materials.dto.MaterialRequirementDto;
 import com.meta.stock.materials.service.MaterialService;
 import com.meta.stock.order.repository.LotsRepository;
 import com.meta.stock.order.dto.LotStockDto;
-import com.meta.stock.product.entity.OrderEntity;
 import com.meta.stock.order.mapper.LotsMapper;
-import com.meta.stock.product.dto.OrderDto;
-import com.meta.stock.product.mapper.OrderMapper;
+import com.meta.stock.product.dto.ProductDto;
+import com.meta.stock.product.dto.ProductRequestDto;
+import com.meta.stock.product.entity.ProductionRequestEntity;
 import com.meta.stock.product.mapper.ProductMapper;
-import com.meta.stock.product.repository.OrderRepository;
+import com.meta.stock.product.mapper.ProductionRequestMapper;
+import com.meta.stock.product.repository.ProductionRequestRepository;
 import com.meta.stock.product.repository.ProductRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
 @Transactional
-public class OrderService {
+public class ProductionRequestService {
 
     @Autowired
-    private OrderMapper orderMapper;
+    private ProductionRequestMapper prMapper;
     @Autowired
     private LotsMapper lotsMapper;
     @Autowired
     private ProductMapper productMapper;
     @Autowired
-    private OrderRepository orderRepository;
+    private ProductionRequestMapper productionRequestMapper;
     @Autowired
-    private LotsRepository lotsRepository;
-    @Autowired
-    private ProductRepository productRepository;
+    private ProductionRequestRepository productionRequestRepository;
     @Autowired
     private MaterialService materialService;
 
-    public List<OrderDto> findAllOrders(int keyword) {
-        return orderMapper.findAllOrders(keyword);
+    // keyword 0, 1, 2에 따라 production request 가져오기
+    public List<ProductRequestDto> findOngoingProductRequests() {
+        return prMapper.findOngoingProductRequests();
     }
 
-    public OrderDto findOrderById(long orderId) {
-        return orderMapper.findOrderById(orderId);
+    public List<ProductRequestDto> findAllProductionRequests() {
+        return prMapper.findAllProductionRequests();
     }
 
-    public void acceptOrder(long orderId) {
-        OrderEntity order = orderRepository.findByOrderId(orderId);
-        order.setComplete(1);
-        orderRepository.save(order);
+    // id로 production request 생산 시작
+    public void acceptProductionRequest(long orderId) {
+        ProductionRequestEntity productionRequest = productionRequestRepository.findProductRequestById(orderId);
+        productionRequest.setProductionStartDate(String.valueOf(LocalDate.now()));
+        productionRequestRepository.save(productionRequest);
     }
 
+    // id로 production request 조회
+    public ProductRequestDto findProductRequestById(long orderId) {
+        return prMapper.findProductRequestById(orderId);
+    }
+
+    // 주문에 대한 제품 출하
     public void shipOrder(Long orderId) {
-        OrderDto order = orderMapper.findOrderById(orderId);
-        if (order.getComplete() != 1) {
+        ProductRequestDto productRequestDto = prMapper.findProductRequestById(orderId);
+        List<ProductDto> productDto = productMapper.getProductsByPRId(productRequestDto.getPrId());
+        if (productRequestDto.getProductionStartDate() == null) {
             throw new IllegalStateException("수주된 주문만 출하 가능합니다.");
         }
-
-        int requiredQty = order.getQty();
-        Long productId = order.getProductDto().getProductId();
+        long productId = productDto.get(0).getProductId();
 
         // 2. 유통기한 빠른 순으로 로트 조회
         List<LotStockDto> lots = lotsMapper.findLotsByProductIdOrderByExpiry(productId);
-        for(LotStockDto lot : lots) {
-            System.out.println(lot.getLotId());
-            System.out.println(lot.getQty());
-        }
-
         if (lots.isEmpty()) {
             throw new IllegalStateException("출하할 재고가 없습니다.");
         }
 
-        int remainingQty = requiredQty;
+        int remainingQty = productRequestDto.getCompletedQty();
         for (LotStockDto lot : lots) {
             if (remainingQty <= 0) break;
 
@@ -84,7 +86,7 @@ public class OrderService {
             // 3. 로트 재고 업데이트
             lotsMapper.updateLotQty(lot.getLotId(), newQty);
 
-            // 재고 0이면 로트 삭제 (선택사항)
+            // 재고 0이면 로트 삭제
             if (newQty == 0) {
                 lotsMapper.deleteZeroLot(lot.getLotId());
             }
@@ -95,7 +97,7 @@ public class OrderService {
         }
 
         // 4. 주문 상태를 출하 완료로 변경 (COMPLETE = 2)
-        orderMapper.updateOrderStatus(orderId, 2);
+        productionRequestMapper.updateOrderStatus(orderId, 2);
     }
 
     public List<MaterialRequirementDto> calculateStock(List<MaterialRequirementDto> requirements) {

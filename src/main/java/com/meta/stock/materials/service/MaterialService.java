@@ -17,18 +17,23 @@ public class MaterialService {
     @Autowired
     private MaterialMapper materialMapper;
 
-    // 재료 요청 조회
-    public List<MaterialRequestDto> getMaterialRequests(int keyword) {
-        return materialMapper.findAllRequests(keyword);
+    // 전체 재료 조회
+    public List<MaterialDto> getAllMaterials() {
+        return materialMapper.getAllMaterials();
+    }
+
+    // 전체 재료 요청 조회
+    public List<MaterialRequestDto> findAllMaterialRequests() {
+        return materialMapper.findAllMaterialRequests();
+    }
+
+    // 진행상황에 따른 요청 조회
+    public List<MaterialRequestDto> findOngoingMaterialRequests() {
+        return materialMapper.findOngoingMaterialRequests();
     }
     
     // 세부 재료 요청 조회
     public List<MaterialDto> getMaterialRequestDetails(int mrId) {
-        return null;
-    }
-
-    // 전체 재료 조회
-    public List<MaterialDto> getMaterials(List<Integer> materials) {
         return null;
     }
 
@@ -42,19 +47,16 @@ public class MaterialService {
         return null;
     }
 
-    public List<MaterialDto> getAllMaterials() {
-        return null;
-    }
-
-
+    // 현재 남은 재고의 개수를 반환한다.
     public List<MaterialRequirementDto> calculateRequiredMaterials(long productId, int qty) {
         Map<String, Object> param = new HashMap<>();
         param.put("productId", productId);
         param.put("qty", qty);
-        return materialMapper.calculateRequiredMaterials(param);  // ← 이제 List<DTO> 반환!
+        return materialMapper.calculateRequiredMaterials(param);
     }
 
     public int getCurrentStock(String materialName) {
         return materialMapper.getCurrentStock(materialName);
     }
+    
 }

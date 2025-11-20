@@ -1,5 +1,6 @@
 package com.meta.stock.materials.entity;
 
+import com.meta.stock.user.entity.EmployeeEntity;
 import jakarta.persistence.*;
 import org.hibernate.annotations.ColumnDefault;
 
@@ -12,44 +13,94 @@ public class MaterialRequestEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "mr_seq")
-    @SequenceGenerator(name = "mr_seq", sequenceName = "SEQ_MATERIAL_REQUEST", allocationSize = 1)
-    @Column(name = "MR_ID")
+    @SequenceGenerator(name = "mr_seq", sequenceName = "MR_SEQ", allocationSize = 1)
+    @Column(name = "mr_id")
     private long mrId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "MATERIAL_ID")
-    private MaterialEntity material;
+    @JoinColumn(name = "request_by")
+    private EmployeeEntity requestBy;
 
-    @Column(name = "REQUEST_DATE")
+    @Column(name = "request_date")
     private String requestDate;
 
-    @Column(name = "QTY")
+    @Column(name = "qty")
     private int qty;
 
-    @Column(name = "APPROVED")
-    @ColumnDefault("0")
-    private int approved;   // Oracle은 boolean 대신 0/1 사용
+    @Column(name = "unit", length = 20)
+    private String unit;
 
-    @Column(name = "APPROVED_DATE")
+    @Column(name = "approved")
+    private int approved;  // 0:대기, 1:승인, 2:완료 등
+
+    @Column(name = "approved_date")
     private String approvedDate;
 
-    @Column(name = "NOTE")
+    @Column(name = "note", length = 20)
     private String note;
 
-    // getter & setter
-    public long getMrId() { return mrId; }
-    public MaterialEntity getMaterial() { return material; }
-    public String getRequestDate() { return requestDate; }
-    public int getQty() { return qty; }
-    public int getApproved() { return approved; }
-    public String getApprovedDate() { return approvedDate; }
-    public String getNote() { return note; }
+    public long getMrId() {
+        return mrId;
+    }
 
-    public void setMrId(long mrId) { this.mrId = mrId; }
-    public void setMaterial(MaterialEntity material) { this.material = material; }
-    public void setRequestDate(String requestDate) { this.requestDate = requestDate; }
-    public void setQty(int qty) { this.qty = qty; }
-    public void setApproved(int approved) { this.approved = approved; }
-    public void setApprovedDate(String approvedDate) { this.approvedDate = approvedDate; }
-    public void setNote(String note) { this.note = note; }
+    public EmployeeEntity getRequestBy() {
+        return requestBy;
+    }
+
+    public String getRequestDate() {
+        return requestDate;
+    }
+
+    public int getQty() {
+        return qty;
+    }
+
+    public String getUnit() {
+        return unit;
+    }
+
+    public int getApproved() {
+        return approved;
+    }
+
+    public String getApprovedDate() {
+        return approvedDate;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+
+    public void setMrId(long mrId) {
+        this.mrId = mrId;
+    }
+
+    public void setRequestBy(EmployeeEntity requestBy) {
+        this.requestBy = requestBy;
+    }
+
+    public void setRequestDate(String requestDate) {
+        this.requestDate = requestDate;
+    }
+
+    public void setQty(int qty) {
+        this.qty = qty;
+    }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
+    }
+
+    public void setApproved(int approved) {
+        this.approved = approved;
+    }
+
+    public void setApprovedDate(String approvedDate) {
+        this.approvedDate = approvedDate;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
 }

@@ -8,33 +8,40 @@ import jakarta.persistence.*;
 public class FixedMaterialEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "fixed_material_gen")
-    @SequenceGenerator(name = "fixed_material_gen", sequenceName = "FM_SEQ", allocationSize = 1)
-    @Column(name = "FM_ID")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "fm_seq")
+    @SequenceGenerator(name = "fm_seq", sequenceName = "FM_SEQ", allocationSize = 1)
+    @Column(name = "fm_id")
     private long fmId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "FP_ID", nullable = false)
+    @JoinColumn(name = "fp_id", nullable = false)
     private FixedProductEntity fixedProduct;
 
-    @Column(name = "MATERIAL_NAME")
-    private String materialName;
+    @Column(name = "name", length = 50)
+    private String name;
 
-    @Column(name = "QTY")
+    @Column(name = "qty")
     private int qty;
 
-    @Column(name = "UNIT")
+    @Column(name = "unit", length = 20)
     private String unit;
+
+    @Column(name = "life_time")
+    private int lifeTime;
 
     public long getFmId() { return fmId; }
     public FixedProductEntity getFixedProduct() { return fixedProduct; }
-    public String getMaterialName() { return materialName; }
+    public String getMaterialName() { return name; }
     public int getQty() { return qty; }
     public String getUnit() { return unit; }
+    public String getName() {return name;}
+    public int getLifeTime() {return lifeTime;}
 
-    public void setFmId(int fmId) { this.fmId = fmId; }
+    public void setFmId(long fmId) { this.fmId = fmId; }
     public void setFixedProduct(FixedProductEntity fixedProduct) { this.fixedProduct = fixedProduct; }
-    public void setMaterialName(String materialName) { this.materialName = materialName; }
+    public void setMaterialName(String name) { this.name = name; }
     public void setQty(int qty) { this.qty = qty; }
     public void setUnit(String unit) { this.unit = unit; }
+    public void setName(String name) {this.name = name;}
+    public void setLifeTime(int lifeTime) {this.lifeTime = lifeTime;}
 }

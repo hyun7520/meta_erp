@@ -78,7 +78,7 @@
                     </thead>
                     <tbody>
                     <tr th:each="order : ${foundOrders}">
-                        <td th:text="${order.orderId}">1</td>
+                        <td th:text="${order.pr_id}">1</td>
                         <td th:text="${order.productDto.productName}">부대찌개</td>
                         <td th:text="${order.requestBy}">거래처A</td>
                         <td th:text="${order.qty}">120</td>
@@ -101,8 +101,9 @@
 
     <!-- 3. 미승인 재료 발주 요청 (APPROVED = 0) -->
     <div class="card shadow-sm">
-        <div class="card-header bg-warning text-dark">
+        <div class="card-header bg-warning text-dark d-flex justify-content">
             <h5 class="mb-0">승인 대기 중인 재료 발주 요청 (건)</h5>
+            <a th:href="@{/material}" methods="get" class="btn btn-sm btn-outline-primary">전체 조회</a>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
