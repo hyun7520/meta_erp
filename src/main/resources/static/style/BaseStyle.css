@@ -19,12 +19,13 @@ body {
     overflow: hidden;
 }
 
-.navbar {
+.header {
     background: linear-gradient(135deg, #2A9D8F 20%, #F5A3A3 100%);
     padding: 24px 40px;
     color: white;
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 20px;
 }
 
@@ -43,24 +44,30 @@ body {
     cursor: pointer;
 }
 
-.navbar-text {
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.header-text {
     flex: 1;
 }
 
-.navbar h1 {
+.header-text h1 {
     font-size: 24px;
     font-weight: 700;
     margin-bottom: 4px;
     letter-spacing: -0.5px;
 }
 
-.navbar .subtitle {
+.header-text .subtitle {
     font-size: 14px;
     opacity: 0.9;
     font-weight: 400;
 }
 
-.navbar-taps {
+.header-nav {
     margin: 0 10px;
     font-size: 20px;
 }
