@@ -5,6 +5,9 @@ import com.meta.stock.materials.dto.MaterialRequestDto;
 import com.meta.stock.materials.dto.MaterialRequirementDto;
 import com.meta.stock.materials.mapper.MaterialMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -39,8 +42,19 @@ public class MaterialService {
     }
 
     // 진행상황에 따른 요청 조회
-    public List<MaterialRequestDto> findOngoingMaterialRequests() {
-        return materialMapper.findOngoingMaterialRequests();
+    public Page<MaterialRequestDto> findOngoingMaterialRequests(String keyword, Pageable pageable) {
+        int offset = pageable.getPageNumber() * pageable.getPageSize();
+        int limit = pageable.getPageSize();
+        String sortBy = pageable.getSort().iterator().next().getProperty();
+        String sortDir = pageable.getSort().iterator().next().getDirection().name();
+
+        List<MaterialRequestDto> content = materialMapper.findMaterialRequestsWithPaging(
+                keyword, sortBy, sortDir, offset, limit
+        );
+
+        long total = materialMapper.countMaterialRequests(keyword);
+
+        return new PageImpl<>(content, pageable, total);
     }
     
     // 세부 재료 요청 조회
@@ -69,4 +83,6 @@ public class MaterialService {
     public int getCurrentStock(String materialName) {
         return materialMapper.getCurrentStock(materialName);
     }
+
+
 }

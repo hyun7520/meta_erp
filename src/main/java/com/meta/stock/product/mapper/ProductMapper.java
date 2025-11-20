@@ -1,20 +1,26 @@
 package com.meta.stock.product.mapper;
 
+import com.meta.stock.materials.dto.MaterialRequirementDto;
 import com.meta.stock.product.dto.ProductDto;
 import com.meta.stock.product.dto.ProductStockDto;
 import org.apache.ibatis.annotations.Mapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 
 @Mapper
 public interface ProductMapper {
-    List<ProductStockDto> findTotalProductStock();
 
-    int getCurrentProductStock(long productId);
+    List<ProductStockDto> findProductStockWithPaging(String keyword, String sortBy, String sortDir, int offset, int limit);
 
-    List<ProductDto> getProductsByPRId(long productRequestId);
+    long countProductStock(String keyword);
 
-    List<ProductStockDto> findAllProductStockByProduct();
+    int getCurrentProductStock(String productId);
 
-    List<ProductStockDto> findTotalRequiredStock();
+    void deleteProductByLotId(Long lotId);
+
+    List<MaterialRequirementDto> getMaterialRequirements(String serialCode);
+
+    void decreaseProductStock(String serialCode, int qty);
 }

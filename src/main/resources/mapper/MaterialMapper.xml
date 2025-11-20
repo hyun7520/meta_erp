@@ -16,12 +16,46 @@
         <result property="note" column="NOTE"/>
     </resultMap>
 
-    <select id="findOngoingMaterialRequests" resultMap="MaterialRequestMap">
-        SELECT mr.*, m.MATERIAL_NAME
-        FROM MATERIAL_REQUEST mr
-        JOIN MATERIALS m ON mr.MR_ID = m.MR_ID
-        WHERE mr.APPROVED = 0
-        ORDER BY mr.REQUEST_DATE DESC
+    <select id="findMaterialRequestsWithPaging" resultMap="MaterialRequestMap">
+        SELECT
+        mr.mr_id,
+        m.material_name,
+        mr.qty,
+        mr.unit,
+        mr.request_date,
+        mr.approved,
+        mr.approved_date,
+        mr.note,
+        e.name as request_by_name
+        FROM Material_Request mr
+        LEFT JOIN Materials m ON mr.mr_id = m.mr_id
+        LEFT JOIN Employees e ON mr.request_by = e.employee_id
+        WHERE mr.approved = 0
+        <if test="keyword != null and keyword != ''">
+            AND m.material_name LIKE '%' || #{keyword} || '%'
+        </if>
+        ORDER BY
+        <choose>
+            <when test="sortBy == 'requestDate'">mr.request_date</when>
+            <when test="sortBy == 'materialName'">m.material_name</when>
+            <otherwise>mr.request_date</otherwise>
+        </choose>
+        <choose>
+            <when test="sortDir == 'DESC'">DESC</when>
+            <otherwise>ASC</otherwise>
+        </choose>
+        OFFSET #{offset} ROWS
+        FETCH NEXT #{limit} ROWS ONLY
+    </select>
+
+    <select id="countMaterialRequests" resultType="long">
+        SELECT COUNT(*)
+        FROM Material_Request mr
+        LEFT JOIN Materials m ON mr.mr_id = m.mr_id
+        WHERE mr.approved = 0
+        <if test="keyword != null and keyword != ''">
+            AND m.material_name LIKE '%' || #{keyword} || '%'
+        </if>
     </select>
 
     <select id="calculateRequiredMaterials" resultType="com.meta.stock.materials.dto.MaterialRequirementDto">

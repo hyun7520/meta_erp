@@ -4,6 +4,7 @@ import com.meta.stock.materials.dto.MaterialDto;
 import com.meta.stock.materials.dto.MaterialRequestDto;
 import com.meta.stock.materials.dto.MaterialRequirementDto;
 import org.apache.ibatis.annotations.Mapper;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 import java.util.Map;
@@ -11,9 +12,11 @@ import java.util.Map;
 @Mapper
 public interface MaterialMapper {
 
-    List<MaterialRequestDto> findAllMaterialRequests();
+    List<MaterialRequestDto> findMaterialRequestsWithPaging(String keyword, String sortBy, String sortDir, int offset, int limit);
 
-    public List<MaterialRequestDto> findOngoingMaterialRequests();
+    long countMaterialRequests(String keyword);
+
+    List<MaterialRequestDto> findAllMaterialRequests();
 
     int getCurrentStock(String materialName);
 

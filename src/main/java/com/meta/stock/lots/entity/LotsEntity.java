@@ -1,7 +1,5 @@
-package com.meta.stock.order.entity;
+package com.meta.stock.lots.entity;
 
-import com.meta.stock.materials.entity.MaterialEntity;
-import com.meta.stock.product.entity.ProductEntity;
 import jakarta.persistence.*;
 
 @Entity

@@ -19,6 +19,28 @@
     <div class="card mb-4 shadow-sm">
         <div class="card-header bg-primary text-white">
             <h5 class="mb-0">완제품 재고 현황</h5>
+            <form method="get" action="/product" class="row g-2 mt-2">
+                <div class="col-md-4">
+                    <input type="text" name="stockKeyword" class="form-control"
+                           placeholder="제품명 검색" th:value="${stockKeyword}">
+                </div>
+                <div class="col-md-3">
+                    <select name="stockSortBy" class="form-select">
+                        <option value="storageDate" th:selected="${stockSortBy == 'storageDate'}">입고일</option>
+                        <option value="productName" th:selected="${stockSortBy == 'productName'}">제품명</option>
+                        <option value="qty" th:selected="${stockSortBy == 'qty'}">재고수량</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select name="stockSortDir" class="form-select">
+                        <option value="ASC" th:selected="${stockSortDir == 'ASC'}">오름차순</option>
+                        <option value="DESC" th:selected="${stockSortDir == 'DESC'}">내림차순</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-light">검색</button>
+                </div>
+            </form>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
@@ -44,8 +66,11 @@
                         <td th:text="${stock.storageDate}">2025-11-01</td>
                         <td th:text="${stock.shelfLifeDays}">2025-11-25</td>
                         <td>
-                            <span class="badge badge-expiring">임박</span>
-                            <span class="badge bg-success">정상</span>
+                            <span th:if="${stock.expired}" class="badge bg-danger" th:text="${stock.daysLeft * -1} + '일 지남'">만료</span>
+                            <span th:unless="${stock.expired}" th:text="${stock.daysLeft} + '일'">7일</span>
+                        </td>
+                        <td>
+                            <span th:class="${stock.statusBadgeClass}" th:text="${stock.statusText}">정상</span>
                         </td>
                     </tr>
                     <tr th:if="${totalProductStock.isEmpty()}">
@@ -55,13 +80,51 @@
                 </table>
             </div>
         </div>
+        <div class="card-footer">
+            <nav>
+                <ul class="pagination justify-content-center">
+                    <li class="page-item" th:classappend="${totalProductStock.first} ? 'disabled'">
+                        <a class="page-link" th:href="@{/product(stockPage=${totalProductStock.number - 1}, stockKeyword=${stockKeyword})}">이전</a>
+                    </li>
+                    <li class="page-item" th:each="i : ${#numbers.sequence(0, totalProductStock.totalPages - 1)}"
+                        th:classappend="${i == totalProductStock.number} ? 'active'">
+                        <a class="page-link" th:href="@{/product(stockPage=${i}, stockKeyword=${stockKeyword})}" th:text="${i + 1}">1</a>
+                    </li>
+                    <li class="page-item" th:classappend="${totalProductStock.last} ? 'disabled'">
+                        <a class="page-link" th:href="@{/product(stockPage=${totalProductStock.number + 1}, stockKeyword=${stockKeyword})}">다음</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
     </div>
 
     <!-- 2. 진행 중인 주문 (COMPLETE = 0) -->
     <div class="card mb-4 shadow-sm">
-        <div class="card-header bg-info text-white">
-            <h5 class="mb-0">진행 중인 주문 (<span th:text="${productRequests.size()}">0</span>건)</h5>
-            <a href="/order" class="btn btn-warning btn-lg ms-3">전체 주문</a>
+        <div class="card-header bg-info text-white d-flex justify-content">
+            <h5 class="mb-0">진행 중인 주문 (<span th:text="${productRequests.numberOfElements}">0</span>건)</h5>
+            <form method="get" action="/product" class="row g-2 mt-2">
+                <div class="col-md-4">
+                    <input type="text" name="prKeyword" class="form-control"
+                           placeholder="제품명 검색" th:value="${stockKeyword}">
+                </div>
+                <div class="col-md-3">
+                    <select name="prSortBy" class="form-select">
+                        <option value="storageDate" th:selected="${stockSortBy == 'storageDate'}">입고일</option>
+                        <option value="productName" th:selected="${stockSortBy == 'productName'}">제품명</option>
+                        <option value="qty" th:selected="${prSortBy == 'qty'}">재고수량</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select name="prSortDir" class="form-select">
+                        <option value="ASC" th:selected="${prSortDir == 'ASC'}">오름차순</option>
+                        <option value="DESC" th:selected="${prSortDir == 'DESC'}">내림차순</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-light">검색</button>
+                </div>
+            </form>
+            <a th:href="@{/pr}" methods="get" class="btn btn-sm btn-outline-primary">전체 조회</a>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
@@ -84,8 +147,8 @@
                         <td th:text="${order.targetQty}">120</td>
                         <td th:text="${order.deadline}">2025-11-20</td>
                         <td>
-                            <span th:if="${order.completedQty < order.plannedQty}" class="badge badge-low ms-2">부족!</span>
-                            <span th:if="${order.completedQty >= order.plannedQty}" class="badge bg-success ms-2">충분</span>
+                            <span th:if="${order.stockInsufficient}" class="badge badge-low ms-2">부족!</span>
+                            <span th:unless="${order.stockInsufficient}" class="badge bg-success ms-2">충분</span>
                         </td>
                     </tr>
                     <tr th:if="${productRequests.isEmpty()}">
@@ -95,12 +158,50 @@
                 </table>
             </div>
         </div>
+        <div class="card-footer">
+            <nav>
+                <ul class="pagination justify-content-center">
+                    <li class="page-item" th:classappend="${productRequests.first} ? 'disabled'">
+                        <a class="page-link" th:href="@{/product(prPage=${productRequests.number - 1}, prKeyword=${prKeyword})}">이전</a>
+                    </li>
+                    <li class="page-item" th:each="i : ${#numbers.sequence(0, productRequests.totalPages - 1)}"
+                        th:classappend="${i == productRequests.number} ? 'active'">
+                        <a class="page-link" th:href="@{/product(prPage=${i}, prKeyword=${prKeyword})}" th:text="${i + 1}">1</a>
+                    </li>
+                    <li class="page-item" th:classappend="${productRequests.last} ? 'disabled'">
+                        <a class="page-link" th:href="@{/product(prPage=${productRequests.number + 1}, prKeyword=${prKeyword})}">다음</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
     </div>
 
     <!-- 3. 미승인 재료 발주 요청 (APPROVED = 0) -->
     <div class="card shadow-sm">
         <div class="card-header bg-warning text-dark d-flex justify-content">
             <h5 class="mb-0">승인 대기 중인 재료 발주 요청 (건)</h5>
+            <form method="get" action="/product" class="row g-2 mt-2">
+                <div class="col-md-4">
+                    <input type="text" name="mrKeyword" class="form-control"
+                           placeholder="제품명 검색" th:value="${mrKeyword}">
+                </div>
+                <div class="col-md-3">
+                    <select name="mrSortBy" class="form-select">
+                        <option value="requestDate" th:selected="${mrSortBy == 'requestDate'}">입고일</option>
+                        <option value="materialName" th:selected="${mrSortBy == 'materialName'}">제료명</option>
+                        <option value="qty" th:selected="${mrSortDir == 'qty'}">재고수량</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select name="mrSortDir" class="form-select">
+                        <option value="ASC" th:selected="${mrSortDir == 'ASC'}">오름차순</option>
+                        <option value="DESC" th:selected="${mrSortDir == 'DESC'}">내림차순</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-light">검색</button>
+                </div>
+            </form>
             <a th:href="@{/material}" methods="get" class="btn btn-sm btn-outline-primary">전체 조회</a>
         </div>
         <div class="card-body p-0">
@@ -134,6 +235,22 @@
                     </tbody>
                 </table>
             </div>
+        </div>
+        <div class="card-footer">
+            <nav>
+                <ul class="pagination justify-content-center">
+                    <li class="page-item" th:classappend="${materialRequests.first} ? 'disabled'">
+                        <a class="page-link" th:href="@{/product(mrPage=${materialRequests.number - 1}, mrKeyword=${mrKeyword})}">이전</a>
+                    </li>
+                    <li class="page-item" th:each="i : ${#numbers.sequence(0, materialRequests.totalPages - 1)}"
+                        th:classappend="${i == materialRequests.number} ? 'active'">
+                        <a class="page-link" th:href="@{/product(mrPage=${i}, mrKeyword=${mrKeyword})}" th:text="${i + 1}">1</a>
+                    </li>
+                    <li class="page-item" th:classappend="${materialRequests.last} ? 'disabled'">
+                        <a class="page-link" th:href="@{/product(mrPage=${materialRequests.number + 1}, mrKeyword=${mrKeyword})}">다음</a>
+                    </li>
+                </ul>
+            </nav>
         </div>
     </div>
 

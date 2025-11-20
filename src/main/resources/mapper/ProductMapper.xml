@@ -13,6 +13,7 @@
         <result property="unit" column="UNIT"/>
         <result property="storageDate" column="STORAGE_DATE"/>
         <result property="shelfLifeDays" column="SHELF_LIFE_DAYS"/>
+        <result property="daysLeft" column="days_left"/>
         <result property="note" column="NOTE"/>
     </resultMap>
 
@@ -27,36 +28,85 @@
     </select>
 
     <!-- 특정 제품 재고 조회 (productId로) -->
-    <select id="findProductStockById" parameterType="long" resultMap="ProductStockMap">
+    <select id="findProductStockWithPaging" resultMap="ProductStockMap">
         SELECT
-        p.PRODUCT_ID,
-        p.PRODUCT_NAME,
-        l.LOT_ID,
-        l.QTY,
-        l.UNIT,
-        l.STORAGE_DATE,
-        l.SHELF_LIFE_DAYS,
-        l.NOTE
-        FROM PRODUCT p
-        JOIN LOTS l ON p.LOTS_ID = l.LOT_ID
-        WHERE p.PRODUCT_ID = #{productId}
-        AND l.QTY > 0
+        p.product_id,
+        p.product_name,
+        l.lot_id,
+        l.qty,
+        l.unit,
+        TO_CHAR(l.storage_date, 'YYYY-MM-DD') as storage_date,
+        TO_CHAR(l.shelf_life_days, 'YYYY-MM-DD') as shelf_life_days,
+        TRUNC(l.shelf_life_days - SYSDATE) as days_left,
+        l.note
+        FROM Products p
+        INNER JOIN Lots l ON p.lots_id = l.lot_id
+        WHERE 1=1
+        <if test="keyword != null and keyword != ''">
+            AND p.product_name LIKE '%' || #{keyword} || '%'
+        </if>
+        ORDER BY
+        <choose>
+            <when test="sortBy == 'productName'">p.product_name</when>
+            <when test="sortBy == 'storageDate'">l.storage_date</when>
+            <when test="sortBy == 'qty'">l.qty</when>
+            <otherwise>l.storage_date</otherwise>
+        </choose>
+        <choose>
+            <when test="sortDir == 'DESC'">DESC</when>
+            <otherwise>ASC</otherwise>
+        </choose>
+        OFFSET #{offset} ROWS
+        FETCH NEXT #{limit} ROWS ONLY
     </select>
 
     <!-- product 별 전체 재고를 확인 -->
-    <select id="getCurrentProductStock" parameterType="long" resultType="int">
-        SELECT SUM(l.QTY), p.PRODUCT_NAME
-        FROM PRODUCT p
-        JOIN LOTS l
-        ON l.LOT_ID = p.LOTS_ID
-        GROUP BY p.PRODUCT_NAME
+    <select id="countProductStock" resultType="long">
+        SELECT COUNT(*)
+        FROM Products p
+        INNER JOIN Lots l ON p.lots_id = l.lot_id
+        WHERE 1=1
+        <if test="keyword != null and keyword != ''">
+            AND p.product_name LIKE '%' || #{keyword} || '%'
+        </if>
     </select>
 
-    <select id="findAllProductStockByProduct" parameterType="long" resultMap="ProductStockMap">
-
+    <!-- 현재 완제품 재고 조회 -->
+    <select id="getCurrentProductStock" resultType="int">
+        SELECT NVL(SUM(l.qty), 0)
+        FROM Products p
+        INNER JOIN Lots l ON p.lots_id = l.lot_id
+        INNER JOIN Fixed_Product fp ON p.product_name = fp.name
+        WHERE fp.serial_code = #{serialCode}
     </select>
 
-    <select id="findTotalRequiredStock" parameterType="long" resultMap="ProductStockMap">
-
+    <!-- BOM 정보 조회 (필요 원자재) -->
+    <select id="getMaterialRequirements" resultType="com.meta.stock.materials.dto.MaterialRequirementDto">
+        SELECT
+        fm.name as material_name,
+        fm.qty as required_qty,
+        fm.unit,
+        0 as current_stock
+        FROM Fixed_Material fm
+        WHERE fm.fp_id = (
+        SELECT fp_id
+        FROM Fixed_Product
+        WHERE serial_code = #{serialCode}
+        )
     </select>
+
+    <!-- 제품 재고 차감 -->
+    <update id="decreaseProductStock">
+        UPDATE Lots l
+        SET l.qty = l.qty - #{qty}
+        WHERE l.lot_id IN (
+        SELECT p.lots_id
+        FROM Products p
+        INNER JOIN Fixed_Product fp ON p.product_name = fp.name
+        WHERE fp.serial_code = #{serialCode}
+        AND l.qty > 0
+        ORDER BY l.storage_date ASC
+        )
+        AND ROWNUM = 1
+    </update>
 </mapper>
