@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>완제품 발주 요청</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+            background: linear-gradient(135deg, #B5D8E8 0%, #F5E6D3 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2A9D8F 20%, #F5A3A3 100%);
+            padding: 24px 40px;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .logo {
+            width: 120px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo img {
+            width: 100%;
+            height: auto;
+            object-fit: contain;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-text h1 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            letter-spacing: -0.5px;
+        }
+
+        .header-text .subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+            font-weight: 400;
+        }
+
+        .header-nav {
+            display: flex;
+            gap: 8px;
+        }
+
+        .nav-btn {
+            padding: 20px 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 20px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .nav-btn.active {
+            background: white;
+            color: #2A9D8F;
+            border-color: white;
+        }
+
+        .status-banner {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 12px 20px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            min-width: 220px;
+        }
+
+        .current-time {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .user-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            color: #506D84;
+        }
+
+        .user-info-text {
+            flex: 1;
+        }
+
+        .user-name {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .user-role {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .content-wrapper {
+            padding: 32px 40px;
+        }
+
+        .action-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+            padding: 20px;
+            background: #F8F9FA;
+            border-radius: 12px;
+        }
+
+        .action-bar h2 {
+            font-size: 18px;
+            color: #374151;
+            font-weight: 600;
+        }
+
+        .btn-new-order {
+            padding: 12px 24px;
+            background: #2A9D8F;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-new-order:hover {
+            background: #238276;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(42, 157, 143, 0.3);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 28px;
+            background: #F8F9FA;
+            padding: 6px;
+            border-radius: 12px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 14px 20px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            color: #6B7280;
+            border-radius: 8px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .tab:hover {
+            background: white;
+            color: #506D84;
+        }
+
+        .tab.active {
+            background: white;
+            color: #506D84;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .tab-count {
+            display: inline-block;
+            background: #2A9D8F;
+            color: white;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 13px;
+            margin-left: 8px;
+            font-weight: 600;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 8px;
+        }
+
+        thead {
+            background: #F8F9FA;
+        }
+
+        th {
+            padding: 16px 20px;
+            text-align: left;
+            font-weight: 600;
+            color: #374151;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid #E5E7EB;
+        }
+
+        th:first-child {
+            border-radius: 8px 0 0 0;
+        }
+
+        th:last-child {
+            border-radius: 0 8px 0 0;
+        }
+
+        td {
+            padding: 18px 20px;
+            font-size: 14px;
+            color: #4B5563;
+            border-bottom: 1px solid #F3F4F6;
+            vertical-align: middle;
+        }
+
+        tbody tr {
+            transition: all 0.2s ease;
+        }
+
+        tbody tr:hover {
+            background: #FEFCE8;
+            transform: translateX(2px);
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            gap: 6px;
+        }
+
+        .status-badge::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .status-pending {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+
+        .status-pending::before {
+            background: #F59E0B;
+            animation: pulse 2s infinite;
+        }
+
+        .status-approved {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+
+        .status-approved::before {
+            background: #10B981;
+        }
+
+        .status-rejected {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+
+        .status-rejected::before {
+            background: #EF4444;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .loading {
+            text-align: center;
+            padding: 80px 20px;
+            color: #6B7280;
+        }
+
+        .loading::after {
+            content: '';
+            display: block;
+            width: 40px;
+            height: 40px;
+            margin: 20px auto;
+            border: 4px solid #E5E7EB;
+            border-top-color: #506D84;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .empty {
+            text-align: center;
+            padding: 80px 20px;
+            color: #9CA3AF;
+            font-size: 15px;
+        }
+
+        .empty::before {
+            content: '📦';
+            display: block;
+            font-size: 64px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            animation: fadeIn 0.2s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 16px;
+            width: 600px;
+            max-width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: slideUp 0.3s ease;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #506D84 0%, #3C5770 100%);
+            padding: 24px 28px;
+            color: white;
+            border-radius: 16px 16px 0 0;
+        }
+
+        .modal-header h3 {
+            font-size: 20px;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .modal-body {
+            padding: 28px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #374151;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .form-group label .required {
+            color: #EF4444;
+            margin-left: 4px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #E5E7EB;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.2s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #506D84;
+            box-shadow: 0 0 0 3px rgba(80, 109, 132, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .modal-footer {
+            padding: 0 28px 28px;
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .btn-modal {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .btn-cancel {
+            background: #F3F4F6;
+            color: #6B7280;
+        }
+
+        .btn-cancel:hover {
+            background: #E5E7EB;
+        }
+
+        .btn-submit {
+            background: #2A9D8F;
+            color: white;
+            min-width: 100px;
+        }
+
+        .btn-submit:hover {
+            background: #238276;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(42, 157, 143, 0.3);
+        }
+                /* 작업 버튼 스타일 */
+        .btn-sm {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            margin-right: 4px;
+        }
+
+        .btn-edit {
+            background: #3B82F6;
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background: #2563EB;
+            transform: scale(1.05);
+        }
+        .btn-delete {
+            background: #EF4444;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #DC2626;
+            transform: scale(1.05);
+        }
+
+        .qty-unit {
+            font-weight: 600;
+            color: #506D84;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid #E5E7EB;
+        }
+
+        .pagination-btn {
+            padding: 8px 12px;
+            border: 1px solid #E5E7EB;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: #6B7280;
+            transition: all 0.2s ease;
+            min-width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .pagination-btn:hover:not(:disabled) {
+            background: #F3F4F6;
+            border-color: #506D84;
+            color: #506D84;
+        }
+
+        .pagination-btn.active {
+            background: #506D84;
+            color: white;
+            border-color: #506D84;
+            font-weight: 600;
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .pagination-info {
+            padding: 0 16px;
+            font-size: 14px;
+            color: #6B7280;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <div class="header-left">
+            <div class="logo">
+                <img src="/logo.png" alt="회사로고" onerror="this.style.display='none'">
+            </div>
+            <div class="header-text">
+                <h1>완제품 발주 요청</h1>
+                <p class="subtitle">고객사 주문 : 완제품 발주 관리</p>
+            </div>
+        </div>
+
+        <div class="header-nav">
+            <a href="/order.html" class="nav-btn active">
+                📋 완제품 발주 요청
+            </a>
+            <a href="/material_request.html" class="nav-btn">
+                📦 원재료 발주 허가
+            </a>
+        </div>
+
+        <div class="status-banner">
+            <div class="current-time" id="currentTime">
+                🕐 2025-11-18 10:30:45
+            </div>
+            <div class="user-status">
+                <div class="user-avatar" id="userAvatar">홍</div>
+                <div class="user-info-text">
+                    <div class="user-name" id="userName">홍길동</div>
+                    <div class="user-role" id="userRole">경영팀 · 매니저</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="content-wrapper">
+        <div class="action-bar">
+            <h2>📋 발주 요청 목록</h2>
+            <button class="btn-new-order" onclick="openRequestModal()">
+                ➕ 새 발주 요청
+            </button>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('pending')">
+                대기중 <span class="tab-count" id="pendingCount">0</span>
+            </button>
+            <button class="tab" onclick="showTab('in-progress')">
+                생산시작 <span class="tab-count" id="inProgressCount">0</span>
+            </button>
+            <button class="tab" onclick="showTab('completed')">
+                생산완료 <span class="tab-count" id="completedCount">0</span>
+            </button>
+            <button class="tab" onclick="showTab('all')">
+                전체 <span class="tab-count" id="allCount">0</span>
+            </button>
+        </div>
+
+        <div id="loading" class="loading">
+            데이터를 불러오는 중입니다
+        </div>
+
+        <div id="content" style="display: none;">
+            <table>
+                <thead>
+                <tr>
+                    <th>번호</th>
+                    <th>완제품명</th>
+                    <th>고객사</th>
+                    <th>수량</th>
+                    <th>요청일</th>
+                    <th>납기일</th>
+                    <th>상태</th>
+                    <th>작업</th>
+                </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+            <div class="pagination" id="pagination"></div>
+        </div>
+
+        <div id="empty" class="empty" style="display: none;">
+            발주 요청이 없습니다
+        </div>
+    </div>
+</div>
+
+<div id="requestModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>➕ 새 발주 요청</h3>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="productSelect">완제품 <span class="required">*</span></label>
+                <select id="productSelect" required>
+                    <option value="">선택하세요</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="clientName">고객사 <span class="required">*</span></label>
+                <input type="text" id="clientName" placeholder="고객사명을 입력하세요" required>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="quantity">수량 <span class="required">*</span></label>
+                    <input type="number" id="quantity" placeholder="0" min="1" required>
+                </div>
+                <div class="form-group">
+                    <label for="unit">단위 <span class="required">*</span></label>
+                    <input type="text" id="unit" placeholder="예: BOX, EA, KG" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="dueDate">납기일 <span class="required">*</span></label>
+                <input type="date" id="dueDate" required>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-modal btn-cancel" onclick="closeRequestModal()">취소</button>
+            <button class="btn-modal btn-submit" onclick="submitProductionRequest()">요청</button>
+        </div>
+    </div>
+</div>
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>📝 발주 요청 수정</h3>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="editPrId">
+
+            <div class="form-group">
+                <label for="editProductSelect">완제품 <span class="required">*</span></label>
+                <select id="editProductSelect" required>
+                    <option value="">선택하세요</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="editClientName">고객사 <span class="required">*</span></label>
+                <input type="text" id="editClientName" placeholder="고객사명을 입력하세요" required>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="editQuantity">수량 <span class="required">*</span></label>
+                    <input type="number" id="editQuantity" placeholder="0" min="1" required>
+                </div>
+                <div class="form-group">
+                    <label for="editUnit">단위 <span class="required">*</span></label>
+                    <input type="text" id="editUnit" placeholder="예: BOX, EA, KG" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="editDueDate">납기일 <span class="required">*</span></label>
+                <input type="date" id="editDueDate" required>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-modal btn-cancel" onclick="closeEditModal()">취소</button>
+            <button class="btn-modal btn-submit" onclick="submitEditRequest()">수정</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentTab = 'pending';
+    let currentPage = 1;
+    let itemsPerPage = 10;
+    let allData = [];
+    let products = [];
+
+    window.onload = function() {
+        updateTime();
+        setInterval(updateTime, 1000);
+        loadUserInfo();
+        loadProducts();
+        loadData('pending');
+    };
+
+    function updateTime() {
+        const now = new Date();
+        const formatted = now.getFullYear() + '-' +
+            String(now.getMonth() + 1).padStart(2, '0') + '-' +
+            String(now.getDate()).padStart(2, '0') + ' ' +
+            String(now.getHours()).padStart(2, '0') + ':' +
+            String(now.getMinutes()).padStart(2, '0') + ':' +
+            String(now.getSeconds()).padStart(2, '0');
+        document.getElementById('currentTime').innerHTML = '🕐 ' + formatted;
+    }
+
+    function loadUserInfo() {
+        const userInfo = JSON.parse(sessionStorage.getItem('userInfo') || '{}');
+        if (userInfo.name) {
+            document.getElementById('userName').textContent = userInfo.name;
+            document.getElementById('userAvatar').textContent = userInfo.name.charAt(0);
+            const department = userInfo.department || '경영팀';
+            const role = userInfo.role || '매니저';
+            document.getElementById('userRole').textContent = `${department} · ${role}`;
+        }
+    }
+
+    function loadProducts() {
+        fetch('/api/products')
+            .then(response => response.json())
+            .then(data => {
+                products = data;
+                updateProductSelect();
+            })
+            .catch(error => console.error('제품 목록 로딩 실패:', error));
+    }
+
+    function updateProductSelect() {
+        const select = document.getElementById('productSelect');
+        if (!select) return;
+        select.innerHTML = '<option value="">선택하세요</option>';
+        products.forEach(product => {
+            const option = document.createElement('option');
+            option.value = product.productId;
+            option.textContent = product.productName;
+            select.appendChild(option);
+        });
+    }
+
+    function showTab(tab) {
+        currentTab = tab;
+        currentPage = 1;
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        event.target.classList.add('active');
+        loadData(tab);
+    }
+
+    function loadData(type) {
+        document.getElementById('loading').style.display = 'block';
+        document.getElementById('content').style.display = 'none';
+        document.getElementById('empty').style.display = 'none';
+
+        fetch('/api/production-requests')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('loading').style.display = 'none';
+
+                let filteredData = [];
+                if (type === 'pending') {
+                    filteredData = data.filter(item => item.complete === 0);
+                } else if (type === 'in-progress') {
+                    filteredData = data.filter(item => item.complete === 1);
+                } else if (type === 'completed') {
+                    filteredData = data.filter(item => item.complete === 2);
+                } else {
+                    filteredData = data;
+                }
+
+                filteredData.sort((a, b) => b.orderId - a.orderId);
+                allData = filteredData;
+
+                if (filteredData.length === 0) {
+                    document.getElementById('empty').style.display = 'block';
+                } else {
+                    document.getElementById('content').style.display = 'block';
+                    renderPage();
+                }
+
+                updateTabCounts(data);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('loading').style.display = 'none';
+                alert('데이터를 불러오는데 실패했습니다.');
+            });
+    }
+
+    function renderPage() {
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        const pageData = allData.slice(startIndex, endIndex);
+
+        renderTable(pageData);
+        renderPagination();
+    }
+
+    function renderTable(data) {
+    const tbody = document.getElementById('tableBody');
+    tbody.innerHTML = '';
+
+    data.forEach(item => {
+        const row = document.createElement('tr');
+
+        let statusBadge = '';
+        if (item.complete === 0) {
+            statusBadge = '<span class="status-badge status-rejected">대기중</span>';
+        } else if (item.complete === 1) {
+            statusBadge = '<span class="status-badge status-pending">생산시작</span>';
+        } else if (item.complete === 2) {
+            statusBadge = '<span class="status-badge status-approved">생산완료</span>';
+        }
+
+        // 작업 버튼: 대기중일 때만 수정/삭제 가능
+        let actionButtons = '';
+        if (item.complete === 0) {
+            actionButtons = `
+                <button class="btn btn-sm btn-edit" onclick="openEditModal(${item.orderId})" title="수정">
+                    ✏️
+                </button>
+                <button class="btn btn-sm btn-delete" onclick="deleteOrder(${item.orderId})" title="삭제">
+                    🗑️
+                </button>
+            `;
+        } else {
+            actionButtons = '<span style="color: #9CA3AF;">-</span>';
+        }
+
+        row.innerHTML = `
+            <td><strong>${item.orderId}</strong></td>
+            <td>${item.productName || '-'}</td>
+            <td>${item.requestBy || '-'}</td>
+            <td><span class="qty-unit">${item.qty} ${item.unit || '개'}</span></td>
+            <td>${item.requestDate || '-'}</td>
+            <td>${item.deadline || '-'}</td>
+            <td>${statusBadge}</td>
+            <td>${actionButtons}</td>
+        `;
+
+        tbody.appendChild(row);
+    });
+}
+
+// 수정 모달 열기
+function openEditModal(prId) {
+    // 서버에서 주문 정보 가져오기
+    fetch(`/api/production-requests/${prId}`)
+        .then(response => response.json())
+        .then(data => {
+            // 제품 목록 채우기
+            const editProductSelect = document.getElementById('editProductSelect');
+            editProductSelect.innerHTML = '<option value="">선택하세요</option>';
+            products.forEach(product => {
+                const option = document.createElement('option');
+                option.value = product.productId;
+                option.textContent = product.productName;
+                // 현재 제품 선택
+                if (product.productName === data.productName) {
+                    option.selected = true;
+                }
+                editProductSelect.appendChild(option);
+            });
+
+            // 폼 필드 채우기
+            document.getElementById('editPrId').value = data.orderId;
+            document.getElementById('editClientName').value = data.requestBy || '';
+            document.getElementById('editQuantity').value = data.qty || '';
+            document.getElementById('editUnit').value = data.unit || '';
+            document.getElementById('editDueDate').value = data.deadline || '';
+
+            // 모달 표시
+            document.getElementById('editModal').style.display = 'block';
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('주문 정보를 불러오는데 실패했습니다.');
+        });
+}
+
+// 수정 모달 닫기
+function closeEditModal() {
+    document.getElementById('editModal').style.display = 'none';
+}
+
+// 수정 요청 제출
+function submitEditRequest() {
+    const prId = document.getElementById('editPrId').value;
+    const productId = document.getElementById('editProductSelect').value;
+    const clientName = document.getElementById('editClientName').value;
+    const quantity = document.getElementById('editQuantity').value;
+    const unit = document.getElementById('editUnit').value;
+    const dueDate = document.getElementById('editDueDate').value;
+
+    // 필수 항목 검증
+    if (!productId || !clientName || !quantity || !unit || !dueDate) {
+        alert('필수 항목을 모두 입력해주세요.');
+        return;
+    }
+
+    // 숫자 검증
+    if (isNaN(quantity) || parseInt(quantity) <= 0) {
+        alert('수량은 1 이상의 숫자여야 합니다.');
+        return;
+    }
+
+    // 날짜 형식 검증 및 과거 날짜 체크
+    const dueDateObj = new Date(dueDate);
+    if (isNaN(dueDateObj.getTime())) {
+        alert('올바른 날짜 형식을 입력해주세요.');
+        return;
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // 시간 제거하고 날짜만 비교
+    if (dueDateObj < today) {
+        alert('납기일은 오늘 이후여야 합니다.');
+        return;
+    }
+
+    const orderData = {
+        productId: parseInt(productId),
+        requestBy: clientName.trim(),
+        qty: parseInt(quantity),
+        unit: unit.trim(),
+        deadline: dueDate  // yyyy-MM-dd 형식 보장
+    };
+
+    console.log('수정 요청 데이터:', orderData); // 디버깅용
+
+    fetch(`/api/production-requests/${prId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderData)
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.text().then(text => {
+                console.error('서버 응답:', text);
+                throw new Error(text || '수정 실패');
+            });
+        }
+        return response.json();
+    })
+    .then(result => {
+        console.log('수정 성공:', result);
+        closeEditModal();
+        alert('발주 요청이 수정되었습니다.');
+        loadData(currentTab);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        if (error.message && error.message.includes('이미 생산이 시작')) {
+            alert('이미 생산이 시작된 주문은 수정할 수 없습니다.');
+        } else if (error.message && error.message.includes('ORA-01861')) {
+            alert('날짜 형식이 올바르지 않습니다. (YYYY-MM-DD 형식이어야 합니다)');
+        } else {
+            alert('발주 요청 수정에 실패했습니다.\n' + error.message);
+        }
+    });
+}
+
+// 삭제 함수
+function deleteOrder(prId) {
+    if (!confirm('정말로 이 주문을 삭제하시겠습니까?')) {
+        return;
+    }
+
+    fetch(`/api/production-requests/${prId}`, {
+        method: 'DELETE'
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('삭제 실패');
+        }
+        alert('주문이 삭제되었습니다.');
+        loadData(currentTab);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('주문 삭제에 실패했습니다.');
+    });
+}
+
+    function renderPagination() {
+        const totalPages = Math.ceil(allData.length / itemsPerPage);
+        const pagination = document.getElementById('pagination');
+        pagination.innerHTML = '';
+
+        if (totalPages <= 1) return;
+
+        const prevBtn = document.createElement('button');
+        prevBtn.className = 'pagination-btn';
+        prevBtn.innerHTML = '‹';
+        prevBtn.disabled = currentPage === 1;
+        prevBtn.onclick = () => goToPage(currentPage - 1);
+        pagination.appendChild(prevBtn);
+
+        const startPage = Math.max(1, currentPage - 2);
+        const endPage = Math.min(totalPages, currentPage + 2);
+
+        if (startPage > 1) {
+            const firstBtn = document.createElement('button');
+            firstBtn.className = 'pagination-btn';
+            firstBtn.textContent = '1';
+            firstBtn.onclick = () => goToPage(1);
+            pagination.appendChild(firstBtn);
+
+            if (startPage > 2) {
+                const dots = document.createElement('span');
+                dots.className = 'pagination-info';
+                dots.textContent = '...';
+                pagination.appendChild(dots);
+            }
+        }
+
+        for (let i = startPage; i <= endPage; i++) {
+            const pageBtn = document.createElement('button');
+            pageBtn.className = 'pagination-btn' + (i === currentPage ? ' active' : '');
+            pageBtn.textContent = i;
+            pageBtn.onclick = () => goToPage(i);
+            pagination.appendChild(pageBtn);
+        }
+
+        if (endPage < totalPages) {
+            if (endPage < totalPages - 1) {
+                const dots = document.createElement('span');
+                dots.className = 'pagination-info';
+                dots.textContent = '...';
+                pagination.appendChild(dots);
+            }
+
+            const lastBtn = document.createElement('button');
+            lastBtn.className = 'pagination-btn';
+            lastBtn.textContent = totalPages;
+            lastBtn.onclick = () => goToPage(totalPages);
+            pagination.appendChild(lastBtn);
+        }
+
+        const nextBtn = document.createElement('button');
+        nextBtn.className = 'pagination-btn';
+        nextBtn.innerHTML = '›';
+        nextBtn.disabled = currentPage === totalPages;
+        nextBtn.onclick = () => goToPage(currentPage + 1);
+        pagination.appendChild(nextBtn);
+
+        const info = document.createElement('span');
+        info.className = 'pagination-info';
+        info.textContent = `${allData.length}개 중 ${((currentPage - 1) * itemsPerPage) + 1}-${Math.min(currentPage * itemsPerPage, allData.length)}`;
+        pagination.appendChild(info);
+    }
+
+    function goToPage(page) {
+        currentPage = page;
+        renderPage();
+        document.getElementById('content').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function updateTabCounts(allOrders) {
+        const pendingCount = allOrders.filter(item => item.complete === 0).length;
+        const inProgressCount = allOrders.filter(item => item.complete === 1).length;
+        const completedCount = allOrders.filter(item => item.complete === 2).length;
+
+        document.getElementById('pendingCount').textContent = pendingCount;
+        document.getElementById('inProgressCount').textContent = inProgressCount;
+        document.getElementById('completedCount').textContent = completedCount;
+        document.getElementById('allCount').textContent = allOrders.length;
+    }
+
+    function openRequestModal() {
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('dueDate').value = today;
+        document.getElementById('requestModal').style.display = 'block';
+    }
+
+    function closeRequestModal() {
+        document.getElementById('requestModal').style.display = 'none';
+    }
+
+    function submitProductionRequest() {
+        const productId = document.getElementById('productSelect').value;
+        const clientName = document.getElementById('clientName').value;
+        const quantity = document.getElementById('quantity').value;
+    const unit = document.getElementById('unit').value;
+        const dueDate = document.getElementById('dueDate').value;
+
+        if (!productId || !clientName || !quantity || !unit || !dueDate) {
+            alert('필수 항목을 모두 입력해주세요.');
+            return;
+        }
+
+        const orderData = {
+            productId: parseInt(productId),
+            requestBy: clientName,
+            qty: parseInt(quantity),
+            unit: unit,
+            deadline: dueDate
+        };
+
+        fetch('/api/production-requests', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(orderData)
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(err => Promise.reject(err));
+            }
+            return response.json();
+        })
+        .then(result => {
+            closeRequestModal();
+            alert('생산 요청이 성공적으로 접수되었습니다.');
+            loadData(currentTab);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('생산 요청 중 오류가 발생했습니다: ' + (error.message || '알 수 없는 오류'));
+        });
+    }
+
+    window.onclick = function(event) {
+    const requestModal = document.getElementById('requestModal');
+    const editModal = document.getElementById('editModal');
+
+    if (event.target === requestModal) {
+        closeRequestModal();
+    }
+    if (event.target === editModal) {
+        closeEditModal();
+    }
+}
+</script>
+</body>
+</html>
