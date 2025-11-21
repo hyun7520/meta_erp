@@ -2,11 +2,83 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
 <mapper namespace="com.meta.stock.materials.mapper.MaterialMapper">
+    <resultMap id="MaterialRequestMap" type="com.meta.stock.materials.dto.MaterialRequestDto">
+        <result property="mrId" column="MR_ID"/>
+        <result property="materialId" column="MATERIAL_ID"/>
+        <result property="materialName" column="MATERIAL_NAME"/>
+        <result property="requestBy" column="REQUEST_BY"/>
+        <result property="qty" column="QTY"/>
+        <result property="requestDate" column="REQUEST_DATE"/>
+        <result property="approved" column="APPROVED"/>
+        <result property="approvedDate" column="APPROVED_DATE"/>
+        <result property="note" column="NOTE"/>
+    </resultMap>
+
     <resultMap id="parseMaterialCounts" type="com.meta.stock.materials.dto.MaterialCountsBean">
         <result column="material_name" property="materialName" />
         <result column="total" property="qty" />
     </resultMap>
+
+    <select id="findMaterialRequestsWithPaging" resultMap="MaterialRequestMap">
+        SELECT
+        mr.mr_id,
+        m.material_name,
+        mr.qty,
+        mr.unit,
+        mr.request_date,
+        mr.approved,
+        mr.approved_date,
+        mr.note,
+        e.name as request_by_name
+        FROM Material_Request mr
+        LEFT JOIN Materials m ON mr.mr_id = m.mr_id
+        LEFT JOIN Employees e ON mr.request_by = e.employee_id
+        WHERE mr.approved = 1
+        <if test="keyword != null and keyword != ''">
+            AND m.material_name LIKE '%' || #{keyword} || '%'
+        </if>
+        ORDER BY
+        <choose>
+            <when test="sortBy == 'requestDate'">mr.request_date</when>
+            <when test="sortBy == 'materialName'">m.material_name</when>
+            <otherwise>mr.request_date</otherwise>
+        </choose>
+        <choose>
+            <when test="sortDir == 'DESC'">DESC</when>
+            <otherwise>ASC</otherwise>
+        </choose>
+        OFFSET #{offset} ROWS
+        FETCH NEXT #{limit} ROWS ONLY
+    </select>
+
+    <select id="countMaterialRequests" resultType="long">
+        SELECT COUNT(*)
+        FROM Material_Request mr
+        LEFT JOIN Materials m ON mr.mr_id = m.mr_id
+        WHERE mr.approved = 0
+        <if test="keyword != null and keyword != ''">
+            AND m.material_name LIKE '%' || #{keyword} || '%'
+        </if>
+    </select>
+
+    <select id="calculateRequiredMaterials" resultType="com.meta.stock.materials.dto.MaterialRequirementDto">
+        SELECT
+        fm.MATERIAL_NAME,
+        fm.QTY * #{qty} AS REQUIRED_QTY,
+        fm.UNIT
+        FROM FIXED_MATERIAL fm
+        WHERE fm.FP_ID = #{productId}
+    </select>
+
+    <!-- 현재 재고 조회 (같은 이름 재료 합계) -->
+    <select id="getCurrentStock" parameterType="string" resultType="int">
+        SELECT COALESCE(SUM(l.QTY), 0)
+        FROM MATERIAL m
+        JOIN LOTS l ON m.LOTS_ID = l.LOT_ID
+        WHERE m.MATERIAL_NAME = #{materialName}
+    </select>
 
     <select id="getDateMaterialTotals" resultMap="parseMaterialCounts">
         select material_name, sum(qty) as total
@@ -16,9 +88,9 @@
             <choose>
                 <when test="serialCode != null and serialCode != ''">
                     exists (
-                        select 1 from fixed_material fm
-                        join fixed_product fp on fm.fp_id = fp.fp_id
-                        where fm.name = m.material_name and fp.serial_code = #{serialCode}
+                    select 1 from fixed_material fm
+                    join fixed_product fp on fm.fp_id = fp.fp_id
+                    where fm.name = m.material_name and fp.serial_code = #{serialCode}
                     )
                 </when>
             </choose>

@@ -1,8 +1,13 @@
 package com.meta.stock.product.mapper;
 
+import com.meta.stock.materials.dto.MaterialRequirementDto;
+import com.meta.stock.product.dto.ProductDto;
+import com.meta.stock.product.dto.ProductStockDto;
 import com.meta.stock.product.dto.ProductDemandBean;
 import com.meta.stock.product.dto.ProductsAmountListBean;
 import org.apache.ibatis.annotations.Mapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 import java.util.Map;
@@ -13,4 +18,16 @@ public interface ProductMapper {
     List<ProductDemandBean> getDashProductDemand();
 
     int getTotalListSize(Map<String, Object> param);
+
+    List<ProductStockDto> findProductStockWithPaging(String keyword, String sortBy, String sortDir, int offset, int limit);
+
+    long countProductStock(String keyword);
+
+    int getCurrentProductStock(String productId);
+
+    void deleteProductByLotId(Long lotId);
+
+    List<MaterialRequirementDto> getMaterialRequirements(String serialCode);
+
+    void decreaseProductStock(String serialCode, int qty);
 }

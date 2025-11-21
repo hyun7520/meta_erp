@@ -1,8 +1,22 @@
 <?xml version="1.0" encoding="UTF-8" ?>
+<!-- mybatis 사이트에서 필요한 링크를 찾을 수 있다 -->
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
 <mapper namespace="com.meta.stock.product.mapper.ProductMapper">
+    <resultMap id="ProductStockMap" type="com.meta.stock.product.dto.ProductStockDto">
+        <result property="productId" column="PRODUCT_ID"/>
+        <result property="productName" column="PRODUCT_NAME"/>
+        <result property="lotId" column="LOT_ID"/>
+        <result property="qty" column="QTY"/>
+        <result property="unit" column="UNIT"/>
+        <result property="storageDate" column="STORAGE_DATE"/>
+        <result property="shelfLifeDays" column="SHELF_LIFE_DAYS"/>
+        <result property="daysLeft" column="days_left"/>
+        <result property="note" column="NOTE"/>
+    </resultMap>
+
     <resultMap id="parseDashProductsList" type="com.meta.stock.product.dto.ProductsAmountListBean">
         <result property="productId" column="product_id" />
         <result property="serialCode" column="serial_code" />
@@ -10,6 +24,84 @@
         <result property="storageDate" column="storage_date" />
         <result property="shelfLifeDays" column="shelf_life_days" />
     </resultMap>
+
+    <!-- 전체 완제품 재고 조회 -->
+    <select id="findTotalProductStock" resultMap="ProductStockMap">
+        SELECT
+        p.PRODUCT_NAME AS PRODUCT_NAME,
+        SUM(l.QTY) AS QTY
+        FROM PRODUCTS p
+        JOIN LOTS l ON p.LOTS_ID = l.LOT_ID
+        GROUP BY p.PRODUCT_NAME
+    </select>
+
+    <!-- 특정 제품 재고 조회 (productId로) -->
+    <select id="findProductStockWithPaging" resultMap="ProductStockMap">
+        SELECT
+        p.product_id,
+        p.product_name,
+        l.lot_id,
+        l.qty,
+        l.unit,
+        TO_CHAR(l.storage_date, 'YYYY-MM-DD') as storage_date,
+        TO_CHAR(l.shelf_life_days, 'YYYY-MM-DD') as shelf_life_days,
+        TRUNC(l.shelf_life_days - SYSDATE) as days_left,
+        l.note
+        FROM Products p
+        INNER JOIN Lots l ON p.lots_id = l.lot_id
+        WHERE 1=1
+        <if test="keyword != null and keyword != ''">
+            AND p.product_name LIKE '%' || #{keyword} || '%'
+        </if>
+        ORDER BY
+        <choose>
+            <when test="sortBy == 'productName'">p.product_name</when>
+            <when test="sortBy == 'storageDate'">l.storage_date</when>
+            <when test="sortBy == 'qty'">l.qty</when>
+            <otherwise>l.storage_date</otherwise>
+        </choose>
+        <choose>
+            <when test="sortDir == 'DESC'">DESC</when>
+            <otherwise>ASC</otherwise>
+        </choose>
+        OFFSET #{offset} ROWS
+        FETCH NEXT #{limit} ROWS ONLY
+    </select>
+
+    <!-- product 별 전체 재고를 확인 -->
+    <select id="countProductStock" resultType="long">
+        SELECT COUNT(*)
+        FROM Products p
+        INNER JOIN Lots l ON p.lots_id = l.lot_id
+        WHERE 1=1
+        <if test="keyword != null and keyword != ''">
+            AND p.product_name LIKE '%' || #{keyword} || '%'
+        </if>
+    </select>
+
+    <!-- 현재 완제품 재고 조회 -->
+    <select id="getCurrentProductStock" resultType="int">
+        SELECT NVL(SUM(l.qty), 0)
+        FROM Products p
+        INNER JOIN Lots l ON p.lots_id = l.lot_id
+        INNER JOIN Fixed_Product fp ON p.product_name = fp.name
+        WHERE fp.serial_code = #{serialCode}
+    </select>
+
+    <!-- BOM 정보 조회 (필요 원자재) -->
+    <select id="getMaterialRequirements" resultType="com.meta.stock.materials.dto.MaterialRequirementDto">
+        SELECT
+        fm.name as material_name,
+        fm.qty as required_qty,
+        fm.unit,
+        0 as current_stock
+        FROM Fixed_Material fm
+        WHERE fm.fp_id = (
+        SELECT fp_id
+        FROM Fixed_Product
+        WHERE serial_code = #{serialCode}
+        )
+    </select>
 
     <select id="getDashProductsList" resultMap="parseDashProductsList">
         select product_id, serial_code, product_name, qty, unit, storage_date, shelf_life_days
@@ -33,8 +125,8 @@
     <select id="getDashProductDemand">
         select product_name as name, request_date as requestDate, sum(qty) as demand
         from production_request pr
-        join products p on pr.pr_id = p.pr_id
-        left join lots l on p.lots_id = l.lot_id
+                 join products p on pr.pr_id = p.pr_id
+                 left join lots l on p.lots_id = l.lot_id
         group by product_name, request_date
         order by request_date asc
     </select>
@@ -54,4 +146,19 @@
             </choose>
         </where>
     </select>
+
+    <!-- 제품 재고 차감 -->
+    <update id="decreaseProductStock">
+        UPDATE Lots l
+        SET l.qty = l.qty - #{qty}
+        WHERE l.lot_id IN (
+        SELECT p.lots_id
+        FROM Products p
+        INNER JOIN Fixed_Product fp ON p.product_name = fp.name
+        WHERE fp.serial_code = #{serialCode}
+        AND l.qty > 0
+        ORDER BY l.storage_date ASC
+        )
+        AND ROWNUM = 1
+    </update>
 </mapper>
