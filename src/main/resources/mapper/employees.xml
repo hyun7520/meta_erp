@@ -16,94 +16,94 @@
     </resultMap>
 
     <select id="findById">
-        select * from "Employees" where "employee_id" = #{employee_id}
+        select * from Employees where employee_id = #{employee_id}
     </select>
 
     <insert id="insertEmployee">
-        insert into "Employees"
+        insert into Employees
         values(#{employee_id},#{name},#{email},#{password},#{hire_date},#{department_id},#{role_id})
     </insert>
 
     <select id="selectCountById" resultType="int">
-        select count(*) from "Employees" where "employee_id" = #{employee_id}
+        select count(*) from Employees where employee_id = #{employee_id}
     </select>
 
     <select id="selectEmployeeById">
-        select * from "Employees"
-        where "employee_id"=#{employee_id}
+        select * from Employees
+        where employee_id=#{employee_id}
     </select>
 
     <update id="updateEmployee">
-        update "Employees"
-        set "name"=#{name}, "email"=#{email}, "password"=#{password}, "department_id"=#{department_id}, "role_id"=#{role_id}
-        where "employee_id"=#{employee_id}
+        update Employees
+        set name=#{name}, email=#{email}, password=#{password}, department_id=#{department_id}, role_id=#{role_id}
+        where employee_id=#{employee_id}
     </update>
 
     <delete id="deleteEmployee">
-        delete from "Employees"
-        where "employee_id"=#{employee_id}
+        delete from Employees
+        where employee_id=#{employee_id}
     </delete>
 
     <select id="selectAll" resultMap="EmployeesResultMap">
         select e.*
-        from "Employees" e
+        from Employees e
 
-        left join "Departments" d on e."department_id" = d."department_id"
-        left join "Roles" r on e."role_id" = r."role_id"
+        left join Departments d on e.department_id = d.department_id
+        left join Roles r on e.role_id = r.role_id
 
         <where>
             <choose>
                 <when test="whatColumn=='all' and keyword != null and keyword != ''">
-                    e."name" like '%' || #{keyword} || '%'
-                    or d."department_name" like '%' || #{keyword} || '%'
-                    or r."role_name" like '%' || #{keyword} || '%'
+                    e.name like '%' || #{keyword} || '%'
+                    or d.department_name like '%' || #{keyword} || '%'
+                    or r.role_name like '%' || #{keyword} || '%'
                 </when>
 
                 <when test="whatColumn != null and whatColumn != 'all' and keyword != null and keyword != ''">
                     <choose>
                         <when test="whatColumn == 'department_name'">
-                            d."department_name" like '%' || #{keyword} || '%'
+                            d.department_name like '%' || #{keyword} || '%'
                         </when>
                         <when test="whatColumn == 'role_name'">
-                            r."role_name" like '%' || #{keyword} || '%'
+                            r.role_name like '%' || #{keyword} || '%'
                         </when>
                         <otherwise>
-                            e."${whatColumn}" like '%' || #{keyword} || '%'
+                            e.${whatColumn} like '%' || #{keyword} || '%'
                         </otherwise>
                     </choose>
                 </when>
             </choose>
         </where>
 
-        order by e."employee_id"
+        order by e.employee_id
         offset #{offset} rows fetch next #{limit} rows only
     </select>
 
     <select id="countTotalEmployees" resultType="int">
         select count(*)
-        from "Employees" e
+        from Employees e
 
-        left join "Departments" d on e."department_id" = d."department_id"
-        left join "Roles" r on e."role_id" = r."role_id"
+        left join Departments d on e.department_id = d.department_id
+        left join Roles r on e.role_id = r.role_id
 
         <where>
             <choose>
                 <when test="whatColumn=='all' and keyword != null and keyword != ''">
-                    e."name" like '%' || #{keyword} || '%'
-                    or d."department_name" like '%' || #{keyword} || '%'
-                    or r."role_name" like '%' || #{keyword} || '%'
+                    e.name like '%' || #{keyword} || '%'
+                    or d.department_name like '%' || #{keyword} || '%'
+                    or r.role_name like '%' || #{keyword} || '%'
                 </when>
 
                 <when test="whatColumn != null and whatColumn != 'all' and keyword != null and keyword != ''">
                     <choose>
                         <when test="whatColumn == 'department_name'">
-                            d."department_name" like '%' || #{keyword} || '%'
+                            d.department_name like '%' || #{keyword} || '%'
                         </when>
                         <when test="whatColumn == 'role_name'">
-                            r."role_name" like '%' || #{keyword} || '%'
+                            r.role_name like '%' || #{keyword} || '%'
                         </when>
                         <otherwise>
-                            e."${whatColumn}" like '%' || #{keyword} || '%'
+                            e.${whatColumn} like '%' || #{keyword} || '%'
                         </otherwise>
                     </choose>
                 </when>
