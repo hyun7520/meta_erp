@@ -32,12 +32,10 @@ const dataObject = [
     { name: "닭도리탕", data: [120, 82, 30] },
 ];
 
-const series = dataObject.map(city => ({
-    name: city.name,
+const series = dataObject.map(data => ({
+    ...data,
     type: "bar",
-    data: city.data,
     label: { show: true },
-    markPoint: { label: { show: false }, data: [] }   // markPoint 박스 제거
 }));
 
 const drawChart = (data) => {
@@ -47,7 +45,7 @@ const drawChart = (data) => {
             {
                 fontFamily: val.fontFamily,
                 fontWeight: val.fontWeight,
-                fontSize: 28,
+                fontSize: 30,
                 color: val.color,
                 align: "center",
                 lineHeight: 32
@@ -55,9 +53,15 @@ const drawChart = (data) => {
         ])
     );
 
+    yAxisRich.label = {
+        fontSize: 14,
+        color: "#333",
+        align: "center"
+    };
+
     const option = {
         title: {
-            text: "Weather Statistics",
+            text: "계절별 제품 로스율",
             top: 10
         },
         tooltip: {
@@ -69,14 +73,13 @@ const drawChart = (data) => {
             data: dataObject.map(({name}) => name)
         },
         grid: {
-            left: 120,
             top: 100,
             right: 50,
             bottom: 50
         },
         xAxis: {
             type: "value",
-            name: "Days"
+            name: "로스율"
         },
         yAxis: {
             type: "category",
@@ -88,8 +91,7 @@ const drawChart = (data) => {
                 rich: yAxisRich
             }
         },
-
-        series: series
+        series: data
     }
 
     lossChart.setOption(option);
