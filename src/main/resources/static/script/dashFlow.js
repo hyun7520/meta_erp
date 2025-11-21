@@ -22,7 +22,11 @@ const labels = {
 }
 };
 
-window.addEventListener("load", refreshTimeline);
+window.addEventListener("load", () => {
+    updateTime();
+    setInterval(updateTime, 1000);
+    refreshTimeline();
+});
 
 function updateFlowLine() {
     const line = document.querySelector(".line");

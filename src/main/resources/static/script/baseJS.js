@@ -3,10 +3,15 @@ const calcDrawDate = (inputDate) => {
     const month = `${inputDate.getMonth() + 1}`.padStart(2, "0");
     const date = `${inputDate.getDate()}`.padStart(2, "0");
 
-    const hour = inputDate.getHours();
-    const minute = inputDate.getMinutes();
-    const seconds = inputDate.getSeconds();
+    const hour = `${inputDate.getHours()}`.padStart(2, "0");
+    const minute = `${inputDate.getMinutes()}`.padStart(2, "0");
+    const seconds = `${inputDate.getSeconds()}`.padStart(2, "0");
     return `${year}-${month}-${date} ${hour}:${minute}:${seconds}`
+}
+
+const updateTime = () => {
+    const now = new Date();
+    document.getElementById('currentTime').innerHTML = '🕐 ' + calcDrawDate(now);
 }
 
 const renderPagination = (currentPage, totalPage, callback) => {
