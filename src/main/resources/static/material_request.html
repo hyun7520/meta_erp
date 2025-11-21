@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>원재료 발주 허가</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="container">
+    <!-- 헤더 -->
+    <div class="header">
+        <div class="header-left">
+            <div class="logo">
+                <img src="/logo.png" alt="회사로고">
+            </div>
+            <div class="header-text">
+                <h1>원재료 발주 허가</h1>
+                <p class="subtitle">생산팀 요청 원재료 : 발주 현황</p>
+            </div>
+        </div>
+
+        <!-- 네비게이션 버튼 (중앙) -->
+        <div class="header-nav">
+            <a href="/order.html" class="nav-btn">
+                📋 완제품 생산 요청
+            </a>
+            <a href="/material_request.html" class="nav-btn active">
+                📦 원재료 발주 허가
+            </a>
+        </div>
+
+        <!-- 시간 & 로그인 상태 배너 (오른쪽) -->
+        <div class="status-banner">
+            <div class="current-time" id="currentTime">
+                🕐 2025-11-18 10:30:45
+            </div>
+            <div class="user-status">
+                <div class="user-avatar" id="userAvatar">홍</div>
+                <div class="user-info-text">
+                    <div class="user-name" id="userName">홍길동</div>
+                    <div class="user-role" id="userRole">경영팀 · 매니저</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- 컨텐츠 -->
+    <div class="content-wrapper">
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('pending')">
+                미승인 발주 <span class="tab-count">0</span>
+            </button>
+            <button class="tab" onclick="showTab('all')">
+                전체 발주 <span class="tab-count">0</span>
+            </button>
+        </div>
+
+        <div id="loading" class="loading">
+            데이터를 불러오는 중입니다
+        </div>
+
+        <div id="content" style="display: none;">
+            <table>
+                <thead>
+                <tr>
+                    <th>번호</th>
+                    <th>원재료명</th>
+                    <th>요청자</th>
+                    <th>수량</th>
+                    <th>요청일</th>
+                    <th>상태</th>
+                    <th>승인일</th>
+                    <th>비고</th>
+                    <th>작업</th>
+                </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+            <div class="pagination" id="pagination"></div>
+        </div>
+
+        <div id="empty" class="empty" style="display: none;">
+            발주 요청이 없습니다
+        </div>
+    </div>
+</div>
+
+<!-- 승인/반려 모달 -->
+<div id="modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="modalTitle">발주 승인</h3>
+        </div>
+        <div class="modal-body">
+            <label for="modalNote">사유 (선택)</label>
+            <textarea id="modalNote" rows="4" placeholder="승인 또는 반려 사유를 입력하세요"></textarea>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-modal btn-cancel" onclick="closeModal()">취소</button>
+            <button class="btn-modal btn-confirm" id="confirmBtn" onclick="confirmAction()">확인</button>
+        </div>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

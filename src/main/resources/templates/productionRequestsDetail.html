@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>주문 상세</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .table-success { background-color: #d4edda !important; }
+        .table-danger { background-color: #f8d7da !important; }
+    </style>
+</head>
+<body class="bg-light">
+<div class="container mt-5">
+
+    <!-- 주문 기본 정보 -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">주문 ID: <span th:text="${productRequest.prId}"></span></h4>
+            <span th:switch="${productRequest.complete}">
+                <span th:case="0" class="badge bg-secondary fs-6">미수주</span>
+                <span th:case="1" class="badge bg-warning fs-6">수주 완료</span>
+                <span th:case="2" class="badge bg-success fs-6">완료</span>
+            </span>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>제품:</strong> <span th:text="${productRequest.productName}"></span></p>
+                    <p><strong>거래처:</strong> <span th:text="${productRequest.toCompany}"></span></p>
+                    <p><strong>주문수량:</strong> <span th:text="${productRequest.targetQty} + ' ' + ${productRequest.unit}"></span></p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>요청일:</strong> <span th:text="${productRequest.requestDate}"></span></p>
+                    <p><strong>납기:</strong> <span th:text="${productRequest.deadline}"></span></p>
+                    <p th:if="${productRequest.productionStartDate != null}">
+                        <strong>수주일:</strong> <span th:text="${productRequest.productionStartDate}"></span>
+                    </p>
+                    <p th:if="${productRequest.endDate != null}">
+                        <strong>완료일:</strong> <span th:text="${productRequest.endDate}"></span>
+                    </p>
+                </div>
+            </div>
+            <p th:if="${productRequest.note != null and productRequest.note != ''}">
+                <strong>비고:</strong> <span th:text="${productRequest.note}"></span>
+            </p>
+        </div>
+    </div>
+
+    <!-- 현재 완제품 재고 -->
+    <div class="card mb-4">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0">현재 완제품 재고</h5>
+        </div>
+        <div class="card-body">
+            <div class="alert" th:classappend="${currentProductStock >= productRequest.targetQty} ? 'alert-success' : 'alert-danger'">
+                <strong th:text="${productRequest.productName}"></strong>:
+                <span th:text="${currentProductStock} + ' ' + ${productRequest.unit}"></span>
+                <span th:if="${currentProductStock < productRequest.targetQty}" class="badge bg-danger ms-2">
+                    부족 (필요: <span th:text="${productRequest.targetQty - currentProductStock}"></span>)
+                </span>
+                <span th:unless="${currentProductStock < productRequest.targetQty}" class="badge bg-success ms-2">충분</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== 미수주 상태일 때 ==================== -->
+    <div th:if="${productRequest.complete == 0}">
+        <div th:if="${currentProductStock < productRequest.targetQty}">
+            <div class="card mb-4">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">이 주문을 수주하면 필요한 원자재 현황</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-bordered">
+                        <thead class="table-light">
+                        <tr>
+                            <th>재료명</th>
+                            <th>필요수량</th>
+                            <th>현재재고</th>
+                            <th>상태</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="req : ${requirements}"
+                            th:classappend="${!req.sufficient} ? 'table-danger' : 'table-success'">
+                            <td th:text="${req.materialName}"></td>
+                            <td th:text="${req.requiredQty} + ' ' + ${req.unit}"></td>
+                            <td th:text="${req.currentStock} + ' ' + ${req.unit}"></td>
+                            <td>
+                                <span th:if="${req.sufficient}" class="badge bg-success">충분</span>
+                                <span th:unless="${req.sufficient}" class="badge bg-danger">
+                                    부족 (<span th:text="${req.remainingQty}"></span>)
+                                </span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== 수주 상태일 때 ==================== -->
+    <div th:if="${productRequest.complete == 1}">
+        <div th:if="${currentProductStock < productRequest.targetQty}">
+            <div class="card mb-4">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">남은 생산을 위한 원자재 현황</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">남은 생산 필요량: <strong th:text="${productRequest.targetQty - currentProductStock} + ' ' + ${productRequest.unit}"></strong></p>
+                    <table class="table table-bordered">
+                        <thead class="table-light">
+                        <tr>
+                            <th>재료명</th>
+                            <th>필요수량</th>
+                            <th>현재재고</th>
+                            <th>남은 필요량</th>
+                            <th>상태</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="req : ${remainingRequirements}"
+                            th:classappend="${req.remainingQty > 0} ? 'table-danger' : 'table-success'">
+                            <td th:text="${req.materialName}"></td>
+                            <td th:text="${req.requiredQty} + ' ' + ${req.unit}"></td>
+                            <td th:text="${req.currentStock} + ' ' + ${req.unit}"></td>
+                            <td th:text="${req.remainingQty} + ' ' + ${req.unit}"></td>
+                            <td>
+                                <span th:if="${req.remainingQty <= 0}" class="badge bg-success">충분</span>
+                                <span th:unless="${req.remainingQty <= 0}" class="badge bg-danger">
+                                    부족 (<span th:text="${req.remainingQty}"></span>)
+                                </span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 버튼 영역 -->
+    <div class="mt-4">
+        <div th:switch="${productRequest.complete}">
+            <!-- 미수주 상태 -->
+            <div th:case="0">
+                <form th:action="@{/productRequest/accept/{id}(id=${productRequest.prId})}" method="post" style="display:inline;">
+                    <button type="submit" class="btn btn-success btn-lg">주문 수주</button>
+                </form>
+                <a th:href="@{/productRequest}" class="btn btn-secondary btn-lg ms-3">목록으로</a>
+            </div>
+
+            <!-- 수주 완료 상태 -->
+            <div th:case="1">
+                <form th:action="@{/pr/ship/{id}(id=${productRequest.prId})}" method="post" style="display:inline;">
+                    <button type="submit" class="btn btn-primary btn-lg"
+                            th:disabled="${currentProductStock < productRequest.targetQty}">
+                        제품 출하
+                    </button>
+                </form>
+                <span th:if="${currentProductStock < productRequest.targetQty}" class="text-danger ms-3">
+                    ※ 재고 부족으로 출하 불가
+                </span>
+                <form th:action="@{/productRequest/decline/{id}(id=${productRequest.prId})}" method="post" style="display:inline;">
+                    <button type="submit" class="btn btn-danger btn-lg ms-3">수주 취소</button>
+                </form>
+                <a th:href="@{/productRequest}" class="btn btn-secondary btn-lg ms-3">목록으로</a>
+            </div>
+
+            <!-- 완료 상태 -->
+            <div th:case="2">
+                <a th:href="@{/pr}" class="btn btn-secondary btn-lg">목록으로</a>
+            </div>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>
