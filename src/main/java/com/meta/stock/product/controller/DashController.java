@@ -81,6 +81,11 @@ public class DashController {
         return ResponseEntity.ok(pageData);
     }
 
+    @GetMapping("/dash/products")
+    private ResponseEntity<Map<String, String>> getProducts() {
+        return ResponseEntity.ok(productsService.getFixedProducts());
+    }
+
     @GetMapping("/dash/flow")
     public ResponseEntity<DashFlowBean> dashFlow() {
         return ResponseEntity.ok(dashService.getDashFlowBean());

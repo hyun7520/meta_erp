@@ -1,11 +1,13 @@
 package com.meta.stock.product.service;
 
+import com.meta.stock.product.entity.FixedProductEntity;
 import com.meta.stock.product.mapper.ProductMapper;
 import com.meta.stock.product.dto.ProductsAmountListBean;
-import org.modelmapper.ModelMapper;
+import com.meta.stock.product.repository.FixedProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -13,8 +15,8 @@ import java.util.Map;
 public class ProductsService {
     @Autowired
     private ProductMapper productMapper;
-
-    private ModelMapper modelMapper = new ModelMapper();
+    @Autowired
+    private FixedProductRepository fixedProductRepository;
 
     public List<ProductsAmountListBean> getDashTable(Map<String, Object> param) {
         return productMapper.getDashProductsList(param);
@@ -22,5 +24,16 @@ public class ProductsService {
 
     public int getDashTableTotal(Map<String, Object> param) {
         return productMapper.getTotalListSize(param);
+    }
+
+
+    public Map<String, String> getFixedProducts() {
+        Map<String, String> map = new HashMap<>();
+        List<FixedProductEntity> list = fixedProductRepository.findAll();
+        list.forEach(entity -> {
+            map.put(entity.getName(), entity.getSerialCode());
+        });
+
+        return map;
     }
 }

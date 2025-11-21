@@ -100,5 +100,14 @@ const dashSort = (isDescending) => {
 }
 
 const reset = () => {
-    renderDashTable({});
+    params = {
+        page: 1,
+        column: '',
+        search: '',
+        date: '',
+        sort: 'product_id',
+        order: 'desc',
+    }
+
+    renderDashTable(params);
 }
