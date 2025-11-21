@@ -1,10 +1,6 @@
 package com.meta.stock.materials.entity;
 
-import com.meta.stock.user.entity.EmployeeEntity;
 import jakarta.persistence.*;
-import org.hibernate.annotations.ColumnDefault;
-
-import java.time.LocalDate;
 
 // 재료 요청서 
 @Entity
@@ -13,38 +9,51 @@ public class MaterialRequestEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "mr_seq")
-    @SequenceGenerator(name = "mr_seq", sequenceName = "MR_SEQ", allocationSize = 1)
-    @Column(name = "mr_id")
+    @SequenceGenerator(name = "mr_seq", sequenceName = "SEQ_MATERIAL_REQUEST", allocationSize = 1)
+    @Column(name = "MR_ID")
     private long mrId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "request_by")
-    private EmployeeEntity requestBy;
+    @Column(name = "REQUEST_BY")
+    private long requestBy; // 요청자 Employee ID
 
-    @Column(name = "request_date")
+    @Column(name = "MANAGEMENT_EMPLOYEE")
+    private long managementEmployee; // 경영 담당자 Employee ID
+
+    @Column(name = "PRODUCTION_EMPLOYEE")
+    private long productionEmployee; // 생산 담당자 Employee ID
+
+    @Column(name = "REQUEST_DATE")
     private String requestDate;
 
-    @Column(name = "qty")
+    @Column(name = "QTY")
     private int qty;
 
-    @Column(name = "unit", length = 20)
+    @Column(name = "UNIT", length = 20)
     private String unit;
 
-    @Column(name = "approved")
-    private int approved;  // 0:대기, 1:승인, 2:완료 등
+    @Column(name = "APPROVED")
+    private int approved; // 0: 미승인, 1: 승인, -1: 반려
 
-    @Column(name = "approved_date")
+    @Column(name = "APPROVED_DATE")
     private String approvedDate;
 
-    @Column(name = "note", length = 20)
+    @Column(name = "NOTE", length = 255)
     private String note;
 
     public long getMrId() {
         return mrId;
     }
 
-    public EmployeeEntity getRequestBy() {
+    public long getRequestBy() {
         return requestBy;
+    }
+
+    public long getManagementEmployee() {
+        return managementEmployee;
+    }
+
+    public long getProductionEmployee() {
+        return productionEmployee;
     }
 
     public String getRequestDate() {
@@ -76,8 +85,16 @@ public class MaterialRequestEntity {
         this.mrId = mrId;
     }
 
-    public void setRequestBy(EmployeeEntity requestBy) {
+    public void setRequestBy(long requestBy) {
         this.requestBy = requestBy;
+    }
+
+    public void setManagementEmployee(long managementEmployee) {
+        this.managementEmployee = managementEmployee;
+    }
+
+    public void setProductionEmployee(long productionEmployee) {
+        this.productionEmployee = productionEmployee;
     }
 
     public void setRequestDate(String requestDate) {

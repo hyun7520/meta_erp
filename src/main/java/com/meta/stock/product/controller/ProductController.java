@@ -2,6 +2,7 @@ package com.meta.stock.product.controller;
 
 import com.meta.stock.materials.dto.MaterialRequestDto;
 import com.meta.stock.materials.service.MaterialService;
+import com.meta.stock.product.dto.ProductDTO;
 import com.meta.stock.product.dto.ProductRequestDto;
 import com.meta.stock.product.dto.ProductStockDto;
 import com.meta.stock.product.service.ProductionRequestService;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -89,5 +91,11 @@ public class ProductController {
         // model.addAttribute("prediction", prediction);
 
         return "productionMain";
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ProductDTO.Response>> getAllProducts() {
+        List<ProductDTO.Response> responses = productService.getAllProducts();
+        return ResponseEntity.ok(responses);
     }
 }

@@ -1,6 +1,6 @@
-package com.meta.stock.materials.Repository;
+package com.meta.stock.materials.repository;
 
-import com.meta.stock.materials.Entity.MaterialRequestEntity;
+import com.meta.stock.materials.entity.MaterialRequestEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
