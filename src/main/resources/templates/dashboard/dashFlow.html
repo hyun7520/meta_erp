@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>대시보드 요청과정 전체 흐름 화면</title>
+</head>
+<body>
+    <div th:fragment="flow" class="flow-container">
+        <div class="flow-wrapper">
+            <div id="flow_items" class="flow-items"></div>
+            <div class="line"></div>
+        </div>
+        <div class="refresh-area">
+            <span class="refresh-time" id="refresh_time"></span>
+            <button class="refresh-btn" onclick="refreshTimeline()">
+                <i class="fa-solid fa-rotate-right"></i>
+            </button>
+        </div>
+    </div>
+</body>
+</html>
