@@ -84,15 +84,15 @@
                 납기
             </th>
             <th class="sortable"
-                th:classappend="${sortBy == 'productionStartDate'} ? (${sortDir == 'ASC'} ? 'asc' : 'desc')"
-                th:onclick="|location.href='@{/pr(sortBy='productionStartDate', sortDir=${sortBy == 'productionStartDate' and sortDir == 'ASC' ? 'DESC' : 'ASC'}, keyword=${keyword})}'|">
+                th:classappend="${sortBy == 'endDate'} ? (${sortDir == 'ASC'} ? 'asc' : 'desc')"
+                th:onclick="|location.href='@{/pr(sortBy='endDate', sortDir=${sortBy == 'endDate' and sortDir == 'ASC' ? 'DESC' : 'ASC'}, keyword=${keyword})}'|">
                 상태
             </th>
             <th>액션</th>
         </tr>
         </thead>
         <tbody>
-        <tr th:each="pr : ${productRequests.content}">
+        <tr th:each="pr : ${productRequests}">
             <td th:text="${pr.prId}"></td>
             <td th:text="${pr.managementEmployee}"></td>
             <td th:text="${pr.productName}"></td>
@@ -100,8 +100,11 @@
             <td th:text="${pr.targetQty}"></td>
             <td th:text="${pr.deadline}"></td>
             <td>
-                <span th:if="${pr.productionStartDate == null}" class="badge bg-secondary">미수주</span>
-                <span th:unless="${pr.productionStartDate == null}" class="badge bg-success">수주</span>
+                <span th:switch="${pr.complete}">
+                    <span th:case="0" class="badge bg-secondary fs-6">미수주</span>
+                    <span th:case="1" class="badge bg-warning fs-6">수주 완료</span>
+                    <span th:case="2" class="badge bg-success fs-6">완료</span>
+                </span>
             </td>
             <td>
                 <a th:href="@{/pr/{id}(id=${pr.prId})}" class="btn btn-sm btn-outline-primary">상세</a>

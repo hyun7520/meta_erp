@@ -39,7 +39,7 @@
     <!-- 로트 재고 업데이트 -->
     <update id="updateLotQty">
         UPDATE LOTS
-        SET QTY = #{newQty}
+        SET QTY = #{qty}
         WHERE LOT_ID = #{lotId}
     </update>
 

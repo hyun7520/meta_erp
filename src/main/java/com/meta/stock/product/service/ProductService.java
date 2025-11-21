@@ -38,7 +38,6 @@ public class ProductService {
     }
 
     public int getCurrentProductStock(String serialCode) {
-        System.out.println("serial_code:" + serialCode);
         return productMapper.getCurrentProductStock(serialCode);
     }
 

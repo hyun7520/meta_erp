@@ -39,7 +39,7 @@ public class ProductController {
     @GetMapping("product")
     public String getAllProducts(
             @RequestParam(defaultValue = "0") int stockPage,
-            @RequestParam(defaultValue = "10") int stockSize,
+            @RequestParam(defaultValue = "6") int stockSize,
             @RequestParam(required = false) String stockKeyword,
             @RequestParam(defaultValue = "storageDate") String stockSortBy,
             @RequestParam(defaultValue = "DESC") String stockSortDir,

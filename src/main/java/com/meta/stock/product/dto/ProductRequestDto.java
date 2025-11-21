@@ -22,6 +22,9 @@ public class ProductRequestDto {
     private String note;
 
     public boolean isStockInsufficient() {
+        if(getCompletedQty() != null) {
+            return true;
+        }
         return getCompletedQty() < getPlannedQty();
     }
 

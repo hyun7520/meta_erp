@@ -110,7 +110,8 @@
         pr.unit,
         TO_CHAR(pr.deadline, 'YYYY-MM-DD') as deadline,
         TO_CHAR(pr.production_start_date, 'YYYY-MM-DD') as production_start_date,
-        TO_CHAR(pr.request_date, 'YYYY-MM-DD') as request_date
+        TO_CHAR(pr.request_date, 'YYYY-MM-DD') as request_date,
+        TO_CHAR(pr.end_date, 'YYYY-MM-DD') as end_date
         FROM Production_Request pr
         LEFT JOIN Fixed_Product fp ON pr.serial_code = fp.serial_code
         WHERE 1=1
@@ -126,7 +127,7 @@
             <when test="sortBy == 'toCompany'">pr.to_company</when>
             <when test="sortBy == 'targetQty'">pr.target_qty</when>
             <when test="sortBy == 'deadline'">pr.deadline</when>
-            <when test="sortBy == 'productionStartDate'">pr.production_start_date</when>
+            <when test="sortBy == 'endDate'">pr.end_date</when>
             <otherwise>pr.pr_id</otherwise>
         </choose>
         <choose>

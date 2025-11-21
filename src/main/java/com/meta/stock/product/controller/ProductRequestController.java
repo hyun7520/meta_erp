@@ -36,7 +36,7 @@ public class ProductRequestController {
     @GetMapping("/pr")
     public String getAllOrders(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "6") int size,
             @RequestParam(required = false) String keyword,
             @RequestParam(defaultValue = "prId") String sortBy,
             @RequestParam(defaultValue = "ASC") String sortDir,
@@ -91,21 +91,21 @@ public class ProductRequestController {
     @PostMapping("/pr/accept/{prId}")
     public String acceptOrder(@PathVariable long prId) {
         productionRequestService.acceptProductionRequest(prId);
-        return "redirect:/order";
+        return "redirect:/pr";
     }
 
     // 주문 수주
-    @PostMapping("/order/accept/{id}")
+    @PostMapping("/pr/accept/{id}")
     public String acceptOrder(@PathVariable Long id) {
         productionRequestService.acceptOrder(id);
         return "redirect:/pr/" + id;
     }
 
     // 제품 출하
-    @PostMapping("/order/ship/{id}")
+    @PostMapping("/pr/ship/{id}")
     public String shipOrder(@PathVariable Long id) {
         productionRequestService.shipOrder(id);
-        return "redirect:/order";
+        return "redirect:/pr";
     }
 
 }
