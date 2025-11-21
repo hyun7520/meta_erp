@@ -21,11 +21,28 @@ public class MaterialEntity {
     @Column(name = "mr_id")
     private Long mrId;
 
+    @Column(name = "MATERIAL_LOSS")
+    private int materialLoss;
+
     public long getMaterialsId() { return materialsId; }
     public String getMaterialName() { return materialName; }
     public long getLotsId() { return lotsId; }
+    public Long getMrId() { return mrId; }
+    public int getMaterialLoss() { return materialLoss; }
 
-    public void setMaterialId(long materialsId) { this.materialsId = materialsId; }
+    public void setMaterialsId(Long materialsId) { this.materialsId = materialsId; }
+
     public void setMaterialName(String materialName) { this.materialName = materialName; }
-    public void setLotsId(long lotsId) { this.lotsId = lotsId; }
+
+    public void setLotsId(Long lotsId) {
+        this.lotsId = lotsId;
+    }
+
+    public void setMrId(Long mrId) {
+        this.mrId = mrId;
+    }
+
+    public void setMaterialLoss(int materialLoss) {
+        this.materialLoss = materialLoss;
+    }
 }

@@ -43,7 +43,7 @@ function showTab(tab) {
 }
 
 async function loadData(tabName) {
-    const apiUrl = tabName === 'pending' ? '/api/material-requests/pending' : '/api/material-requests';
+    const apiUrl = tabName === 'pending' ? '/pro/material-requests/pending' : '/pro/material-requests';
 
     try {
         document.getElementById('loading').style.display = 'block';
@@ -224,7 +224,7 @@ function updateTabCounts(currentType, currentCount) {
     if (currentType === 'pending') {
         tabs[0].querySelector('.tab-count').textContent = currentCount;
         // 전체 카운트 업데이트
-        fetch('/api/material-requests')
+        fetch('/pro/material-requests')
             .then(response => response.json())
             .then(data => {
                 const count = Array.isArray(data) ? data.length : 0;
@@ -234,7 +234,7 @@ function updateTabCounts(currentType, currentCount) {
     } else { // currentType === 'all'
         tabs[1].querySelector('.tab-count').textContent = currentCount;
         // 미승인 카운트 업데이트
-        fetch('/api/material-requests/pending')
+        fetch('/pro/material-requests/pending')
             .then(response => response.json())
             .then(data => {
                 const count = Array.isArray(data) ? data.length : 0;
@@ -284,7 +284,7 @@ function confirmAction() {
         return;
     }
 
-    const apiUrl = isApprove ? '/api/material-requests/approve' : '/api/material-requests/reject';
+    const apiUrl = isApprove ? '/pro/material-requests/approve' : '/pro/material-requests/reject';
 
     const data = {
         mrId: currentMrId,

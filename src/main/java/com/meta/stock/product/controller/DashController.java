@@ -35,7 +35,7 @@ public class DashController {
 
     private final int limit = 5;
 
-    @GetMapping("/")
+    @GetMapping("/dash")
     private String dashboard() {
         return "dashboard/dashboard";
     }

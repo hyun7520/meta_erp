@@ -1,4 +1,4 @@
-package com.meta.stock.product.DTO;
+package com.meta.stock.product.dto;
 
 public class ProductionRequestDTO {
 

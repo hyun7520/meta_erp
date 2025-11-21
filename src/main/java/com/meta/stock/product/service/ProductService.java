@@ -2,10 +2,13 @@ package com.meta.stock.product.service;
 
 import com.meta.stock.materials.dto.MaterialRequirementDto;
 import com.meta.stock.materials.mapper.MaterialMapper;
-import com.meta.stock.product.dto.ProductDto;
+import com.meta.stock.product.dto.ProductDTO;
+import com.meta.stock.product.dto.ProductListDTO;
 import com.meta.stock.product.dto.ProductStockDto;
+import com.meta.stock.product.entity.ProductEntity;
+import com.meta.stock.product.repository.ProductRepository;
 import com.meta.stock.product.mapper.ProductMapper;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -13,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductService {
@@ -21,6 +25,8 @@ public class ProductService {
     private ProductMapper productMapper;
     @Autowired
     private MaterialMapper materialMapper;
+    @Autowired
+    private ProductRepository productRepository;
 
     public Page<ProductStockDto> findTotalProductStock(String keyword, Pageable pageable) {
         int offset = pageable.getPageNumber() * pageable.getPageSize();
@@ -42,19 +48,42 @@ public class ProductService {
     }
 
     public List<MaterialRequirementDto> calculateMaterialRequirements(String serialCode, int productQty) {
-        // Fixed_Material에서 BOM 정보 조회
         List<MaterialRequirementDto> requirements = productMapper.getMaterialRequirements(serialCode);
 
-        // 필요 수량 계산 및 현재 재고 조회
         for (MaterialRequirementDto req : requirements) {
             int totalRequired = req.getRequiredQty() * productQty;
             req.setRequiredQty(totalRequired);
 
-            // 현재 재료 재고 조회
             int currentStock = materialMapper.getCurrentStock(req.getMaterialName());
             req.setCurrentStock(currentStock);
         }
 
         return requirements;
+    }
+
+    //  주문 페이지용 제품 목록 조회
+    @Transactional(readOnly = true)
+    public List<ProductListDTO> getProductsForOrder() {
+        return productRepository.findAllProductsForOrder();
+    }
+
+    // 전체 제품 목록 조회 (기존 메서드 유지)
+    @Transactional(readOnly = true)
+    public List<ProductDTO.Response> getAllProducts() {
+        List<ProductEntity> entities = productRepository.findAllByOrderByProductIdAsc();
+        return entities.stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
+    }
+
+    // Entity -> Response DTO 변환
+    private ProductDTO.Response convertToResponse(ProductEntity entity) {
+        return ProductDTO.Response.builder()
+                .productId(entity.getProductId())
+                .productName(entity.getProductName())
+                .productionLoss(entity.getProductionLoss())
+                .prId(entity.getPrId())
+                .lotsId(entity.getLotsId())
+                .build();
     }
 }

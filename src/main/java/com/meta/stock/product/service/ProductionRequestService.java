@@ -1,24 +1,29 @@
 package com.meta.stock.product.service;
 
-import com.meta.stock.materials.dto.MaterialRequirementDto;
 import com.meta.stock.materials.service.MaterialService;
 import com.meta.stock.lots.dto.LotStockDto;
 import com.meta.stock.lots.mapper.LotsMapper;
-import com.meta.stock.product.dto.ProductDto;
 import com.meta.stock.product.dto.ProductRequestDto;
+import com.meta.stock.product.dto.ProductionRequestDTO;
 import com.meta.stock.product.entity.ProductionRequestEntity;
+import com.meta.stock.product.entity.ProductEntity;
 import com.meta.stock.product.mapper.ProductMapper;
 import com.meta.stock.product.mapper.ProductionRequestMapper;
 import com.meta.stock.product.repository.ProductionRequestRepository;
-import jakarta.transaction.Transactional;
+import com.meta.stock.product.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -36,7 +41,10 @@ public class ProductionRequestService {
     private MaterialService materialService;
     @Autowired
     private ProductService productService;
+    @Autowired
+    private ProductRepository productRepository;
 
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     public Page<ProductRequestDto> findAllProductRequests(String keyword, Pageable pageable) {
         int offset = pageable.getPageNumber() * pageable.getPageSize();
@@ -53,7 +61,6 @@ public class ProductionRequestService {
         return new PageImpl<>(content, pageable, total);
     }
 
-    // keyword 0, 1, 2에 따라 production request 가져오기
     public Page<ProductRequestDto> findOngoingProductRequests(String keyword, Pageable pageable) {
         int offset = pageable.getPageNumber() * pageable.getPageSize();
         int limit = pageable.getPageSize();
@@ -69,43 +76,35 @@ public class ProductionRequestService {
         return new PageImpl<>(content, pageable, total);
     }
 
-    // id로 production request 생산 시작
     public void acceptProductionRequest(long prId) {
         ProductionRequestEntity productionRequest = productionRequestRepository.findProductRequestByPrId(prId);
         productionRequest.setProductionStartDate(String.valueOf(LocalDate.now()));
         productionRequestRepository.save(productionRequest);
     }
 
-    // id로 production request 조회
     public ProductRequestDto findProductRequestById(long orderId) {
         return prMapper.findProductRequestById(orderId);
     }
 
-    // 제품 출하
     @Transactional
     public void shipOrder(Long prId) {
-        // 1. 생산 요청 정보 조회
         ProductRequestDto pr = findProductRequestById(prId);
 
-        // 수주 확인
         if (pr.getProductionStartDate() == null) {
             throw new IllegalStateException("수주된 주문만 출하 가능합니다.");
         }
 
-        // 2. 해당 제품의 로트를 유통기한 빠른 순으로 조회
         List<LotStockDto> lots = lotsMapper.findLotsBySerialCodeOrderByExpiry(pr.getSerialCode());
 
         if (lots.isEmpty()) {
             throw new IllegalStateException("출하할 재고가 없습니다.");
         }
 
-        // 3. 총 재고 확인
         int totalStock = lots.stream().mapToInt(LotStockDto::getQty).sum();
         if (totalStock < pr.getTargetQty()) {
             throw new IllegalStateException("재고가 부족합니다. (필요: " + pr.getTargetQty() + ", 현재: " + totalStock + ")");
         }
 
-        // 4. 유통기한 빠른 순으로 재고 차감
         int remainingQty = pr.getTargetQty();
 
         for (LotStockDto lot : lots) {
@@ -114,23 +113,18 @@ public class ProductionRequestService {
             int currentQty = lot.getQty();
             if (currentQty <= 0) continue;
 
-            // 이번 로트에서 출하할 수량
             int toShip = Math.min(currentQty, remainingQty);
             int newQty = currentQty - toShip;
             remainingQty -= toShip;
 
-            // 5. 로트 재고 업데이트
             lotsMapper.updateLotQty(lot.getLotId(), newQty);
 
-            // 재고가 0이 되면 로트 삭제 (선택사항)
             if (newQty == 0) {
                 lotsMapper.deleteLotById(lot.getLotId());
-                // 또는 Products 테이블에서 해당 로트 연결 제거
                 productMapper.deleteProductByLotId(lot.getLotId());
             }
         }
 
-        // 6. 주문 완료 처리
         if (remainingQty == 0) {
             prMapper.updateEndDate(prId);
         } else {
@@ -138,9 +132,266 @@ public class ProductionRequestService {
         }
     }
 
-    // 주문 수주
     @Transactional
     public void acceptOrder(Long prId) {
         prMapper.updateProductionStartDate(prId);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ProductionRequestDTO.Response> getAllOrders() {
+        List<ProductionRequestEntity> entities = productionRequestRepository.findAllByOrderByPrIdDesc();
+        return entities.stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<ProductionRequestDTO.Response> getPendingOrders() {
+        List<ProductionRequestEntity> entities = productionRequestRepository.findByProductionStartDateIsNullOrderByPrIdDesc();
+        return entities.stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<ProductionRequestDTO.Response> getInProgressOrders() {
+        List<ProductionRequestEntity> entities = productionRequestRepository.findByProductionStartDateIsNotNullAndEndDateIsNullOrderByPrIdDesc();
+        return entities.stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<ProductionRequestDTO.Response> getCompletedOrders() {
+        List<ProductionRequestEntity> entities = productionRequestRepository.findByEndDateIsNotNullOrderByPrIdDesc();
+        return entities.stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
+    }
+
+    //  생산 요청 생성 (Repository 쿼리 메서드 사용)
+    @Transactional
+    public ProductionRequestDTO.Response createProductionRequest(ProductionRequestDTO.Request request) {
+        String serialCode = null;
+
+        if (request.getProductId() != null) {
+            serialCode = productRepository.findProductNameById(request.getProductId())
+                    .orElseThrow(() -> new IllegalArgumentException("제품을 찾을 수 없습니다. ID: " + request.getProductId()));
+        } else if (request.getSerialCode() != null) {
+            serialCode = request.getSerialCode();
+        } else {
+            throw new IllegalArgumentException("productId 또는 serialCode가 필요합니다.");
+        }
+
+        ProductionRequestEntity entity = ProductionRequestEntity.builder()
+                .serialCode(serialCode)
+                .managementEmployee(0)
+                .productionEmployee(0)
+                .toCompany(request.getRequestBy())
+                .targetQty(request.getQty())
+                .plannedQty(0)
+                .completedQty(0)
+                .unit(request.getUnit())
+                .requestDate(LocalDate.now().format(DATE_FORMATTER))
+                .deadline(request.getDeadline())
+                .note("")
+                .build();
+
+        ProductionRequestEntity saved = productionRequestRepository.save(entity);
+        return convertToResponse(saved);
+    }
+
+    @Transactional
+    public ProductionRequestDTO.Response startProduction(long prId) {
+        ProductionRequestEntity entity = productionRequestRepository.findById(prId)
+                .orElseThrow(() -> new IllegalArgumentException("생산 요청을 찾을 수 없습니다."));
+
+        String now = LocalDateTime.now().format(DATE_FORMATTER);
+        entity.setProductionStartDate(now);
+
+        ProductionRequestEntity saved = productionRequestRepository.save(entity);
+        return convertToResponse(saved);
+    }
+
+    @Transactional
+    public ProductionRequestDTO.Response completeProduction(long prId) {
+        ProductionRequestEntity entity = productionRequestRepository.findById(prId)
+                .orElseThrow(() -> new IllegalArgumentException("생산 요청을 찾을 수 없습니다."));
+
+        String now = LocalDateTime.now().format(DATE_FORMATTER);
+        if (entity.getProductionStartDate() == null) {
+            entity.setProductionStartDate(now);
+        }
+        entity.setEndDate(now);
+        entity.setCompletedQty(entity.getTargetQty());
+
+        ProductionRequestEntity saved = productionRequestRepository.save(entity);
+        return convertToResponse(saved);
+    }
+
+    @Transactional
+    public ProductionRequestDTO.Response updateProductionStatus(ProductionRequestDTO.UpdateStatus update) {
+        ProductionRequestEntity entity = productionRequestRepository.findById(update.getPrId())
+                .orElseThrow(() -> new IllegalArgumentException("생산 요청을 찾을 수 없습니다."));
+
+        String now = LocalDateTime.now().format(DATE_FORMATTER);
+
+        if (update.getAction() == 1) {
+            entity.setProductionStartDate(now);
+            entity.setEndDate(null);
+        } else if (update.getAction() == 2) {
+            if (entity.getProductionStartDate() == null) {
+                entity.setProductionStartDate(now);
+            }
+            entity.setEndDate(now);
+            entity.setCompletedQty(entity.getTargetQty());
+        } else if (update.getAction() == 3) {
+            entity.setProductionStartDate(null);
+            entity.setEndDate(null);
+            entity.setCompletedQty(0);
+        } else {
+            throw new IllegalArgumentException("잘못된 상태 변경 요청입니다.");
+        }
+
+        ProductionRequestEntity saved = productionRequestRepository.save(entity);
+        return convertToResponse(saved);
+    }
+
+    @Transactional
+    public void deleteProductionRequest(long prId) {
+        ProductionRequestEntity entity = productionRequestRepository.findById(prId)
+                .orElseThrow(() -> new IllegalArgumentException("생산 요청을 찾을 수 없습니다."));
+
+        productionRequestRepository.delete(entity);
+    }
+
+    @Transactional
+    public void deleteCompletedOrders() {
+        List<ProductionRequestEntity> completedOrders = productionRequestRepository.findByEndDateIsNotNullOrderByPrIdDesc();
+        productionRequestRepository.deleteAll(completedOrders);
+    }
+
+    @Transactional(readOnly = true)
+    public ProductionRequestDTO.TopProduct getTopProduct() {
+        List<ProductionRequestEntity> allOrders = productionRequestRepository.findAll();
+
+        if (allOrders.isEmpty()) {
+            return null;
+        }
+
+        Map<String, ProductionRequestDTO.TopProduct> productMap = allOrders.stream()
+                .filter(order -> order.getSerialCode() != null)
+                .collect(Collectors.groupingBy(
+                        ProductionRequestEntity::getSerialCode,
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                orders -> {
+                                    int totalQty = orders.stream().mapToInt(ProductionRequestEntity::getTargetQty).sum();
+                                    String unit = orders.get(0).getUnit();
+                                    return ProductionRequestDTO.TopProduct.builder()
+                                            .productName(orders.get(0).getSerialCode())
+                                            .totalQty(totalQty)
+                                            .unit(unit != null ? unit : "개")
+                                            .orderCount(orders.size())
+                                            .build();
+                                }
+                        )
+                ));
+
+        return productMap.values().stream()
+                .max((a, b) -> Integer.compare(a.getTotalQty(), b.getTotalQty()))
+                .orElse(null);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ProductionRequestDTO.TopProduct> getTopSellingProducts() {
+        List<ProductionRequestEntity> allOrders = productionRequestRepository.findAll();
+
+        Map<String, ProductionRequestDTO.TopProduct> productMap = allOrders.stream()
+                .filter(order -> order.getSerialCode() != null)
+                .collect(Collectors.groupingBy(
+                        ProductionRequestEntity::getSerialCode,
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                orders -> {
+                                    int totalQty = orders.stream().mapToInt(ProductionRequestEntity::getTargetQty).sum();
+                                    String unit = orders.get(0).getUnit();
+                                    return ProductionRequestDTO.TopProduct.builder()
+                                            .productName(orders.get(0).getSerialCode())
+                                            .totalQty(totalQty)
+                                            .unit(unit != null ? unit : "개")
+                                            .orderCount(orders.size())
+                                            .build();
+                                }
+                        )
+                ));
+
+        return productMap.values().stream()
+                .sorted((a, b) -> Integer.compare(b.getTotalQty(), a.getTotalQty()))
+                .collect(Collectors.toList());
+    }
+
+    private ProductionRequestDTO.Response convertToResponse(ProductionRequestEntity entity) {
+        String productName = entity.getSerialCode() != null ? entity.getSerialCode() : "-";
+
+        return ProductionRequestDTO.Response.builder()
+                .orderId(entity.getPrId())
+                .serialCode(entity.getSerialCode())
+                .productName(productName)
+                .requestBy(entity.getToCompany())
+                .qty(entity.getTargetQty())
+                .unit(entity.getUnit())
+                .requestDate(entity.getRequestDate())
+                .deadline(entity.getDeadline())
+                .complete(entity.getCompleteStatus())
+                .productionStartDate(entity.getProductionStartDate())
+                .endDate(entity.getEndDate())
+                .build();
+    }
+
+    @Transactional(readOnly = true)
+    public ProductionRequestDTO.Response getProductionRequestById(long prId) {
+        ProductionRequestEntity entity = productionRequestRepository.findById(prId)
+                .orElseThrow(() -> new IllegalArgumentException("생산 요청을 찾을 수 없습니다."));
+        return convertToResponse(entity);
+    }
+
+    // 생산 요청 수정 (Repository 쿼리 메서드 사용)
+    @Transactional
+    public ProductionRequestDTO.Response updateProductionRequest(long prId, ProductionRequestDTO.Request request) {
+        ProductionRequestEntity entity = productionRequestRepository.findById(prId)
+                .orElseThrow(() -> new IllegalArgumentException("생산 요청을 찾을 수 없습니다."));
+
+        if (entity.getProductionStartDate() != null) {
+            throw new IllegalStateException("이미 생산이 시작된 주문은 수정할 수 없습니다.");
+        }
+
+        // Serial Code 업데이트
+        if (request.getProductId() != null) {
+            String serialCode = productRepository.findProductNameById(request.getProductId())
+                    .orElseThrow(() -> new IllegalArgumentException("제품을 찾을 수 없습니다. ID: " + request.getProductId()));
+            entity.setSerialCode(serialCode);
+        } else if (request.getSerialCode() != null && !request.getSerialCode().isEmpty()) {
+            entity.setSerialCode(request.getSerialCode());
+        }
+
+        if (request.getRequestBy() != null && !request.getRequestBy().isEmpty()) {
+            entity.setToCompany(request.getRequestBy());
+        }
+
+        if (request.getQty() > 0) {
+            entity.setTargetQty(request.getQty());
+        }
+
+        if (request.getUnit() != null && !request.getUnit().isEmpty()) {
+            entity.setUnit(request.getUnit());
+        }
+
+        if (request.getDeadline() != null && !request.getDeadline().isEmpty() && !request.getDeadline().equals("-")) {
+            entity.setDeadline(request.getDeadline());
+        }
+
+        ProductionRequestEntity saved = productionRequestRepository.save(entity);
+        return convertToResponse(saved);
     }
 }

@@ -1,13 +1,10 @@
 package com.meta.stock.product.mapper;
 
 import com.meta.stock.materials.dto.MaterialRequirementDto;
-import com.meta.stock.product.dto.ProductDto;
 import com.meta.stock.product.dto.ProductStockDto;
 import com.meta.stock.product.dto.ProductDemandBean;
 import com.meta.stock.product.dto.ProductsAmountListBean;
 import org.apache.ibatis.annotations.Mapper;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Sort;
 
 import java.util.List;
 import java.util.Map;

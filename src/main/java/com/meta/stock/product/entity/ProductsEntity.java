@@ -1,4 +1,4 @@
-package com.meta.stock.product.Entity;
+package com.meta.stock.product.entity;
 
 import lombok.*;
 import jakarta.persistence.*;
@@ -28,44 +28,41 @@ public class ProductsEntity {
     @Column(name = "LOTS_ID")
     private Long lotsId;
 
-    // Production_Request 테이블에 PRODUCT_ID가 없으므로 양방향 관계 제거
-
-    // Getters and Setters (Lombok @Getter 대신 수동으로 구현)
-
     public Long getProductId() {
         return productId;
-    }
-
-    public void setProductId(Long productId) {
-        this.productId = productId;
     }
 
     public String getProductName() {
         return productName;
     }
 
-    public void setProductName(String productName) {
-        this.productName = productName;
-    }
-
     public Integer getProductionLoss() {
         return productionLoss;
-    }
-
-    public void setProductionLoss(Integer productionLoss) {
-        this.productionLoss = productionLoss;
     }
 
     public Long getPrId() {
         return prId;
     }
 
-    public void setPrId(Long prId) {
-        this.prId = prId;
-    }
-
     public Long getLotsId() {
         return lotsId;
+    }
+
+
+    public void setProductId(Long productId) {
+        this.productId = productId;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
+
+    public void setProductionLoss(Integer productionLoss) {
+        this.productionLoss = productionLoss;
+    }
+
+    public void setPrId(Long prId) {
+        this.prId = prId;
     }
 
     public void setLotsId(Long lotsId) {

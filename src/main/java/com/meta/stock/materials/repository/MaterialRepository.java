@@ -1,6 +1,6 @@
-package com.meta.stock.materials.Repository;
+package com.meta.stock.materials.repository;
 
-import com.meta.stock.materials.Entity.MaterialEntity;
+import com.meta.stock.materials.entity.MaterialEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -15,4 +15,7 @@ public interface MaterialRepository extends JpaRepository<MaterialEntity, Long> 
 
     // 전체 원재료 목록 조회 (ID 순)
     List<MaterialEntity> findAllByOrderByMaterialsIdAsc();
+
+    // MR_ID로 원재료 조회 (추가)
+    List<MaterialEntity> findByMrId(Long mrId);
 }

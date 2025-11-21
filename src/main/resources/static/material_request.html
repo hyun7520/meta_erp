@@ -8,11 +8,10 @@
 </head>
 <body>
 <div class="container">
-    <!-- 헤더 -->
     <div class="header">
         <div class="header-left">
             <div class="logo">
-                <img src="/logo.png" alt="회사로고">
+                <img src="/logo.png" alt="회사로고" onerror="this.style.display='none'">
             </div>
             <div class="header-text">
                 <h1>원재료 발주 허가</h1>
@@ -20,7 +19,6 @@
             </div>
         </div>
 
-        <!-- 네비게이션 버튼 (중앙) -->
         <div class="header-nav">
             <a href="/order.html" class="nav-btn">
                 📋 완제품 생산 요청
@@ -30,38 +28,35 @@
             </a>
         </div>
 
-        <!-- 시간 & 로그인 상태 배너 (오른쪽) -->
         <div class="status-banner">
-            <div class="current-time" id="currentTime">
+            <div class="current-time" id="materialCurrentTime">
                 🕐 2025-11-18 10:30:45
             </div>
             <div class="user-status">
-                <div class="user-avatar" id="userAvatar">홍</div>
+                <div class="user-avatar" id="materialUserAvatar">홍</div>
                 <div class="user-info-text">
-                    <div class="user-name" id="userName">홍길동</div>
-                    <div class="user-role" id="userRole">경영팀 · 매니저</div>
+                    <div class="user-name" id="materialUserName">홍길동</div>
+                    <div class="user-role" id="materialUserRole">경영팀 · 매니저</div>
                 </div>
             </div>
         </div>
     </div>
 
-
-    <!-- 컨텐츠 -->
     <div class="content-wrapper">
         <div class="tabs">
-            <button class="tab active" onclick="showTab('pending')">
-                미승인 발주 <span class="tab-count">0</span>
+            <button class="tab active" onclick="MaterialModule.showTab('pending')">
+                미승인 발주 <span class="tab-count" id="materialPendingCount">0</span>
             </button>
-            <button class="tab" onclick="showTab('all')">
-                전체 발주 <span class="tab-count">0</span>
+            <button class="tab" onclick="MaterialModule.showTab('all')">
+                전체 발주 <span class="tab-count" id="materialAllCount">0</span>
             </button>
         </div>
 
-        <div id="loading" class="loading">
+        <div id="materialLoading" class="loading">
             데이터를 불러오는 중입니다
         </div>
 
-        <div id="content" style="display: none;">
+        <div id="materialContent" style="display: none;">
             <table>
                 <thead>
                 <tr>
@@ -76,34 +71,367 @@
                     <th>작업</th>
                 </tr>
                 </thead>
-                <tbody id="tableBody"></tbody>
+                <tbody id="materialTableBody"></tbody>
             </table>
-            <div class="pagination" id="pagination"></div>
+            <div class="pagination" id="materialPagination"></div>
         </div>
 
-        <div id="empty" class="empty" style="display: none;">
+        <div id="materialEmpty" class="empty" style="display: none;">
             발주 요청이 없습니다
         </div>
     </div>
 </div>
 
-<!-- 승인/반려 모달 -->
-<div id="modal" class="modal">
+<div id="materialModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
-            <h3 id="modalTitle">발주 승인</h3>
+            <h3 id="materialModalTitle">발주 승인</h3>
         </div>
         <div class="modal-body">
-            <label for="modalNote">사유 (선택)</label>
-            <textarea id="modalNote" rows="4" placeholder="승인 또는 반려 사유를 입력하세요"></textarea>
+            <label for="materialModalNote">사유 (선택)</label>
+            <textarea id="materialModalNote" rows="4" placeholder="승인 또는 반려 사유를 입력하세요"></textarea>
         </div>
         <div class="modal-footer">
-            <button class="btn-modal btn-cancel" onclick="closeModal()">취소</button>
-            <button class="btn-modal btn-confirm" id="confirmBtn" onclick="confirmAction()">확인</button>
+            <button class="btn-modal btn-cancel" onclick="MaterialModule.closeModal()">취소</button>
+            <button class="btn-modal btn-confirm" id="materialConfirmBtn" onclick="MaterialModule.confirmAction()">확인</button>
         </div>
     </div>
 </div>
 
-<script src="script.js"></script>
+<script>
+    const MaterialModule = (function() {
+        const API = {
+            ALL_REQUESTS: '/pro/material-requests',
+            PENDING_REQUESTS: '/pro/material-requests/pending',
+            APPROVE: '/pro/material-requests/approve',
+            REJECT: '/pro/material-requests/reject'
+        };
+
+        let state = {
+            currentTab: 'pending',
+            currentAction: null, // 1: 승인, 2: 반려
+            currentMrId: null,
+            currentPage: 1,
+            itemsPerPage: 5,
+            allData: []
+        };
+
+        function init() {
+            updateTime();
+            setInterval(updateTime, 1000);
+            loadUserInfo();
+            loadData('pending');
+        }
+
+        function updateTime() {
+            const now = new Date();
+            const formatted = now.getFullYear() + '-' +
+                String(now.getMonth() + 1).padStart(2, '0') + '-' +
+                String(now.getDate()).padStart(2, '0') + ' ' +
+                String(now.getHours()).padStart(2, '0') + ':' +
+                String(now.getMinutes()).padStart(2, '0') + ':' +
+                String(now.getSeconds()).padStart(2, '0');
+            document.getElementById('materialCurrentTime').innerHTML = '🕐 ' + formatted;
+        }
+
+        function loadUserInfo() {
+            // 다른 팀원의 employees 세션 사용
+            const employeeInfo = JSON.parse(sessionStorage.getItem('employees') || '{}');
+
+            if (employeeInfo.name) {
+                document.getElementById('materialUserName').textContent = employeeInfo.name;
+                document.getElementById('materialUserAvatar').textContent = employeeInfo.name.charAt(0);
+                const department = employeeInfo.department || '경영팀';
+                const position = employeeInfo.position || '매니저';
+                document.getElementById('materialUserRole').textContent = `${department} · ${position}`;
+            }
+        }
+
+        function showTab(tab) {
+            state.currentTab = tab;
+            state.currentPage = 1;
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            loadData(tab);
+        }
+
+        async function loadData(tabName) {
+            const apiUrl = tabName === 'pending' ? API.PENDING_REQUESTS : API.ALL_REQUESTS;
+
+            try {
+                document.getElementById('materialLoading').style.display = 'block';
+                document.getElementById('materialContent').style.display = 'none';
+                document.getElementById('materialEmpty').style.display = 'none';
+
+                const response = await fetch(apiUrl);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                state.allData = Array.isArray(data) ? data : [];
+
+                if (state.allData.length === 0) {
+                    document.getElementById('materialEmpty').style.display = 'block';
+                    document.getElementById('materialContent').style.display = 'none';
+                } else {
+                    document.getElementById('materialContent').style.display = 'block';
+                    renderPage();
+                }
+
+                updateTabCounts(tabName, state.allData.length);
+
+            } catch (error) {
+                console.error("API 로드 중 오류 발생:", error);
+                document.getElementById('materialLoading').innerHTML = `데이터 로드 실패: ${error.message}`;
+                document.getElementById('materialLoading').style.display = 'block';
+            } finally {
+                document.getElementById('materialLoading').style.display = 'none';
+            }
+        }
+
+        function renderPage() {
+            if (!Array.isArray(state.allData)) {
+                console.error("renderPage: allData is not an array.");
+                return;
+            }
+
+            const startIndex = (state.currentPage - 1) * state.itemsPerPage;
+            const endIndex = startIndex + state.itemsPerPage;
+            const pageData = state.allData.slice(startIndex, endIndex);
+
+            renderTable(pageData);
+            renderPagination();
+        }
+
+        function renderTable(data) {
+            const tbody = document.getElementById('materialTableBody');
+            tbody.innerHTML = '';
+
+            data.forEach(item => {
+                const row = document.createElement('tr');
+
+                let statusBadge = '';
+                if (item.approved === 0) {
+                    statusBadge = '<span class="status-badge status-pending">미승인</span>';
+                } else if (item.approved > 0) {
+                    statusBadge = '<span class="status-badge status-approved">승인</span>';
+                } else {
+                    statusBadge = '<span class="status-badge status-rejected">반려</span>';
+                }
+
+                let actionButtons = '';
+                if (item.approved === 0) {
+                    actionButtons = `
+                        <button class="btn btn-approve" onclick="MaterialModule.openModal(${item.mrId}, 1)">✓ 승인</button>
+                        <button class="btn btn-reject" onclick="MaterialModule.openModal(${item.mrId}, 2)">✕ 반려</button>
+                    `;
+                } else {
+                    const approverText = item.approved > 0 ? (item.approverName || '처리완료') : '처리완료';
+                    actionButtons = `<span style="color: #666;">${approverText}</span>`;
+                }
+
+                row.innerHTML = `
+                    <td><strong>${item.mrId}</strong></td>
+                    <td>${item.materialName || '-'}</td>
+                    <td>${item.requesterName || '-'}</td>
+                    <td><span class="qty-unit">${item.qty} ${item.unit}</span></td>
+                    <td>${item.requestDate || '-'}</td>
+                    <td>${statusBadge}</td>
+                    <td>${item.approvedDate || '-'}</td>
+                    <td>${item.note || '-'}</td>
+                    <td>${actionButtons}</td>
+                `;
+
+                tbody.appendChild(row);
+            });
+        }
+
+        function renderPagination() {
+            const totalPages = Math.ceil(state.allData.length / state.itemsPerPage);
+            const pagination = document.getElementById('materialPagination');
+            pagination.innerHTML = '';
+
+            if (totalPages <= 1) return;
+
+            const prevBtn = document.createElement('button');
+            prevBtn.className = 'pagination-btn';
+            prevBtn.innerHTML = '‹';
+            prevBtn.disabled = state.currentPage === 1;
+            prevBtn.onclick = () => goToPage(state.currentPage - 1);
+            pagination.appendChild(prevBtn);
+
+            const startPage = Math.max(1, state.currentPage - 2);
+            const endPage = Math.min(totalPages, state.currentPage + 2);
+
+            if (startPage > 1) {
+                const firstBtn = document.createElement('button');
+                firstBtn.className = 'pagination-btn';
+                firstBtn.textContent = '1';
+                firstBtn.onclick = () => goToPage(1);
+                pagination.appendChild(firstBtn);
+
+                if (startPage > 2) {
+                    const dots = document.createElement('span');
+                    dots.className = 'pagination-info';
+                    dots.textContent = '...';
+                    pagination.appendChild(dots);
+                }
+            }
+
+            for (let i = startPage; i <= endPage; i++) {
+                const pageBtn = document.createElement('button');
+                pageBtn.className = 'pagination-btn' + (i === state.currentPage ? ' active' : '');
+                pageBtn.textContent = i;
+                pageBtn.onclick = () => goToPage(i);
+                pagination.appendChild(pageBtn);
+            }
+
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) {
+                    const dots = document.createElement('span');
+                    dots.className = 'pagination-info';
+                    dots.textContent = '...';
+                    pagination.appendChild(dots);
+                }
+
+                const lastBtn = document.createElement('button');
+                lastBtn.className = 'pagination-btn';
+                lastBtn.textContent = totalPages;
+                lastBtn.onclick = () => goToPage(totalPages);
+                pagination.appendChild(lastBtn);
+            }
+
+            const nextBtn = document.createElement('button');
+            nextBtn.className = 'pagination-btn';
+            nextBtn.innerHTML = '›';
+            nextBtn.disabled = state.currentPage === totalPages;
+            nextBtn.onclick = () => goToPage(state.currentPage + 1);
+            pagination.appendChild(nextBtn);
+
+            const info = document.createElement('span');
+            info.className = 'pagination-info';
+            info.textContent = `${state.allData.length}개 중 ${((state.currentPage - 1) * state.itemsPerPage) + 1}-${Math.min(state.currentPage * state.itemsPerPage, state.allData.length)}`;
+            pagination.appendChild(info);
+        }
+
+        function goToPage(page) {
+            state.currentPage = page;
+            renderPage();
+            document.getElementById('materialContent').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function updateTabCounts(currentType, currentCount) {
+            const tabs = document.querySelectorAll('.tab');
+
+            if (currentType === 'pending') {
+                document.getElementById('materialPendingCount').textContent = currentCount;
+                fetch(API.ALL_REQUESTS)
+                    .then(response => response.json())
+                    .then(data => {
+                        const count = Array.isArray(data) ? data.length : 0;
+                        document.getElementById('materialAllCount').textContent = count;
+                    })
+                    .catch(error => console.error("전체 카운트 로드 실패:", error));
+            } else {
+                document.getElementById('materialAllCount').textContent = currentCount;
+                fetch(API.PENDING_REQUESTS)
+                    .then(response => response.json())
+                    .then(data => {
+                        const count = Array.isArray(data) ? data.length : 0;
+                        document.getElementById('materialPendingCount').textContent = count;
+                    })
+                    .catch(error => console.error("미승인 카운트 로드 실패:", error));
+            }
+        }
+
+        function openModal(mrId, action) {
+            state.currentMrId = mrId;
+            state.currentAction = action;
+
+            const modal = document.getElementById('materialModal');
+            const modalTitle = document.getElementById('materialModalTitle');
+            const confirmBtn = document.getElementById('materialConfirmBtn');
+
+            if (action === 1) {
+                modalTitle.textContent = '✓ 발주 승인';
+                confirmBtn.textContent = '승인';
+                confirmBtn.className = 'btn-modal btn-confirm';
+            } else {
+                modalTitle.textContent = '✕ 발주 반려';
+                confirmBtn.textContent = '반려';
+                confirmBtn.className = 'btn-modal btn-confirm reject';
+            }
+
+            document.getElementById('materialModalNote').value = '';
+            modal.style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('materialModal').style.display = 'none';
+        }
+
+        function confirmAction() {
+            const note = document.getElementById('materialModalNote').value.trim();
+            const isApprove = state.currentAction === 1;
+
+            // 다른 팀원의 employees 세션에서 승인자 ID 가져오기
+            const employeeInfo = JSON.parse(sessionStorage.getItem('employees') || '{}');
+            const approvedBy = employeeInfo.employeeId || 200; // 기본값 200
+
+            if (!approvedBy) {
+                alert("사용자 정보를 찾을 수 없습니다. 로그인이 필요합니다.");
+                return;
+            }
+
+            const apiUrl = isApprove ? API.APPROVE : API.REJECT;
+
+            const data = {
+                mrId: state.currentMrId,
+                approvedBy: approvedBy,
+                note: note || null
+            };
+
+            fetch(apiUrl, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                if (!response.ok) {
+                     throw new Error('처리 API 서버 오류');
+                }
+                return response.json();
+            })
+            .then(result => {
+                closeModal();
+                alert(isApprove ? '승인되었습니다.' : '반려되었습니다.');
+                loadData(state.currentTab);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('처리 중 오류가 발생했습니다: ' + error.message);
+            });
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('materialModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+
+        return {
+            init,
+            showTab,
+            openModal,
+            closeModal,
+            confirmAction
+        };
+    })();
+
+    window.onload = MaterialModule.init;
+</script>
 </body>
 </html>
