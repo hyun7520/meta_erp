@@ -14,6 +14,7 @@ public class ProductRequestDto {
     private Integer targetQty;
     private Integer plannedQty;
     private Integer completedQty;
+    private Integer inStockQty;
     private String unit;
     private String requestDate;
     private String productionStartDate;
@@ -22,10 +23,10 @@ public class ProductRequestDto {
     private String note;
 
     public boolean isStockInsufficient() {
-        if(getCompletedQty() != null) {
+        if(inStockQty + getCompletedQty() < getPlannedQty()) {
             return true;
         }
-        return getCompletedQty() < getPlannedQty();
+        return false;
     }
 
     public int getComplete() {

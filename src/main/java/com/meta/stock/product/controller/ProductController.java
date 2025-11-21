@@ -39,21 +39,21 @@ public class ProductController {
     @GetMapping("product")
     public String getAllProducts(
             @RequestParam(defaultValue = "0") int stockPage,
-            @RequestParam(defaultValue = "6") int stockSize,
+            @RequestParam(defaultValue = "5") int stockSize,
             @RequestParam(required = false) String stockKeyword,
             @RequestParam(defaultValue = "storageDate") String stockSortBy,
             @RequestParam(defaultValue = "DESC") String stockSortDir,
 
             // 생산 요청 파라미터
             @RequestParam(defaultValue = "0") int prPage,
-            @RequestParam(defaultValue = "10") int prSize,
+            @RequestParam(defaultValue = "5") int prSize,
             @RequestParam(required = false) String prKeyword,
             @RequestParam(defaultValue = "requestDate") String prSortBy,
             @RequestParam(defaultValue = "ASC") String prSortDir,
 
             // 재료 발주 파라미터
             @RequestParam(defaultValue = "0") int mrPage,
-            @RequestParam(defaultValue = "10") int mrSize,
+            @RequestParam(defaultValue = "5") int mrSize,
             @RequestParam(required = false) String mrKeyword,
             @RequestParam(defaultValue = "requestDate") String mrSortBy,
             @RequestParam(defaultValue = "ASC") String mrSortDir,

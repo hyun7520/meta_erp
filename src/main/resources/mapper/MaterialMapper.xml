@@ -30,7 +30,7 @@
         FROM Material_Request mr
         LEFT JOIN Materials m ON mr.mr_id = m.mr_id
         LEFT JOIN Employees e ON mr.request_by = e.employee_id
-        WHERE mr.approved = 0
+        WHERE mr.approved = 1
         <if test="keyword != null and keyword != ''">
             AND m.material_name LIKE '%' || #{keyword} || '%'
         </if>

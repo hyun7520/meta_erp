@@ -21,6 +21,7 @@
         <result property="targetQty" column="TARGET_QTY"/>
         <result property="plannedQty" column="PLANNED_QTY"/>
         <result property="completedQty" column="COMPLETED_QTY"/>
+        <result property="inStockQty" column="in_stock_qty"/>
         <result property="unit" column="UNIT"/>
         <result property="requestDate" column="REQUEST_DATE"/>
         <result property="productionStartDate" column="PRODUCTION_START_DATE"/>
@@ -58,16 +59,27 @@
         fp.name as product_name,
         pr.to_company,
         pr.target_qty,
-        pr.planned_qty,
-        pr.completed_qty,
+        NVL(pr.planned_qty, 0) as planned_qty,
+        NVL(pr.completed_qty, 0) as completed_qty,
         pr.unit,
-        pr.request_date,
-        pr.deadline,
-        pr.production_start_date,
-        pr.end_date,
-        pr.note
+        TO_CHAR(pr.request_date, 'YYYY-MM-DD') as request_date,
+        TO_CHAR(pr.deadline, 'YYYY-MM-DD') as deadline,
+        TO_CHAR(pr.production_start_date, 'YYYY-MM-DD') as production_start_date,
+        TO_CHAR(pr.end_date, 'YYYY-MM-DD') as end_date,
+        pr.note,
+        NVL(stock.in_stock_qty, 0) as in_stock_qty
         FROM Production_Request pr
         LEFT JOIN Fixed_Product fp ON pr.serial_code = fp.serial_code
+        LEFT JOIN (
+        SELECT
+        fp2.serial_code,
+        SUM(l.qty) as in_stock_qty
+        FROM Products p
+        INNER JOIN Lots l ON p.lots_id = l.lot_id
+        INNER JOIN Fixed_Product fp2 ON p.product_name = fp2.name
+        WHERE l.qty > 0
+        GROUP BY fp2.serial_code
+        ) stock ON pr.serial_code = stock.serial_code
         WHERE pr.end_date IS NULL
         <if test="keyword != null and keyword != ''">
             AND fp.name LIKE '%' || #{keyword} || '%'
