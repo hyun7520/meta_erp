@@ -1,10 +1,11 @@
-package com.meta.stock.materials.Service;
+package com.meta.stock.materials.service;
 
-import com.meta.stock.materials.DTO.MaterialRequestDTO;
-import com.meta.stock.materials.Entity.MaterialRequestEntity;
-import com.meta.stock.materials.Repository.MaterialRequestRepository;
-import com.meta.stock.user.Entity.EmployeeEntity;
-import com.meta.stock.user.Repository.EmployeeRepository;
+import com.meta.stock.materials.dto.MaterialRequestDto;
+import com.meta.stock.materials.entity.MaterialRequestEntity;
+import com.meta.stock.materials.repository.MaterialRequestRepository;
+import com.meta.stock.user.employees.entity.Employees;
+import com.meta.stock.user.employees.repository.employeesEntityRepositiry;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,20 +17,21 @@ import java.util.stream.Collectors;
 @Service
 public class MaterialRequestService {
 
+    @Autowired
     private final MaterialRequestRepository materialRequestRepository;
-    private final EmployeeRepository employeeRepository;
+    @Autowired
+    private final employeesEntityRepositiry employeeRepository;
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private static final DateTimeFormatter DATETIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    public MaterialRequestService(MaterialRequestRepository materialRequestRepository,
-                                  EmployeeRepository employeeRepository) {
+    public MaterialRequestService(MaterialRequestRepository materialRequestRepository, employeesEntityRepositiry employeeRepository) {
         this.materialRequestRepository = materialRequestRepository;
         this.employeeRepository = employeeRepository;
     }
 
     @Transactional(readOnly = true)
-    public List<MaterialRequestDTO.Response> getAllMaterialRequests() {
+    public List<MaterialRequestDto.Response> getAllMaterialRequests() {
         List<MaterialRequestEntity> entities = materialRequestRepository.findAllByOrderByMrIdDesc();
         return entities.stream()
                 .map(this::convertToResponse)
@@ -37,7 +39,7 @@ public class MaterialRequestService {
     }
 
     @Transactional(readOnly = true)
-    public List<MaterialRequestDTO.Response> getPendingMaterialRequests() {
+    public List<MaterialRequestDto.Response> getPendingMaterialRequests() {
         List<MaterialRequestEntity> entities = materialRequestRepository.findByApproved(0);
         return entities.stream()
                 .map(this::convertToResponse)
@@ -45,31 +47,30 @@ public class MaterialRequestService {
     }
 
     @Transactional
-    public MaterialRequestDTO.Response createMaterialRequest(MaterialRequestDTO.Request request) {
-        MaterialRequestEntity entity = MaterialRequestEntity.builder()
-                .requestBy(request.getRequestBy())
-                .requestDate(LocalDateTime.now().format(DATE_FORMATTER))
-                .qty(request.getQty())
-                .unit(request.getUnit())
-                .approved(0)
-                .note(request.getNote())
-                .build();
+    public MaterialRequestDto.Response createMaterialRequest(MaterialRequestDto.Request request) {
+        MaterialRequestEntity entity = new MaterialRequestEntity();
+        entity.setRequestBy(request.getRequestBy());
+        entity.setRequestDate(LocalDateTime.now().format(DATETIME_FORMATTER));
+        entity.setQty(request.getQty());
+        entity.setUnit(request.getUnit());
+        entity.setApproved(0);
+        entity.setNote(request.getNote());
 
         MaterialRequestEntity saved = materialRequestRepository.save(entity);
         return convertToResponse(saved);
     }
 
     @Transactional
-    public MaterialRequestDTO.Response approveMaterialRequest(MaterialRequestDTO.Approval approval) {
+    public MaterialRequestDto.Response approveMaterialRequest(MaterialRequestDto.Approval approval) {
         return processApproval(approval, 1);
     }
 
     @Transactional
-    public MaterialRequestDTO.Response rejectMaterialRequest(MaterialRequestDTO.Approval approval) {
+    public MaterialRequestDto.Response rejectMaterialRequest(MaterialRequestDto.Approval approval) {
         return processApproval(approval, -1);
     }
 
-    private MaterialRequestDTO.Response processApproval(MaterialRequestDTO.Approval approval, int status) {
+    private MaterialRequestDto.Response processApproval(MaterialRequestDto.Approval approval, int status) {
         MaterialRequestEntity entity = materialRequestRepository.findById(approval.getMrId())
                 .orElseThrow(() -> new IllegalArgumentException("발주 요청을 찾을 수 없습니다."));
 
@@ -88,16 +89,16 @@ public class MaterialRequestService {
         return convertToResponse(saved);
     }
 
-    private MaterialRequestDTO.Response convertToResponse(MaterialRequestEntity entity) {
-        EmployeeEntity requester = employeeRepository.findById(entity.getRequestBy()).orElse(null);
-        EmployeeEntity managementEmp = employeeRepository.findById(entity.getManagementEmployee()).orElse(null);
-        EmployeeEntity productionEmp = employeeRepository.findById(entity.getProductionEmployee()).orElse(null);
+    private MaterialRequestDto.Response convertToResponse(MaterialRequestEntity entity) {
+        Employees requester = employeeRepository.findById((int) entity.getRequestBy()).orElse(null);
+        Employees managementEmp = employeeRepository.findById((int) entity.getManagementEmployee()).orElse(null);
+        Employees productionEmp = employeeRepository.findById((int) entity.getProductionEmployee()).orElse(null);
 
         String requesterName = requester != null ? requester.getName() : String.valueOf(entity.getRequestBy());
         String managementName = managementEmp != null ? managementEmp.getName() : "-";
         String productionName = productionEmp != null ? productionEmp.getName() : "-";
 
-        return MaterialRequestDTO.Response.builder()
+        return MaterialRequestDto.Response.builder()
                 .mrId(entity.getMrId())
                 .materialId(0)
                 .materialName("-")

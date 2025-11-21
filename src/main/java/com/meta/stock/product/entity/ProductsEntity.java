@@ -1,4 +1,4 @@
-package com.meta.stock.product.Entity;
+package com.meta.stock.product.entity;
 
 import lombok.*;
 import jakarta.persistence.*;

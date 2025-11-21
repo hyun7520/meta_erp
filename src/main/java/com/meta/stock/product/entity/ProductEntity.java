@@ -15,7 +15,7 @@ public class ProductEntity {
     private String productName;
 
     @Column(name = "production_loss")
-    private float productionLoss;
+    private int productionLoss;
 
     @Column(name = "pr_id")
     private long prId;
@@ -26,13 +26,13 @@ public class ProductEntity {
     // getter & setter
     public long getProductId() { return productId; }
     public String getProductName() { return productName; }
-    public float getProductionLoss() {return productionLoss;}
+    public int getProductionLoss() {return productionLoss;}
     public long getPrId() {return prId;}
     public long getLotsId() { return lotsId; }
 
     public void setProductId(long productId) { this.productId = productId; }
     public void setProductName(String productName) { this.productName = productName; }
-    public void setProductionLoss(float productionLoss) {this.productionLoss = productionLoss;}
+    public void setProductionLoss(int productionLoss) {this.productionLoss = productionLoss;}
     public void setPrId(long prId) {this.prId = prId;}
     public void setLotsId(long lotsId) { this.lotsId = lotsId; }
 }
