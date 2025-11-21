@@ -196,4 +196,11 @@
         SET end_date = SYSDATE
         WHERE pr_id = #{prId}
     </update>
+
+    <select id="getOngoingRequestsCount">
+        SELECT count(*)
+        FROM Production_Request pr
+        LEFT JOIN Fixed_Product fp ON pr.serial_code = fp.serial_code
+        WHERE pr.end_date IS NULL
+    </select>
 </mapper>

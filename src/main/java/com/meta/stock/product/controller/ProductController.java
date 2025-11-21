@@ -70,6 +70,7 @@ public class ProductController {
         model.addAttribute("stockSortBy", stockSortBy);
         model.addAttribute("stockSortDir", stockSortDir);
 
+        int ongoingRequestsCount = productionRequestService.getOngoingRequestsCount(prKeyword);
         // 진행 중인 생산 요청 페이징/검색/정렬
         Pageable prPageable = PageRequest.of(prPage, prSize, Sort.by(Sort.Direction.fromString(prSortDir), prSortBy));
         Page<ProductRequestDto> productRequests = productionRequestService.findOngoingProductRequests(prKeyword, prPageable);

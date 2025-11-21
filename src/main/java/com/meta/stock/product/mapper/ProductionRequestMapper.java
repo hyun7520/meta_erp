@@ -24,4 +24,6 @@ public interface ProductionRequestMapper {
     void updateEndDate(Long prId);
 
     void updateProductionStartDate(Long prId);
+
+    int getOngoingRequestsCount(String keyword);
 }

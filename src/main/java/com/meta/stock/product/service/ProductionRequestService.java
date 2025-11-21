@@ -424,4 +424,8 @@ public class ProductionRequestService {
         ProductionRequestEntity saved = productionRequestRepository.save(entity);
         return convertToResponse(saved);
     }
+
+    public int getOngoingRequestsCount(String prKeyword) {
+        return prMapper.getOngoingRequestsCount(prKeyword);
+    }
 }

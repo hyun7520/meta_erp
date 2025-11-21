@@ -100,7 +100,7 @@
 
     <!-- 2. 진행 중인 주문 (COMPLETE = 0) -->
     <div class="card mb-4 shadow-sm">
-        <div class="card-header bg-info text-white d-flex justify-content">
+        <div class="card-header bg-info text-white">
             <h5 class="mb-0">진행 중인 주문 (<span th:text="${productRequests.numberOfElements}">0</span>건)</h5>
             <form method="get" action="/product" class="row g-2 mt-2">
                 <div class="col-md-4">
@@ -142,7 +142,9 @@
                     <tbody>
                     <tr th:each="order : ${productRequests}">
                         <td th:text="${order.prId}">1</td>
-                        <td th:text="${order.productName}">부대찌개</td>
+                        <td>
+                            <a th:href="@{/pr/{id}(id=${order.prId})}" th:text="${order.productName}">부대찌개</a>
+                        </td>
                         <td th:text="${order.toCompany}">거래처A</td>
                         <td th:text="${order.targetQty}">120</td>
                         <td th:text="${order.deadline}">2025-11-20</td>
