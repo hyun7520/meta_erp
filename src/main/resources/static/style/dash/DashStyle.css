@@ -35,16 +35,6 @@
 
 [id$="_time"] { color:#777; }
 
-.search-group {
-    display: flex;
-    justify-content: end;
-    align-items: baseline;
-}
-
-.search-group div {
-    margin: 0 10px;
-}
-
 .label_form_group {
     display: flex;
     align-items: baseline;

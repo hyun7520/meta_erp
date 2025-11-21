@@ -53,7 +53,7 @@ public class employeesController {
         else{
             if(employee.getPassword().equals(eDto.getPassword())){
                 session.setAttribute("loginId", employee.getEmployee_id()); // ID를 세션에 저장
-                return "employees/main";
+                return "dashboard/dashboard";
             }
             else{
                 pw.println("<script type='text/javascript'>");
