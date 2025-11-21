@@ -6,10 +6,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 const drawPie = (data, product = '') => {
     const option = {
-        title: {
-            text: product + '원자재 현 보유량',
-            left: 'center'
-        },
         tooltip: {
             trigger: 'item'
         },
