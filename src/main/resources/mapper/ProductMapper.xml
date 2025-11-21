@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.meta.stock.product.mapper.ProductMapper">
+    <resultMap id="parseDashProductsList" type="com.meta.stock.product.dto.ProductsAmountListBean">
+        <result property="productId" column="product_id" />
+        <result property="serialCode" column="serial_code" />
+        <result property="productName" column="product_name" />
+        <result property="storageDate" column="storage_date" />
+        <result property="shelfLifeDays" column="shelf_life_days" />
+    </resultMap>
+
+    <select id="getDashProductsList" resultMap="parseDashProductsList">
+        select product_id, serial_code, product_name, qty, unit, storage_date, shelf_life_days
+        from products p
+        left join fixed_product fp on p.product_name = fp.name
+        left join lots l on p.lots_id = l.lot_id
+        <where>
+            <choose>
+                <when test="column != null and column != '' and search != null and search != ''">
+                    ${column} like '%' || #{search} || '%'
+                </when>
+                <when test="date != null and date != ''">
+                    storage_date eq #{date}
+                </when>
+            </choose>
+        </where>
+        order by ${sort} ${order}
+        offset #{offset} rows fetch next #{limit} rows only
+    </select>
+
+    <select id="getDashProductDemand">
+        select product_name as name, request_date as requestDate, sum(qty) as demand
+        from production_request pr
+        join products p on pr.pr_id = p.pr_id
+        left join lots l on p.lots_id = l.lot_id
+        group by product_name, request_date
+        order by request_date asc
+    </select>
+
+    <select id="getTotalListSize">
+        select count(*) from products p
+        left join fixed_product fp on p.product_name = fp.name
+        left join lots l on p.lots_id = l.lot_id
+        <where>
+            <choose>
+                <when test="column != null and column != '' and search != null and search != ''">
+                    ${column} like '%' || #{search} || '%'
+                </when>
+                <when test="date != null and date != ''">
+                    storage_date eq #{date}
+                </when>
+            </choose>
+        </where>
+    </select>
+</mapper>

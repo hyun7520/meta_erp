@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>수요량(출하량) 선그래프</title>
+</head>
+<body>
+    <div th:fragment="line">
+        <div id="product_demand_Line" class="chart"></div>
+        <div class="refresh-area">
+            <span class="refresh-time" id="product_demand_Line_time"></span>
+            <button class="refresh-btn" onclick="drawDemandLineChart()">
+                <i class="fa-solid fa-rotate-right"></i>
+            </button>
+        </div>
+
+        <script type="text/javascript" th:src="@{/script/graph/productDemandLine.js}"></script>
+    </div>
+</body>
+</html>
