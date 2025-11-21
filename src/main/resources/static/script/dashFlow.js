@@ -1,10 +1,25 @@
 const FLOW_API = "/dash/flow"
 const labels = {
-    orderRequest: "제품 생산 요청",
-    metrialRequest: "재료 발주 요청",
-    metrialRequestClear: "생산 대기",
-    productionReady: "제품 생산중",
-    todayDelivered: "당일 생산완료"
+    orderRequest: {
+        name: "제품 생산 요청",
+        icon: `<i class="fa-regular fa-comment-dots"></i>`
+    },
+    metrialRequest: {
+        name: "재료 발주 요청",
+        icon: `<i class="fa-regular fa-comment-dots"></i>`
+    },
+    metrialRequestClear: {
+        name: "생산 대기",
+        icon: `<i class="fa-solid fa-boxes-packing"></i>`
+    },
+    productionReady: {
+        name: "제품 생산중",
+    icon: `<i class="fa-solid fa-industry"></i>`
+},
+    todayDelivered: {
+        name: "당일 생산완료",
+        icon: `<i class="fa-solid fa-truck"></i>`
+}
 };
 
 window.addEventListener("load", refreshTimeline);
@@ -38,12 +53,16 @@ function renderTimeline(items) {
 
         const icon = document.createElement("div");
         icon.className = "mini-top";
-        icon.innerHTML = `<i class="fa-regular fa-comment-dots"></i>`;
+        icon.innerHTML = label.icon;
+
+        if (count > 5) icon.style.color = "deeppink";
+        else if (count === 0) icon.style.color = "black";
+
         box.appendChild(icon);
 
         const text = document.createElement("div");
         text.className = "center-text";
-        text.innerHTML = `${label} <span class='count'>${count}개</span>`;
+        text.innerHTML = `${label.name} <span class='count'>${count}개</span>`;
         box.appendChild(text);
 
         container.appendChild(box);
