@@ -1,0 +1,668 @@
+/* ==============================================
+   전역 설정 (Global Settings)
+   ============================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+    background: linear-gradient(135deg, #B5D8E8 0%, #F5E6D3 100%); /* 배경 그라데이션 */
+    padding: 20px;
+    min-height: 100vh;
+}
+
+/* ==============================================
+   메인 컨테이너 (Main Container)
+   - 전체 페이지를 감싸는 흰색 박스
+   ============================================== */
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    background: white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    overflow: hidden;
+}
+
+/* ==============================================
+   헤더 영역 (Header Section)
+   ============================================== */
+/* 헤더 전체 배경 - 그라데이션 색상 변경 가능 */
+.header {
+    background: linear-gradient(135deg, #2A9D8F 20%, #F5A3A3 100%);
+    padding: 24px 40px;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+/* 로고 영역 */
+.logo {
+    width: 120px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+}
+
+.logo img {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+}
+
+/* 헤더 왼쪽 (로고 + 제목) */
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+/* 헤더 제목 텍스트 */
+.header-text h1 {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    letter-spacing: -0.5px;
+}
+
+.header-text .subtitle {
+    font-size: 14px;
+    opacity: 0.9;
+    font-weight: 400;
+}
+
+/* ==============================================
+   네비게이션 버튼 (Navigation Buttons)
+   - 헤더 중앙의 페이지 이동 버튼들
+   ============================================== */
+.header-nav {
+    display: flex;
+    gap: 8px;
+}
+
+/* 네비게이션 버튼 스타일 */
+.nav-btn {
+    padding: 10px 20px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.nav-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* 현재 활성화된 페이지 버튼 */
+.nav-btn.active {
+    background: white;
+    color: #2A9D8F;
+    border-color: white;
+}
+
+/* ==============================================
+   사용자 상태 배너 (User Status Banner)
+   - 헤더 오른쪽의 시간 & 로그인 정보
+   ============================================== */
+.status-banner {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 12px 20px;
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    min-width: 220px;
+}
+
+/* 현재 시간 표시 */
+.current-time {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* 사용자 정보 영역 */
+.user-status {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* 사용자 아바타 (프로필 이미지 대신 이니셜) */
+.user-avatar {
+    width: 32px;
+    height: 32px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    color: #506D84;
+}
+
+.user-info-text {
+    flex: 1;
+}
+
+/* 사용자 이름 */
+.user-name {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 2px;
+}
+
+/* 사용자 역할/부서 */
+.user-role {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* ==============================================
+   메인 컨텐츠 영역 (Main Content Area)
+   ============================================== */
+.content-wrapper {
+    padding: 32px 40px;
+}
+
+/* 액션바 - 페이지 상단 회색 배경 영역 */
+.action-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 28px;
+    padding: 20px;
+    background: #F8F9FA;
+    border-radius: 12px;
+}
+
+.action-bar h2 {
+    font-size: 18px;
+    color: #374151;
+    font-weight: 600;
+}
+
+/* ==============================================
+   탭 메뉴 (Tab Menu)
+   - "미승인 발주" / "전체 발주" 탭
+   ============================================== */
+.tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 28px;
+    background: #F8F9FA;
+    padding: 6px;
+    border-radius: 12px;
+}
+
+/* 개별 탭 버튼 */
+.tab {
+    flex: 1;
+    padding: 14px 20px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 600;
+    color: #6B7280;
+    border-radius: 8px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tab:hover {
+    background: white;
+    color: #506D84;
+}
+
+/* 현재 활성화된 탭 */
+.tab.active {
+    background: white;
+    color: #506D84;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+/* 탭 내 카운트 배지 (숫자 표시) */
+.tab-count {
+    display: inline-block;
+    background: #2A9D8F;
+    color: white;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 13px;
+    margin-left: 8px;
+    font-weight: 600;
+}
+
+/* ==============================================
+   테이블 스타일 (Table Styles)
+   - 데이터 목록 표시
+   ============================================== */
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 8px;
+}
+
+/* 테이블 헤더 */
+thead {
+    background: #F8F9FA;
+}
+
+/* 테이블 헤더 셀 */
+th {
+    padding: 16px 20px;
+    text-align: left;
+    font-weight: 600;
+    color: #374151;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid #E5E7EB;
+}
+
+th:first-child {
+    border-radius: 8px 0 0 0;
+}
+
+th:last-child {
+    border-radius: 0 8px 0 0;
+}
+
+/* 테이블 데이터 셀 */
+td {
+    padding: 18px 20px;
+    font-size: 14px;
+    color: #4B5563;
+    border-bottom: 1px solid #F3F4F6;
+    vertical-align: middle;
+}
+
+/* 테이블 행 호버 효과 */
+tbody tr {
+    transition: all 0.2s ease;
+}
+
+tbody tr:hover {
+    background: #FEFCE8; /* 마우스 오버시 노란색 배경 */
+    transform: translateX(2px);
+}
+
+tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* ==============================================
+   상태 배지 (Status Badges)
+   - "미승인", "승인", "반려" 표시
+   ============================================== */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    gap: 6px;
+}
+
+/* 배지 앞 점(dot) 효과 */
+.status-badge::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+/* 미승인 상태 - 노란색 */
+.status-pending {
+    background: #FEF3C7;
+    color: #92400E;
+}
+
+.status-pending::before {
+    background: #F59E0B;
+    animation: pulse 2s infinite; /* 깜빡이는 효과 */
+}
+
+/* 승인 상태 - 초록색 */
+.status-approved {
+    background: #D1FAE5;
+    color: #065F46;
+}
+
+.status-approved::before {
+    background: #10B981;
+}
+
+/* 반려 상태 - 빨간색 */
+.status-rejected {
+    background: #FEE2E2;
+    color: #991B1B;
+}
+
+.status-rejected::before {
+    background: #EF4444;
+}
+
+/* 깜빡이는 애니메이션 */
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* ==============================================
+   버튼 스타일 (Button Styles)
+   - 승인/반려 버튼
+   ============================================== */
+.btn {
+    padding: 9px 18px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    margin-right: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* 승인 버튼 - 청록색 */
+.btn-approve {
+    background: #2A9D8F;
+    color: white;
+}
+
+.btn-approve:hover {
+    background: #238276;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(42, 157, 143, 0.3);
+}
+
+/* 반려 버튼 - 분홍색 */
+.btn-reject {
+    background: #F5A3A3;
+    color: #7F1D1D;
+}
+
+.btn-reject:hover {
+    background: #F28B8B;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+/* ==============================================
+   로딩 & 빈 상태 (Loading & Empty States)
+   ============================================== */
+/* 로딩 화면 */
+.loading {
+    text-align: center;
+    padding: 80px 20px;
+    color: #6B7280;
+}
+
+/* 로딩 스피너 애니메이션 */
+.loading::after {
+    content: '';
+    display: block;
+    width: 40px;
+    height: 40px;
+    margin: 20px auto;
+    border: 4px solid #E5E7EB;
+    border-top-color: #506D84;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* 데이터 없을 때 */
+.empty {
+    text-align: center;
+    padding: 80px 20px;
+    color: #9CA3AF;
+    font-size: 15px;
+}
+
+.empty::before {
+    content: '📦';
+    display: block;
+    font-size: 64px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+}
+
+/* ==============================================
+   모달 (Modal/Popup)
+   - 승인/반려 확인 팝업
+   ============================================== */
+/* 모달 배경 오버레이 */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* 모달 박스 */
+.modal-content {
+    background: white;
+    margin: 10% auto;
+    padding: 0;
+    border-radius: 16px;
+    width: 480px;
+    max-width: 90%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 모달 헤더 */
+.modal-header {
+    background: linear-gradient(135deg, #506D84 0%, #3C5770 100%);
+    padding: 24px 28px;
+    color: white;
+    border-radius: 16px 16px 0 0;
+}
+
+.modal-header h3 {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0;
+}
+
+/* 모달 본문 */
+.modal-body {
+    padding: 28px;
+}
+
+.modal-body label {
+    display: block;
+    margin-bottom: 10px;
+    color: #374151;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+/* 모달 텍스트 입력창 */
+.modal-body textarea {
+    width: 100%;
+    padding: 14px;
+    border: 2px solid #E5E7EB;
+    border-radius: 10px;
+    font-size: 14px;
+    resize: vertical;
+    font-family: inherit;
+    transition: all 0.2s ease;
+}
+
+.modal-body textarea:focus {
+    outline: none;
+    border-color: #506D84;
+    box-shadow: 0 0 0 3px rgba(80, 109, 132, 0.1);
+}
+
+/* 모달 하단 버튼 영역 */
+.modal-footer {
+    padding: 0 28px 28px;
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+/* ==============================================
+   모달 버튼 (Modal Buttons)
+   ============================================== */
+.btn-modal {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+/* 취소 버튼 - 회색 */
+.btn-cancel {
+    background: #F3F4F6;
+    color: #6B7280;
+}
+
+.btn-cancel:hover {
+    background: #E5E7EB;
+}
+
+/* 확인 버튼 - 청록색 */
+.btn-confirm {
+    background: #2A9D8F;
+    color: white;
+    min-width: 100px;
+}
+
+.btn-confirm:hover {
+    background: #238276;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(42, 157, 143, 0.3);
+}
+
+/* 반려 확인 버튼 - 분홍색 */
+.btn-confirm.reject {
+    background: #F5A3A3;
+    color: #7F1D1D;
+}
+
+.btn-confirm.reject:hover {
+    background: #F28B8B;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+/* ==============================================
+   기타 유틸리티 (Utilities)
+   ============================================== */
+/* 수량 표시 스타일 */
+.qty-unit {
+    font-weight: 600;
+    color: #506D84;
+}
+
+/* ==============================================
+   페이지네이션 (Pagination)
+   - 하단 페이지 번호 버튼
+   ============================================== */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid #E5E7EB;
+}
+
+/* 페이지 버튼 */
+.pagination-btn {
+    padding: 8px 12px;
+    border: 1px solid #E5E7EB;
+    background: white;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    color: #6B7280;
+    transition: all 0.2s ease;
+    min-width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pagination-btn:hover:not(:disabled) {
+    background: #F3F4F6;
+    border-color: #506D84;
+    color: #506D84;
+}
+
+/* 현재 선택된 페이지 */
+.pagination-btn.active {
+    background: #506D84;
+    color: white;
+    border-color: #506D84;
+    font-weight: 600;
+}
+
+/* 비활성화된 버튼 (이전/다음 버튼) */
+.pagination-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* 페이지 정보 텍스트 (예: "10개 중 1-5") */
+.pagination-info {
+    padding: 0 16px;
+    font-size: 14px;
+    color: #6B7280;
+}

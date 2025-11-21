@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" th:href="@{/style/styles.css}">
+<!--    <style>-->
+<!--        body {-->
+<!--            font-family: 'Malgun Gothic', '맑은 고딕', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;-->
+<!--            background-color: #f4f7f6;-->
+<!--            color: #333;-->
+<!--            line-height: 1.6;-->
+<!--            margin: 0;-->
+<!--            padding: 30px;-->
+<!--            display: flex;-->
+<!--            flex-direction: column;-->
+<!--            align-items: center; /* 폼을 화면 중앙에 배치 */-->
+<!--        }-->
+
+<!--        /* 컨테이너 역할 (폼과 제목을 감싸는 역할) */-->
+<!--        body > h1, form {-->
+<!--            max-width: 600px;-->
+<!--            width: 100%;-->
+<!--            margin-top: 20px;-->
+<!--            padding: 25px;-->
+<!--            background-color: #fff;-->
+<!--            border-radius: 10px;-->
+<!--            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);-->
+<!--        }-->
+
+<!--        h1 {-->
+<!--            color: #17a2b8; /* 청록색 계열 (리스트 페이지와 동일) */-->
+<!--            text-align: center;-->
+<!--            margin-bottom: 30px;-->
+<!--            padding-bottom: 15px;-->
+<!--            border-bottom: 3px solid #17a2b8;-->
+<!--            font-size: 28px;-->
+<!--        }-->
+
+<!--        /* -&#45;&#45; 폼 (테이블) 스타일 -&#45;&#45; */-->
+<!--        form table {-->
+<!--            width: 100%;-->
+<!--            border-collapse: collapse;-->
+<!--            margin: 0 auto;-->
+<!--            border: 1px solid #dee2e6;-->
+<!--        }-->
+
+<!--        form table tr:nth-child(even) {-->
+<!--            background-color: #f8f9fa; /* 짝수 행 배경색 */-->
+<!--        }-->
+
+<!--        form table td {-->
+<!--            padding: 12px 15px;-->
+<!--            border: 1px solid #dee2e6;-->
+<!--            font-size: 14px;-->
+<!--        }-->
+
+<!--        form table td:first-child {-->
+<!--            width: 100px;-->
+<!--            background-color: #e9f7f9; /* 제목 셀 배경색 */-->
+<!--            font-weight: 600;-->
+<!--            color: #495057;-->
+<!--            text-align: center;-->
+<!--        }-->
+
+<!--        /* -&#45;&#45; 입력 요소 스타일 -&#45;&#45; */-->
+<!--        input[type="text"], input[type="password"], input[type="date"], select, #idInput, #emailPrefix {-->
+<!--            padding: 8px 10px;-->
+<!--            border: 1px solid #ced4da;-->
+<!--            border-radius: 4px;-->
+<!--            font-size: 14px;-->
+<!--            outline: none;-->
+<!--            transition: border-color 0.3s;-->
+<!--            box-sizing: border-box; /* 패딩이 너비를 증가시키지 않도록 */-->
+<!--        }-->
+
+<!--        input:focus, select:focus {-->
+<!--            border-color: #007bff;-->
+<!--            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);-->
+<!--        }-->
+
+<!--        /* 이메일 입력 필드 너비 조정 */-->
+<!--        #emailPrefix {-->
+<!--            width: 150px;-->
+<!--        }-->
+<!--        #emailDomain {-->
+<!--            width: 120px;-->
+<!--        }-->
+
+<!--        /* 부서/직책 드롭다운 너비 조정 */-->
+<!--        #departmentSelect, #roleSelect {-->
+<!--            width: 180px;-->
+<!--        }-->
+
+<!--        /* -&#45;&#45; 버튼 스타일 -&#45;&#45; */-->
+<!--        input[type="submit"], input[type="button"] {-->
+<!--            padding: 8px 15px;-->
+<!--            font-weight: bold;-->
+<!--            border: none;-->
+<!--            border-radius: 4px;-->
+<!--            cursor: pointer;-->
+<!--            transition: background-color 0.3s ease;-->
+<!--        }-->
+
+<!--        /* 중복체크 버튼 */-->
+<!--        input[type="button"] {-->
+<!--            background-color: #6c757d; /* 회색 */-->
+<!--            color: white;-->
+<!--            margin-left: 5px;-->
+<!--        }-->
+
+<!--        input[type="button"]:hover {-->
+<!--            background-color: #5a6268;-->
+<!--        }-->
+
+<!--        /* 사원 등록 버튼 (폼 하단) */-->
+<!--        input[type="submit"] {-->
+<!--            background-color: #28a745; /* 녹색 */-->
+<!--            color: white;-->
+<!--        }-->
+
+<!--        input[type="submit"]:hover {-->
+<!--            background-color: #1e7e34;-->
+<!--        }-->
+
+<!--        .err {-->
+<!--            color: red;-->
+<!--            font-size: 0.9em;-->
+<!--        }-->
+<!--        #idCheckResult {-->
+<!--            font-weight: bold;-->
+<!--        }-->
+<!--    </style>-->
+</head>
+<body>
+<h1>사원 등록</h1>
+<script>
+    let idChecked = false; //중복체크 버튼을 클릭했는지
+    let idAvailable = false;
+
+    function checkId(){ <!--중복체크버튼-->
+        idValue = document.getElementById('idInput').value;
+
+        if(idValue == ''){
+            alert("아이디를 입력하세요");
+            return;
+        }
+
+        const idNum = parseInt(idValue);
+        if (isNaN(idNum) || idNum < 1000) {
+            alert("아이디 번호 시작은 1000부터 입니다.");
+            const msgSpan = document.getElementById('idCheckResult');
+            msgSpan.textContent = "아이디는 1000 이상이어야 합니다.";
+            msgSpan.style.color = "red";
+            return;
+        }
+
+        fetch("/checkId.mb?id="+encodeURIComponent(idValue))
+            .then(response => response.text())
+            .then(result => {
+                    const msgSpan = document.getElementById('idCheckResult');
+                    idChecked = true;
+                    if(result == "duplicate"){
+                        msgSpan.textContent = "이미 사용중인 아이디입니다.";
+                        msgSpan.style.color = "red";
+                        idAvailable = false;
+                    } else{
+                        msgSpan.textContent = "사용 가능한 아이디입니다.";
+                        msgSpan.style.color = "green";
+                        idAvailable = true;
+                    }
+                })
+                .catch(error => {
+                    console.log("에러 발생: ", error);
+                });
+
+    }//checkId
+
+    <!--새로운 입력이 들어왔을때-->
+    function resetIdCheck(){
+        idChecked = false;
+        idAvailable = false;
+        const msgSpan = document.getElementById('idCheckResult');
+        msgSpan.textContent = "아이디 중복체크 필수";
+        msgSpan.style.color = "gray";
+    }//resetIdCheck
+
+    function validateForm(){
+        if(!idChecked){
+            alert("아이디 중복체크 필수");
+            return false;
+        }
+
+        if(!idAvailable){
+            alert("이미 사용중인 아이디입니다.");
+            return false;
+        }
+
+        const emailPrefix = document.getElementById('emailPrefix').value.trim();
+        const emailDomain = document.getElementById('emailDomain').value;
+        const emailField = document.querySelector('input[name="email"]');
+
+        if(emailPrefix === ''){
+            alert("이메일 주소를 입력해주세요.");
+            return false;
+        }
+
+        if (emailDomain === '') {
+            alert("이메일 도메인을 선택해주세요.");
+            return false;
+        }
+
+        emailField.value = emailPrefix + '@' + emailDomain;
+
+        const department_id = document.getElementById('departmentSelect').value;
+        const role_id = document.getElementById('roleSelect').value;
+
+        if (department_id === '0') {
+            alert("부서를 선택해주세요.");
+            return false;
+        }
+
+        if (role_id === '0') {
+            alert("직책을 선택해주세요.");
+            return false;
+        }
+
+        return true;
+    }
+</script>
+
+<form th:action="registerProc" th:object="${eDto}" method="post" onsubmit="return validateForm()">
+    <table border="1">
+        <tr>
+            <td>아이디</td>
+            <td>
+                <input id="idInput" th:field="*{employee_id}" onkeyup="resetIdCheck()">
+                <input type="button" value="중복체크" onclick="checkId()">
+                <span id="idCheckResult"></span>
+                <div th:if="${#fields.hasErrors('employee_id')}" th:errors="*{employee_id}" class="err"></div>
+            </td>
+        </tr>
+
+        <tr>
+            <td>이름</td>
+            <td>
+                <input th:field="*{name}">
+                <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="err"></div>
+            </td>
+        </tr>
+
+        <tr>
+            <td>비번</td>
+            <td>
+                <input th:field="*{password}">
+                <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="err"></div>
+            </td>
+        </tr>
+
+        <tr>
+            <td>이메일</td>
+            <td>
+                <input type="text" id="emailPrefix" placeholder="이메일 주소">
+                <span>@</span>
+                <select id="emailDomain">
+                    <option value="">도메인 선택</option>
+                    <option value="naver.com">naver.com</option>
+                    <option value="gmail.com">gmail.com</option>
+                    <option value="daum.net">daum.net</option>
+                </select>
+                <input type="hidden" th:field="*{email}">
+                <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="err"></div>
+            </td>
+        </tr>
+
+        <tr>
+            <td>입사일</td>
+            <td>
+                <input type="date" th:field="*{hire_date}">
+                <div th:if="${#fields.hasErrors('hire_date')}" th:errors="*{hire_date}" class="err"></div>
+            </td>
+        </tr>
+
+        <tr>
+            <td>부서</td>
+            <td>
+                <select id="departmentSelect" th:field="*{department_id}">
+                    <option value="0">--- 부서 선택 ---</option>
+                    <option value="100">경영</option>
+                    <option value="200">생산</option>
+                </select>
+                <div th:if="${#fields.hasErrors('department_id')}" th:errors="*{department_id}" class="err"></div>
+            </td>
+        </tr>
+
+        <tr>
+            <td>직책</td>
+            <td>
+                <select id="roleSelect" th:field="*{role_id}">
+                    <option value="0">--- 직책 선택 ---</option>
+                    <option value="1">사원</option>
+                    <option value="2">감독관</option>
+                </select>
+                <div th:if="${#fields.hasErrors('role_id')}" th:errors="*{role_id}" class="err"></div>
+            </td>
+        </tr>
+
+        <tr>
+            <td colspan="2">
+                <input type="submit" value="사원등록">
+            </td>
+        </tr>
+    </table>
+</form>
+</body>
+</html>
