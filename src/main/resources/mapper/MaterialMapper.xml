@@ -16,6 +16,11 @@
         <result property="note" column="NOTE"/>
     </resultMap>
 
+    <resultMap id="parseMaterialCounts" type="com.meta.stock.materials.dto.MaterialCountsBean">
+        <result column="material_name" property="materialName" />
+        <result column="total" property="qty" />
+    </resultMap>
+
     <select id="findMaterialRequestsWithPaging" resultMap="MaterialRequestMap">
         SELECT
         mr.mr_id,
@@ -73,5 +78,23 @@
         FROM MATERIAL m
         JOIN LOTS l ON m.LOTS_ID = l.LOT_ID
         WHERE m.MATERIAL_NAME = #{materialName}
+    </select>
+
+    <select id="getDateMaterialTotals" resultMap="parseMaterialCounts">
+        select material_name, sum(qty) as total
+        from materials m
+        left join lots l on m.lots_id = l.lot_id and to_date(shelf_life_days, 'YY/MM/DD') >= sysdate
+        <where>
+            <choose>
+                <when test="serialCode != null and serialCode != ''">
+                    exists (
+                    select 1 from fixed_material fm
+                    join fixed_product fp on fm.fp_id = fp.fp_id
+                    where fm.name = m.material_name and fp.serial_code = #{serialCode}
+                    )
+                </when>
+            </choose>
+        </where>
+        group by material_name
     </select>
 </mapper>

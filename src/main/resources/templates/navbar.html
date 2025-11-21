@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Navbar</title>
+</head>
+<body>
+    <div th:fragment="navbar(mainTitle, subTitle)" class="header">
+        <div class="header-left">
+            <div class="logo" th:onclick="|location.href='@{/}'|">
+                <img src="/file/logo.png" alt="회사로고">
+            </div>
+            <div class="header-text" th:unless="${mainTitle eq '대시보드'}">
+                <h1 th:text="${mainTitle}" th:onclick="|location.href='@{/}'|"></h1>
+                <p th:text="${subTitle}" class="subtitle"></p>
+            </div>
+            <div class="header-nav">
+            <a href="/order.html" class="nav-btn" th:classappend="${#rootpath eq '/order' ? 'active' : ''}">
+                📋 완제품 발주 요청
+            </a>
+            <a href="/material_request.html" class="nav-btn" th:classappend="${#rootpath eq '/order' ? 'active' : ''}">
+                📦 원재료 발주 허가
+            </a>
+            <a th:href="${'/product'}" class="nav-btn" th:classappend="${#rootpath eq '/product' ? 'active' : ''}">
+                생산
+            </a>
+        </div>
+        </div>
+
+        <div class="status-banner">
+            <div class="current-time" id="currentTime" th:text="${'🕐 ' + #dates.format(#dates.createNow(), 'yyyy-MM-dd HH:mm:ss')}"></div>
+            <div class="user-status">
+                <div class="user-avatar" id="userAvatar">홍</div>
+                <div class="user-info-text">
+                    <div class="user-name" id="userName" th:text="${'이름'}"></div>
+                    <div class="user-role" id="userRole" th:text="${'부서  ·  지위'}"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

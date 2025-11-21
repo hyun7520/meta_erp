@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>창고 관리</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/style/BaseStyle.css}" />
+    <link rel="stylesheet" type="text/css" th:href="@{/style/dash/DashStyle.css}" />
+    <link rel="stylesheet" type="text/css" th:href="@{/style/dash/DashFlowStyle.css}" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@6.0.0/dist/echarts.min.js"></script>
+    <script type="text/javascript" th:src="@{/script/baseJS.js}"></script>
+</head>
+<body>
+    <div class="container">
+        <div th:insert="~{navbar :: navbar('대시보드', '')}"></div>
+        <div class="content-wrapper">
+            <div class="row">
+                <div th:insert="~{dashboard/dashFlow :: flow}" class="fragement-box w-60"></div>
+                <div class="w-40">
+                    <div th:insert="~{dashboard/demandqtyLine :: line}" class="fragement-box"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div th:insert="~{dashboard/productsTable :: productsTable}" class="fragement-box w-60"></div>
+                <div class="w-40">
+                    <div th:insert="~{dashboard/lossGraph :: graph}" class="fragement-box"></div>
+                    <div th:insert="~{dashboard/materialTotal :: pie}" class="fragement-box"></div>
+                </div>
+            </div>
+        </div>
+        <script type="text/javascript" th:src="@{/script/dashFlow.js}"></script>
+    </div>
+</body>
+</html>

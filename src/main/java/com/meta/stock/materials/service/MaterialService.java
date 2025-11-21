@@ -3,6 +3,7 @@ package com.meta.stock.materials.service;
 import com.meta.stock.materials.dto.MaterialDto;
 import com.meta.stock.materials.dto.MaterialRequestDto;
 import com.meta.stock.materials.dto.MaterialRequirementDto;
+import com.meta.stock.materials.dto.MaterialCountsBean;
 import com.meta.stock.materials.mapper.MaterialMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -56,7 +57,7 @@ public class MaterialService {
 
         return new PageImpl<>(content, pageable, total);
     }
-    
+
     // 세부 재료 요청 조회
     public List<MaterialDto> getMaterialRequestDetails(int mrId) {
         return null;
@@ -84,5 +85,7 @@ public class MaterialService {
         return materialMapper.getCurrentStock(materialName);
     }
 
-
+    public List<MaterialCountsBean> getDateMaterialTotals(String serialCode) {
+        return materialMapper.getDateMaterialTotals(serialCode);
+    }
 }

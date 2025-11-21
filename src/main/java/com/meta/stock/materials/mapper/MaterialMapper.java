@@ -3,6 +3,7 @@ package com.meta.stock.materials.mapper;
 import com.meta.stock.materials.dto.MaterialDto;
 import com.meta.stock.materials.dto.MaterialRequestDto;
 import com.meta.stock.materials.dto.MaterialRequirementDto;
+import com.meta.stock.materials.dto.MaterialCountsBean;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.data.domain.Sort;
 
@@ -25,4 +26,6 @@ public interface MaterialMapper {
     List<MaterialDto> getAllMaterials();
 
     List<MaterialRequestDto> getAllMaterialRequests();
+
+    List<MaterialCountsBean> getDateMaterialTotals(String serialCode);
 }
