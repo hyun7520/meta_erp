@@ -10,6 +10,11 @@ window.addEventListener('DOMContentLoaded', (event) => {
     renderEmployeeList();
 });
 
+const onClickEdit = (employeeId) => {
+    openEmployeeModal(employeeId);
+}
+
+const onClickDelete = (employeeId) => {}
 
 const renderEmployeeTable = (list) => {
     const tbody = document.getElementById("employees_tbody");
@@ -25,8 +30,8 @@ const renderEmployeeTable = (list) => {
             <td>${dates}</td>
             <td>${element.department}</td>
             <td>${element.role}</td>
-            <td><button type="button" class="btn btn-cancel">수정</button></td>
-            <td><button type="button" class="btn btn-reject">삭제</button></td>
+            <td><button type="button" class="btn btn-cancel" onclick="onClickEdit(${element.employeeId})">수정</button></td>
+            <td><button type="button" class="btn btn-reject" onclick="onClickDelete(${element.employeeId})">삭제</button></td>
         `;
         tbody.appendChild(row);
     });

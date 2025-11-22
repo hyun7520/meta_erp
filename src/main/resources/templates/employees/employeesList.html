@@ -10,6 +10,9 @@
     <div class="container">
         <div th:insert="~{navbar :: navbar('사원목록', '경영팀 관리 : 사원 관리')}"></div>
         <div class="content-wrapper">
+            <div class="flex-right">
+                <button type="button" class="btn btn-approve" onclick="openEmployeeModal(0)">➕ 사원 추가</button>
+            </div>
             <form id="employee_search">
                 <div class="search-group">
                     <div class="form-group">
@@ -42,7 +45,9 @@
                 <tbody id="employees_tbody"></table>
             <div class="pagination" id="pagination"></div>
         </div>
+        <div th:insert="~{employees/employeeModal :: employeeModal}"></div>
         <script type="text/javascript" th:src="@{/script/employee/employeeList.js}"></script>
+        <script type="text/javascript" th:src="@{/script/employee/employeeModal.js}"></script>
     </div>
     </body>
     </html>

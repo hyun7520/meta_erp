@@ -2,11 +2,11 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
-    <link rel="stylesheet" th:href="@{/style/styles.css}">
+    <title>사원정보 수정</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/style/BaseStyle.css}" />
+    <script type="text/javascript" th:src="@{/script/baseJS.js}"></script>
 </head>
 <body>
-<h1>사원 정보 수정</h1>
 <script th:inline="javascript">
     const currentEmail = [[${employee.email}]];
     if(currentEmail){
@@ -62,86 +62,91 @@
         return true;
     }
 </script>
-<form th:action="updateEmployeeProc" th:object="${employee}"
-      method="post" enctype="multipart/form-data"
-      onsubmit="return validateForm()">
-    <table border="1">
-        <tr>
-            <td>아이디</td>
-            <td>
-                <input id="idInput" th:field="*{employee_id}" readonly>
-            </td>
-        </tr>
+<div class="container">
+    <div th:insert="~{navbar :: navbar('사원목록', '경영팀 관리 : 사원 관리')}"></div>
+    <div class="content-wrapper">
+        <form th:action="updateEmployeeProc" th:object="${employee}"
+              method="post" enctype="multipart/form-data"
+              onsubmit="return validateForm()">
+            <table border="1">
+                <tr>
+                    <td>아이디</td>
+                    <td>
+                        <input id="idInput" th:field="*{employee_id}" readonly>
+                    </td>
+                </tr>
 
-        <tr>
-            <td>이름</td>
-            <td>
-                <input th:field="*{name}">
-                <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="err"></div>
-            </td>
-        </tr>
+                <tr>
+                    <td>이름</td>
+                    <td>
+                        <input th:field="*{name}">
+                        <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="err"></div>
+                    </td>
+                </tr>
 
-        <tr>
-            <td>비번</td>
-            <td>
-                <input th:field="*{password}">
-                <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="err"></div>
-            </td>
-        </tr>
+                <tr>
+                    <td>비번</td>
+                    <td>
+                        <input th:field="*{password}">
+                        <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="err"></div>
+                    </td>
+                </tr>
 
-        <tr>
-            <td>이메일</td>
-            <td>
-                <input type="text" id="emailPrefix" placeholder="이메일 주소">
-                <span>@</span>
-                <select id="emailDomain">
-                    <option value="">도메인 선택</option>
-                    <option value="naver.com">naver.com</option>
-                    <option value="gmail.com">gmail.com</option>
-                    <option value="daum.net">daum.net</option>
-                </select>
-                <input type="hidden" th:field="*{email}">
-                <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="err"></div>
-            </td>
-        </tr>
+                <tr>
+                    <td>이메일</td>
+                    <td>
+                        <input type="text" id="emailPrefix" placeholder="이메일 주소">
+                        <span>@</span>
+                        <select id="emailDomain">
+                            <option value="">도메인 선택</option>
+                            <option value="naver.com">naver.com</option>
+                            <option value="gmail.com">gmail.com</option>
+                            <option value="daum.net">daum.net</option>
+                        </select>
+                        <input type="hidden" th:field="*{email}">
+                        <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="err"></div>
+                    </td>
+                </tr>
 
-        <tr>
-            <td>입사일</td>
-            <td>
-                <input type="date" th:field="*{hire_date}" readonly>
-            </td>
-        </tr>
+                <tr>
+                    <td>입사일</td>
+                    <td>
+                        <input type="date" th:field="*{hire_date}" readonly>
+                    </td>
+                </tr>
 
-        <tr>
-            <td>부서</td>
-            <td>
-                <select id="departmentSelect" th:field="*{department_id}">
-                    <option value="0">--- 부서 선택 ---</option>
-                    <option value="100">경영</option>
-                    <option value="200">생산</option>
-                </select>
-                <div th:if="${#fields.hasErrors('department_id')}" th:errors="*{department_id}" class="err"></div>
-            </td>
-        </tr>
+                <tr>
+                    <td>부서</td>
+                    <td>
+                        <select id="departmentSelect" th:field="*{department_id}">
+                            <option value="0">--- 부서 선택 ---</option>
+                            <option value="1">경영</option>
+                            <option value="2">생산</option>
+                        </select>
+                        <div th:if="${#fields.hasErrors('department_id')}" th:errors="*{department_id}" class="err"></div>
+                    </td>
+                </tr>
 
-        <tr>
-            <td>직책</td>
-            <td>
-                <select id="roleSelect" th:field="*{role_id}">
-                    <option value="0">--- 직책 선택 ---</option>
-                    <option value="1">사원</option>
-                    <option value="2">감독관</option>
-                </select>
-                <div th:if="${#fields.hasErrors('role_id')}" th:errors="*{role_id}" class="err"></div>
-            </td>
-        </tr>
+                <tr>
+                    <td>직책</td>
+                    <td>
+                        <select id="roleSelect" th:field="*{role_id}">
+                            <option value="0">--- 직책 선택 ---</option>
+                            <option value="1">사원</option>
+                            <option value="2">감독관</option>
+                        </select>
+                        <div th:if="${#fields.hasErrors('role_id')}" th:errors="*{role_id}" class="err"></div>
+                    </td>
+                </tr>
 
-        <tr>
-            <td colspan="2">
-                <input type="submit" value="사원 정보 수정">
-            </td>
-        </tr>
-    </table>
-</form>
+                <tr>
+                    <td colspan="2">
+                        <input type="submit" value="사원 정보 수정">
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+</div>
 </body>
 </html>

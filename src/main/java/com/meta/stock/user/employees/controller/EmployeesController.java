@@ -99,13 +99,13 @@ public class EmployeesController {
         return result;
     }
 
-    @GetMapping(value = "updateEmployee")
-    public String updateEmployee(@RequestParam(value = "employee_id") int employee_id,
+    @GetMapping(value = "/updateEmployee/{employeeId}")
+    public String updateEmployee(@PathVariable int employeeId,
                                  @RequestParam(value = "whatColumn",required = false) String whatColumn,
                                  @RequestParam(value = "keyword",required = false) String keyword,
                                  @RequestParam(value = "page",defaultValue = "1") int page,
                               Model model, HttpSession session){
-        EmployeeInsertDto employee = employeesMapper.selectEmployeeById(employee_id);
+        EmployeeInsertDto employee = employeesMapper.selectEmployeeById(employeeId);
         model.addAttribute("employee",employee);
 
         model.addAttribute("whatColumn",whatColumn);
@@ -130,6 +130,12 @@ public class EmployeesController {
         employeesMapper.updateEmployee(employee);
         String encodeKeyword = keyword != null ? URLEncoder.encode(keyword, StandardCharsets.UTF_8) : "";
         return "redirect:/showEmployees?page="+page+"&whatColumn="+whatColumn+"&keyword="+encodeKeyword;
+    }
+
+    @PostMapping("/employee/update")
+    public ResponseEntity<Boolean> updateEmployee(@RequestBody EmployeeInsertDto employee) {
+        employeesMapper.updateEmployee(employee);
+        return ResponseEntity.ok(true);
     }
 
     @GetMapping(value = "/deleteEmployee")
@@ -186,5 +192,10 @@ public class EmployeesController {
         resultMap.put("totalPage", totalPage);
 
         return ResponseEntity.ok(resultMap);
+    }
+
+    @GetMapping("/employee/{employeeId}")
+    public ResponseEntity<EmployeeInsertDto> getEmployeeById(@PathVariable int employeeId) {
+        return ResponseEntity.ok(employeesMapper.selectEmployeeById(employeeId));
     }
 }
