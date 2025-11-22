@@ -24,4 +24,6 @@ public interface EmployeesMapper {
     void deleteEmployee(int employeeId);
 
     int countTotalEmployees(Map<String, Object> params);
+
+    int getLastEmployeeId();
 }

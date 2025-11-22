@@ -14,7 +14,16 @@ const onClickEdit = (employeeId) => {
     openEmployeeModal(employeeId);
 }
 
-const onClickDelete = (employeeId) => {}
+const onClickDelete = (employeeId) => {
+    fetch("/employee/delete/" + employeeId, {method: "GET"})
+    .then(() => {
+        alert("사원 정보가 삭제되었습니다.")
+        renderEmployeeList(params);
+    }).catch(error => {
+        console.error('Error:', error);
+        alert("사원 정보를 삭제하지 못했습니다. 잠시후 다시 시도해주세요.");
+    });
+}
 
 const renderEmployeeTable = (list) => {
     const tbody = document.getElementById("employees_tbody");
@@ -48,6 +57,11 @@ const renderEmployeeList = ({page, whatColumn, keyword} = params) => {
         .then(response => response.json())
         .then(({list, totalPage, ...data}) => {
             params = {...data};
+            if (list.length === 0 && params.page > 1) {
+                params.page -= 1;
+                renderEmployeeList(params);
+            }
+
             renderEmployeeTable(list);
             renderPagination(data.page, totalPage, movePage);
         });

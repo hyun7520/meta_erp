@@ -32,6 +32,10 @@
         where employee_id=#{employee_id}
     </select>
 
+    <select id="getLastEmployeeId">
+        select employee_id from employees order by employee_id desc fetch first row only
+    </select>
+
     <update id="updateEmployee">
         update Employees
         set name=#{name}, email=#{email}, password=#{password}, department_id=#{department_id}, role_id=#{role_id}
@@ -73,7 +77,7 @@
             </choose>
         </where>
 
-        order by e.employee_id
+        order by e.employee_id desc
         offset #{offset} rows fetch next #{limit} rows only
     </select>
 

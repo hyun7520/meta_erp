@@ -138,6 +138,19 @@ public class EmployeesController {
         return ResponseEntity.ok(true);
     }
 
+    @PostMapping("/employee/register")
+    public ResponseEntity<Boolean> registerEmployee(@RequestBody EmployeeInsertDto employee) {
+        employee.setEmployee_id(employeesMapper.getLastEmployeeId() + 1);
+        employeesMapper.insertEmployee(employee);
+        return ResponseEntity.ok(true);
+    }
+
+    @GetMapping("/employee/delete/{employeeId}")
+    public ResponseEntity<Boolean> deleteEmployee(@PathVariable int employeeId) {
+        employeesMapper.deleteEmployee(employeeId);
+        return ResponseEntity.ok(true);
+    }
+
     @GetMapping(value = "/deleteEmployee")
     public String deleteEmployee(@RequestParam(value = "employee_id") int employee_id,
                                  @RequestParam(value = "whatColumn",required = false) String whatColumn,

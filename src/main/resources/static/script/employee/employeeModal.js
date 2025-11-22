@@ -1,5 +1,5 @@
 const ROAD_EMPLOYEE = "/employee/";
-const INSERT_EMPLOYEE = "/employee/insert";
+const INSERT_EMPLOYEE = "/employee/register";
 const UPDATE_EMPLOYEE = "/employee/update";
 let updateEmployeeId = 0;
 
