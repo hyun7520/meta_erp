@@ -1,6 +1,7 @@
 package com.meta.stock.user.employees.mapper;
 
-import com.meta.stock.user.employees.dto.EmployeesDto;
+import com.meta.stock.user.employees.dto.EmployeeGetDto;
+import com.meta.stock.user.employees.dto.EmployeeInsertDto;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -8,17 +9,17 @@ import java.util.Map;
 
 @Mapper
 public interface EmployeesMapper {
-    EmployeesDto findById(int employeeId);
+    EmployeeInsertDto findById(int employeeId);
 
-    void insertEmployee(EmployeesDto eDto);
+    void insertEmployee(EmployeeInsertDto eDto);
 
     int selectCountById(String id);
 
-    List<EmployeesDto> selectAll(Map<String, Object> params);
+    List<EmployeeGetDto> selectAll(Map<String, Object> params);
 
-    EmployeesDto selectEmployeeById(int employeeId);
+    EmployeeInsertDto selectEmployeeById(int employeeId);
 
-    void updateEmployee(EmployeesDto employee);
+    void updateEmployee(EmployeeInsertDto employee);
 
     void deleteEmployee(int employeeId);
 

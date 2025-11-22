@@ -1,6 +1,7 @@
 package com.meta.stock.user.employees.controller;
 
-import com.meta.stock.user.employees.dto.EmployeesDto;
+import com.meta.stock.user.employees.dto.EmployeeGetDto;
+import com.meta.stock.user.employees.dto.EmployeeInsertDto;
 import com.meta.stock.user.employees.mapper.EmployeesMapper;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -36,9 +37,9 @@ public class EmployeesController {
     }
 
     @PostMapping(value = "login.mb")
-    public String login(EmployeesDto eDto, HttpServletResponse response,
+    public String login(EmployeeInsertDto eDto, HttpServletResponse response,
                         HttpSession session) throws IOException {
-        EmployeesDto employee = employeesMapper.findById(eDto.getEmployee_id());
+        EmployeeInsertDto employee = employeesMapper.findById(eDto.getEmployee_id());
 
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter pw = response.getWriter();
@@ -70,12 +71,12 @@ public class EmployeesController {
 
     @GetMapping(value = "/register")
     public String register(Model model){
-        model.addAttribute("eDto", new EmployeesDto());
+        model.addAttribute("eDto", new EmployeeInsertDto());
         return "employees/register";
     }
 
     @PostMapping(value = "registerProc")
-    public String registerProc(@ModelAttribute("eDto") @Valid EmployeesDto eDto, BindingResult bResult, Model model){
+    public String registerProc(@ModelAttribute("eDto") @Valid EmployeeInsertDto eDto, BindingResult bResult, Model model){
         if(bResult.hasErrors())
             return "employees/register";
 
@@ -104,7 +105,7 @@ public class EmployeesController {
                                  @RequestParam(value = "keyword",required = false) String keyword,
                                  @RequestParam(value = "page",defaultValue = "1") int page,
                               Model model, HttpSession session){
-        EmployeesDto employee = employeesMapper.selectEmployeeById(employee_id);
+        EmployeeInsertDto employee = employeesMapper.selectEmployeeById(employee_id);
         model.addAttribute("employee",employee);
 
         model.addAttribute("whatColumn",whatColumn);
@@ -114,7 +115,7 @@ public class EmployeesController {
     }
 
     @PostMapping(value = "/updateEmployeeProc")
-    public String updateSongProc(@ModelAttribute("employee") @Valid EmployeesDto employee,
+    public String updateSongProc(@ModelAttribute("employee") @Valid EmployeeInsertDto employee,
                                  @RequestParam(value = "whatColumn",required = false) String whatColumn,
                                  @RequestParam(value = "keyword",required = false) String keyword,
                                  @RequestParam(value = "page",defaultValue = "1") int page,
@@ -172,7 +173,7 @@ public class EmployeesController {
         params.put("offset", offset);
         params.put("limit", limit);
 
-        List<EmployeesDto> elist = employeesMapper.selectAll(params);
+        List<EmployeeGetDto> elist = employeesMapper.selectAll(params);
 
         int totalCount = employeesMapper.countTotalEmployees(params);
         int totalPage = (int)Math.ceil((double)totalCount/limit);

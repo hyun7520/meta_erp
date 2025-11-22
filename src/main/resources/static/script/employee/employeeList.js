@@ -17,14 +17,14 @@ const renderEmployeeTable = (list) => {
     list.forEach(element => {
         const row = document.createElement('tr');
 
-        const dates = calcDrawDate(new Date(element.hire_date)).split(" ")[0];
+        const dates = calcDrawDate(new Date(element.hireDate)).split(" ")[0];
         row.innerHTML = `
-            <td>${element.employee_id}</td>
+            <td>${element.employeeId}</td>
             <td>${element.name}</td>
             <td>${element.email}</td>
             <td>${dates}</td>
-            <td>${element.department_id}</td>
-            <td>${element.role_id}</td>
+            <td>${element.department}</td>
+            <td>${element.role}</td>
             <td><button type="button" class="btn btn-cancel">수정</button></td>
             <td><button type="button" class="btn btn-reject">삭제</button></td>
         `;

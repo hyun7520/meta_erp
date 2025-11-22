@@ -4,15 +4,14 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.meta.stock.user.employees.mapper.EmployeesMapper">
-    <resultMap id="EmployeesResultMap" type="com.meta.stock.user.employees.dto.EmployeesDto">
-        <id property="employee_id" column="employee_id"></id>
-
+    <resultMap id="EmployeesResultMap" type="com.meta.stock.user.employees.dto.EmployeeGetDto">
+        <id property="employeeId" column="employee_id"></id>
         <result property="name" column="name"></result>
         <result property="email" column="email"></result>
         <result property="password" column="password"></result>
-        <result property="hire_date" column="hire_date"></result>
-        <result property="department_id" column="department_id"></result>
-        <result property="role_id" column="role_id"></result>
+        <result property="hireDate" column="hire_date"></result>
+        <result property="department" column="department_name"></result>
+        <result property="role" column="role_name"></result>
     </resultMap>
 
     <select id="findById">
@@ -45,11 +44,10 @@
     </delete>
 
     <select id="selectAll" resultMap="EmployeesResultMap">
-        select e.*
-        from Employees e
-
-        left join Departments d on e.department_id = d.department_id
-        left join Roles r on e.role_id = r.role_id
+        select employee_id, name, email, password, hire_date, department_name, role_name
+        from employees e
+        left join departments d on e.department_id = d.department_id
+        left join roles r on e.role_id = r.role_id
 
         <where>
             <choose>
@@ -82,7 +80,6 @@
     <select id="countTotalEmployees" resultType="int">
         select count(*)
         from Employees e
-
         left join Departments d on e.department_id = d.department_id
         left join Roles r on e.role_id = r.role_id
 
