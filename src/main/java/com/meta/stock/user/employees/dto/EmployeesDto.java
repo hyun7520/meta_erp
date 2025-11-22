@@ -8,7 +8,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
-public class employeesDto {
+public class EmployeesDto {
     private int employee_id;
 
     @NotBlank(message = "이름은 필수입력사항 입니다.")

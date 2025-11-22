@@ -1,7 +1,7 @@
 package com.meta.stock.user.employees.controller;
 
-import com.meta.stock.user.employees.dto.employeesDto;
-import com.meta.stock.user.employees.mapper.employeesMapper;
+import com.meta.stock.user.employees.dto.EmployeesDto;
+import com.meta.stock.user.employees.mapper.EmployeesMapper;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -10,23 +10,19 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 @Controller
-public class employeesController {
+public class EmployeesController {
     @Autowired
-    employeesMapper employeesMapper;
+    EmployeesMapper employeesMapper;
 
     @RequestMapping(value = "/login")
     public String login(){
@@ -34,9 +30,9 @@ public class employeesController {
     }
 
     @PostMapping(value = "login.mb")
-    public String login(employeesDto eDto, HttpServletResponse response,
+    public String login(EmployeesDto eDto, HttpServletResponse response,
                         HttpSession session) throws IOException {
-        employeesDto employee = employeesMapper.findById(eDto.getEmployee_id());
+        EmployeesDto employee = employeesMapper.findById(eDto.getEmployee_id());
 
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter pw = response.getWriter();
@@ -68,12 +64,12 @@ public class employeesController {
 
     @GetMapping(value = "/register")
     public String register(Model model){
-        model.addAttribute("eDto", new employeesDto());
+        model.addAttribute("eDto", new EmployeesDto());
         return "employees/register";
     }
 
     @PostMapping(value = "registerProc")
-    public String registerProc(@ModelAttribute("eDto") @Valid employeesDto eDto, BindingResult bResult, Model model){
+    public String registerProc(@ModelAttribute("eDto") @Valid EmployeesDto eDto, BindingResult bResult, Model model){
         if(bResult.hasErrors())
             return "employees/register";
 
@@ -102,7 +98,7 @@ public class employeesController {
                                  @RequestParam(value = "keyword",required = false) String keyword,
                                  @RequestParam(value = "page",defaultValue = "1") int page,
                               Model model, HttpSession session){
-        employeesDto employee = employeesMapper.selectEmployeeById(employee_id);
+        EmployeesDto employee = employeesMapper.selectEmployeeById(employee_id);
         model.addAttribute("employee",employee);
 
         model.addAttribute("whatColumn",whatColumn);
@@ -112,7 +108,7 @@ public class employeesController {
     }
 
     @PostMapping(value = "/updateEmployeeProc")
-    public String updateSongProc(@ModelAttribute("employee") @Valid employeesDto employee,
+    public String updateSongProc(@ModelAttribute("employee") @Valid EmployeesDto employee,
                                  @RequestParam(value = "whatColumn",required = false) String whatColumn,
                                  @RequestParam(value = "keyword",required = false) String keyword,
                                  @RequestParam(value = "page",defaultValue = "1") int page,
@@ -169,7 +165,7 @@ public class employeesController {
         params.put("offset", offset);
         params.put("limit", limit);
 
-        List<employeesDto> elist = employeesMapper.selectAll(params);
+        List<EmployeesDto> elist = employeesMapper.selectAll(params);
 
         int totalCount = employeesMapper.countTotalEmployees(params);
 

@@ -3,8 +3,8 @@ package com.meta.stock.materials.service;
 import com.meta.stock.materials.dto.MaterialRequestDto;
 import com.meta.stock.materials.entity.MaterialRequestEntity;
 import com.meta.stock.materials.repository.MaterialRequestRepository;
-import com.meta.stock.user.employees.entity.Employees;
-import com.meta.stock.user.employees.repository.employeesEntityRepositiry;
+import com.meta.stock.user.employees.entity.EmployeeEntity;
+import com.meta.stock.user.employees.repository.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,12 +20,12 @@ public class MaterialRequestService {
     @Autowired
     private final MaterialRequestRepository materialRequestRepository;
     @Autowired
-    private final employeesEntityRepositiry employeeRepository;
+    private final EmployeeRepository employeeRepository;
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private static final DateTimeFormatter DATETIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    public MaterialRequestService(MaterialRequestRepository materialRequestRepository, employeesEntityRepositiry employeeRepository) {
+    public MaterialRequestService(MaterialRequestRepository materialRequestRepository, EmployeeRepository employeeRepository) {
         this.materialRequestRepository = materialRequestRepository;
         this.employeeRepository = employeeRepository;
     }
@@ -90,9 +90,9 @@ public class MaterialRequestService {
     }
 
     private MaterialRequestDto.Response convertToResponse(MaterialRequestEntity entity) {
-        Employees requester = employeeRepository.findById((int) entity.getRequestBy()).orElse(null);
-        Employees managementEmp = employeeRepository.findById((int) entity.getManagementEmployee()).orElse(null);
-        Employees productionEmp = employeeRepository.findById((int) entity.getProductionEmployee()).orElse(null);
+        EmployeeEntity requester = employeeRepository.findById((int) entity.getRequestBy()).orElse(null);
+        EmployeeEntity managementEmp = employeeRepository.findById((int) entity.getManagementEmployee()).orElse(null);
+        EmployeeEntity productionEmp = employeeRepository.findById((int) entity.getProductionEmployee()).orElse(null);
 
         String requesterName = requester != null ? requester.getName() : String.valueOf(entity.getRequestBy());
         String managementName = managementEmp != null ? managementEmp.getName() : "-";
