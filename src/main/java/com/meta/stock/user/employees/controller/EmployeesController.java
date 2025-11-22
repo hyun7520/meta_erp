@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -27,6 +28,11 @@ public class EmployeesController {
     @RequestMapping(value = "/login")
     public String login(){
         return "employees/login";
+    }
+
+    @GetMapping(value = "/showEmployees")
+    public String showEmployees(){
+        return "employees/employeesList";
     }
 
     @PostMapping(value = "login.mb")
@@ -151,12 +157,13 @@ public class EmployeesController {
         return "redirect:/showEmployees?page="+page+"&whatColumn="+whatColumn+"&keyword="+encodeKeyword;
     }
 
-    @GetMapping(value = "/showEmployees")
-    public String showEmployees(Model model,
-                                @RequestParam(value = "whatColumn",required = false)String whatColumn,
-                                @RequestParam(value = "keyword",required = false)String keyword,
-                                @RequestParam(value = "page", defaultValue = "1")int page){
-        int limit = 7;
+    @GetMapping(value = "/employees")
+    public ResponseEntity<Map<String, Object>> getEmployeeList(
+            @RequestParam(value = "whatColumn",required = false)String whatColumn,
+            @RequestParam(value = "keyword",required = false)String keyword,
+            @RequestParam(value = "page", defaultValue = "1")int page
+    ){
+        int limit = 4;
         int offset = (page-1)*limit;
 
         Map<String, Object> params = new HashMap<>();
@@ -168,26 +175,15 @@ public class EmployeesController {
         List<EmployeesDto> elist = employeesMapper.selectAll(params);
 
         int totalCount = employeesMapper.countTotalEmployees(params);
-
         int totalPage = (int)Math.ceil((double)totalCount/limit);
 
-        Map<Integer, String> departmentMap = new HashMap<>();
-        departmentMap.put(100,"경영");
-        departmentMap.put(200,"생산");
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("list", elist);
+        resultMap.put("whatColumn",whatColumn);
+        resultMap.put("keyword",keyword);
+        resultMap.put("page", page);
+        resultMap.put("totalPage", totalPage);
 
-        Map<Integer, String> roleMap = new HashMap<>();
-        roleMap.put(1,"사원");
-        roleMap.put(2,"감독관");
-
-        model.addAttribute("elist",elist);
-        model.addAttribute("totalCount",totalCount);
-        model.addAttribute("totalPage",totalPage);
-        model.addAttribute("page",page);
-        model.addAttribute("whatColumn",whatColumn);
-        model.addAttribute("keyword",keyword);
-        model.addAttribute("departmentMap",departmentMap);
-        model.addAttribute("roleMap",roleMap);
-
-        return "employees/employeesList";
+        return ResponseEntity.ok(resultMap);
     }
 }

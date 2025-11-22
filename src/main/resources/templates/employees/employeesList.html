@@ -2,7 +2,7 @@
     <html lang="en" xmlns:th="http://www.thymeleaf.org">
     <head>
         <meta charset="UTF-8">
-        <title>Title</title>
+        <title>사원 관리</title>
         <link rel="stylesheet" type="text/css" th:href="@{/style/BaseStyle.css}" />
         <script type="text/javascript" th:src="@{/script/baseJS.js}"></script>
     </head>
@@ -10,7 +10,7 @@
     <div class="container">
         <div th:insert="~{navbar :: navbar('사원목록', '경영팀 관리 : 사원 관리')}"></div>
         <div class="content-wrapper">
-            <form th:action="@{/showEmployees}" method="get" >
+            <form id="employee_search">
                 <div class="search-group">
                     <div class="form-group">
                         <select name="whatColumn">
@@ -23,75 +23,26 @@
                     <div class="form-group">
                         <input type="text" name="keyword">
                     </div>
-                    <button class="btn btn-approve">검색</button>
+                    <button type="button" class="btn btn-approve" onclick="onSearchEmployees()">검색</button>
                 </div>
             </form>
-
-            <form>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>이름</th>
-                            <th>이메일</th>
-                            <th>비번</th>
-                            <th>입사일</th>
-                            <th>부서</th>
-                            <th>직책</th>
-                            <th>수정</th>
-                            <th>삭제</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <th:block th:each="eDto : ${elist}">
-                            <tr>
-                                <td th:text="${eDto.employee_id}"></td>
-                                <td th:text="${eDto.name}"></td>
-                                <td th:text="${eDto.email}"></td>
-                                <td th:text="${eDto.password}"></td>
-                                <td th:text="${#dates.format(eDto.hire_date, 'yyyy-MM-dd')}"></td>
-                                <td th:text="${departmentMap.get(eDto.department_id)}"></td>
-                                <td th:text="${roleMap.get(eDto.role_id)}"></td>
-
-                                <td>
-                                    <a th:href="@{/updateEmployee(employee_id=${eDto.employee_id}, page=${page}, whatColumn=${whatColumn}, keyword=${keyword})}">
-                                        수정
-                                    </a>
-                                </td>
-
-                                <td>
-                                    <a th:href="@{/deleteEmployee(employee_id=${eDto.employee_id}, page=${page}, whatColumn=${whatColumn}, keyword=${keyword})}">
-                                        삭제
-                                    </a>
-                                </td>
-                            </tr>
-                        </th:block>
-                    </tbody>
-                </table>
-            </form>
-            <div>
-            <span th:if="${page > 1}">
-                <a th:href="@{/showEmployees(page=${page - 1}, whatColumn=${param.whatColumn}, keyword=${param.keyword})}">이전</a>
-            </span>
-
-                <span th:each="i : ${#numbers.sequence(1,totalPage)}">
-                <a th:if="${i != page}"
-                   th:href="@{showEmployees(page=${i}, whatColumn=${param.whatColumn}, keyword=${param.keyword})}"
-                   th:text="${i}">
-                </a>
-
-                <span th:if="${i==page}"
-                      th:text="${i}"
-                      style="font-weight:bold; color:red">
-                </span>
-            </span>
-
-                <!--지금 페이지가 전체페이지보다 작은 경우 다음-->
-                <span th:if="${page < totalPage}">
-                <a th:href="@{/showEmployees(page=${page+1}, whatColumn=${param.whatColumn}, keyword=${param.keyword})}">다음</a>
-            </span>
-            </div>
+            <table>
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>이름</th>
+                    <th>이메일</th>
+                    <th>입사일</th>
+                    <th>부서</th>
+                    <th>직책</th>
+                    <th>수정</th>
+                    <th>삭제</th>
+                </tr>
+                </thead>
+                <tbody id="employees_tbody"></table>
+            <div class="pagination" id="pagination"></div>
         </div>
+        <script type="text/javascript" th:src="@{/script/employee/employeeList.js}"></script>
     </div>
     </body>
     </html>
