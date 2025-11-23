@@ -26,5 +26,6 @@ public interface ProductMapper {
 
     List<MaterialRequirementDto> getMaterialRequirements(String serialCode);
 
-    void decreaseProductStock(String serialCode, int qty);
+
+    List<ProductStockDto> findTotalProductStock();
 }

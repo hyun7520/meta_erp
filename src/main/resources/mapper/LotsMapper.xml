@@ -20,14 +20,14 @@
     <!-- 특정 제품의 로트를 유통기한 빠른 순으로 조회 -->
     <select id="findLotsBySerialCodeOrderByExpiry" resultMap="LotStockMap">
         SELECT
-        l.lot_id,
-        p.product_id,
-        p.product_name,
-        l.qty,
-        l.unit,
-        TO_CHAR(l.storage_date, 'YYYY-MM-DD') as storage_date,
-        TO_CHAR(l.shelf_life_days, 'YYYY-MM-DD') as shelf_life_days,
-        l.note
+            l.lot_id,
+            p.product_id,
+            p.product_name,
+            l.qty,
+            l.unit,
+            TO_CHAR(l.storage_date, 'YYYY-MM-DD') as storage_date,
+            TO_CHAR(l.shelf_life_days, 'YYYY-MM-DD') as shelf_life_days,
+            l.note
         FROM Lots l
         INNER JOIN Products p ON l.lot_id = p.lots_id
         INNER JOIN Fixed_Product fp ON p.product_name = fp.name
@@ -43,8 +43,9 @@
         WHERE LOT_ID = #{lotId}
     </update>
 
-    <!-- 재고 0인 로트 삭제 -->
-    <delete id="deleteZeroLot">
-        DELETE FROM LOTS WHERE LOT_ID = #{lotId} AND QTY = 0
+    <!-- 로트 삭제 -->
+    <delete id="deleteLotById">
+        DELETE FROM Lots
+        WHERE lot_id = #{lotId}
     </delete>
 </mapper>

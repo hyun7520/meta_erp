@@ -186,7 +186,9 @@
     <!-- 생산 시작일 업데이트 (수주) -->
     <update id="updateProductionStartDate">
         UPDATE Production_Request
-        SET production_start_date = SYSDATE
+        SET
+        PRODUCTION_EMPLOYEE = #{employeeId},
+        production_start_date = SYSDATE
         WHERE pr_id = #{prId}
     </update>
 
@@ -203,4 +205,29 @@
         LEFT JOIN Fixed_Product fp ON pr.serial_code = fp.serial_code
         WHERE pr.end_date IS NULL
     </select>
+
+    <select id="countCompleted" resultType="int">
+        SELECT COUNT(*) FROM Production_Request WHERE end_date IS NOT NULL
+    </select>
+
+    <select id="countOverdue" resultType="int">
+        <![CDATA[
+        SELECT COUNT(*) FROM Production_Request
+        WHERE end_date IS NULL
+        AND deadline < SYSDATE
+        ]]>
+    </select>
+
+    <select id="countOngoing" resultType="int">
+        SELECT COUNT(*) FROM Production_Request
+        WHERE production_start_date IS NOT NULL
+        AND end_date IS NULL
+        AND deadline >= SYSDATE
+    </select>
+
+    <select id="countPending" resultType="int">
+        SELECT COUNT(*) FROM Production_Request WHERE production_start_date IS NULL
+    </select>
+
+
 </mapper>

@@ -25,6 +25,13 @@
         <result property="shelfLifeDays" column="shelf_life_days" />
     </resultMap>
 
+    <resultMap id="MaterialRequirementMap" type="com.meta.stock.materials.dto.MaterialRequirementDto">
+        <result property="materialName" column="material_name" />
+        <result property="requiredQty" column="required_qty" />
+        <result property="unit" column="unit" />
+        <result property="currentStock" column="current_stock" />
+    </resultMap>
+
     <!-- 전체 완제품 재고 조회 -->
     <select id="findTotalProductStock" resultMap="ProductStockMap">
         SELECT
@@ -89,7 +96,7 @@
     </select>
 
     <!-- BOM 정보 조회 (필요 원자재) -->
-    <select id="getMaterialRequirements" resultType="com.meta.stock.materials.dto.MaterialRequirementDto">
+    <select id="getMaterialRequirements" resultMap="MaterialRequirementMap">
         SELECT
         fm.name as material_name,
         fm.qty as required_qty,
@@ -161,4 +168,10 @@
         )
         AND ROWNUM = 1
     </update>
+
+    <!-- Products 테이블에서 해당 로트 연결 제거 -->
+    <delete id="deleteProductByLotId">
+        DELETE FROM Products
+        WHERE lots_id = #{lotId}
+    </delete>
 </mapper>

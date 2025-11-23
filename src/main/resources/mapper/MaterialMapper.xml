@@ -35,7 +35,7 @@
         FROM Material_Request mr
         LEFT JOIN Materials m ON mr.mr_id = m.mr_id
         LEFT JOIN Employees e ON mr.request_by = e.employee_id
-        WHERE mr.approved = 1
+        WHERE mr.approved = 0
         <if test="keyword != null and keyword != ''">
             AND m.material_name LIKE '%' || #{keyword} || '%'
         </if>
@@ -51,6 +51,53 @@
         </choose>
         OFFSET #{offset} ROWS
         FETCH NEXT #{limit} ROWS ONLY
+    </select>
+
+    <select id="findAllMaterialRequestsWithPaging" resultMap="MaterialRequestMap">
+        SELECT
+        mr.mr_id,
+        fm.name as material_name,
+        mr.qty,
+        mr.unit,
+        TO_CHAR(mr.request_date, 'YYYY-MM-DD') as request_date,
+        mr.approved,
+        TO_CHAR(mr.approved_date, 'YYYY-MM-DD') as approved_date,
+        mr.note,
+        e.name as request_by_name
+        FROM Material_Request mr
+        LEFT JOIN fixed_material fm ON mr.fm_id = fm.fm_id
+        LEFT JOIN Employees e ON mr.request_by = e.employee_id
+        WHERE 1=1
+        <if test="keyword != null and keyword != ''">
+            AND (m.material_name LIKE '%' || #{keyword} || '%'
+            OR mr.note LIKE '%' || #{keyword} || '%')
+        </if>
+        ORDER BY
+        <choose>
+            <when test="sortBy == 'mrId'">mr.mr_id</when>
+            <when test="sortBy == 'materialName'">m.material_name</when>
+            <when test="sortBy == 'qty'">mr.qty</when>
+            <when test="sortBy == 'requestDate'">mr.request_date</when>
+            <when test="sortBy == 'approved'">mr.approved</when>
+            <otherwise>mr.request_date</otherwise>
+        </choose>
+        <choose>
+            <when test="sortDir == 'DESC'">DESC</when>
+            <otherwise>ASC</otherwise>
+        </choose>
+        OFFSET #{offset} ROWS
+        FETCH NEXT #{limit} ROWS ONLY
+    </select>
+
+    <select id="countAllMaterialRequests" resultType="long">
+        SELECT COUNT(*)
+        FROM Material_Request mr
+        LEFT JOIN Materials m ON mr.mr_id = m.mr_id
+        WHERE 1=1
+        <if test="keyword != null and keyword != ''">
+            AND (m.material_name LIKE '%' || #{keyword} || '%'
+            OR mr.note LIKE '%' || #{keyword} || '%')
+        </if>
     </select>
 
     <select id="countMaterialRequests" resultType="long">
@@ -74,10 +121,11 @@
 
     <!-- 현재 재고 조회 (같은 이름 재료 합계) -->
     <select id="getCurrentStock" parameterType="string" resultType="int">
-        SELECT COALESCE(SUM(l.QTY), 0)
-        FROM MATERIAL m
-        JOIN LOTS l ON m.LOTS_ID = l.LOT_ID
-        WHERE m.MATERIAL_NAME = #{materialName}
+        SELECT NVL(SUM(l.qty), 0) as total_stock
+        FROM Materials m
+        INNER JOIN Lots l ON m.lots_id = l.lot_id
+        WHERE m.material_name = #{materialName}
+        AND l.qty > 0
     </select>
 
     <select id="getDateMaterialTotals" resultMap="parseMaterialCounts">
@@ -96,5 +144,24 @@
             </choose>
         </where>
         group by material_name
+    </select>
+
+    <!-- 상태별 발주 요청 개수 -->
+    <select id="countByApproved" resultType="int">
+        SELECT COUNT(*)
+        FROM Material_Request
+        WHERE approved = #{approved}
+    </select>
+
+    <!-- 현재 재료 재고 조회 -->
+    <select id="getCurrentMaterialStocks" resultType="com.meta.stock.materials.dto.MaterialStockDto">
+        SELECT
+        m.material_name as materialName,
+        SUM(l.qty) as qty
+        FROM Materials m
+        INNER JOIN Lots l ON m.lots_id = l.lot_id
+        WHERE l.qty > 0
+        GROUP BY m.material_name
+        ORDER BY SUM(l.qty) ASC
     </select>
 </mapper>

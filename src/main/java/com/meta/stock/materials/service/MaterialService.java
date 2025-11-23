@@ -1,9 +1,6 @@
 package com.meta.stock.materials.service;
 
-import com.meta.stock.materials.dto.MaterialDto;
-import com.meta.stock.materials.dto.MaterialRequestDto;
-import com.meta.stock.materials.dto.MaterialRequirementDto;
-import com.meta.stock.materials.dto.MaterialCountsBean;
+import com.meta.stock.materials.dto.*;
 import com.meta.stock.materials.mapper.MaterialMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -14,8 +11,6 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class MaterialService {
@@ -29,17 +24,19 @@ public class MaterialService {
     }
 
     // 전체 재료 요청 조회
-    public List<MaterialRequestDto> findAllMaterialRequests() {
-        return materialMapper.findAllMaterialRequests();
-    }
+    public Page<MaterialRequestDto> findAllMaterialRequests(String keyword, Pageable pageable) {
+        int offset = pageable.getPageNumber() * pageable.getPageSize();
+        int limit = pageable.getPageSize();
+        String sortBy = pageable.getSort().iterator().next().getProperty();
+        String sortDir = pageable.getSort().iterator().next().getDirection().name();
 
-    // 요청한 재료에 대한 정보 조회
-    public List<MaterialRequestDto> getAllMaterialRequests(List<MaterialRequestDto> mrDto) {
-        Set<Long> mrIds = mrDto.stream()
-                .map(MaterialRequestDto::getMrId)
-                .collect(Collectors.toSet());
+        List<MaterialRequestDto> content = materialMapper.findAllMaterialRequestsWithPaging(
+                keyword, sortBy, sortDir, offset, limit
+        );
 
-        return materialMapper.getAllMaterialRequests();
+        long total = materialMapper.countAllMaterialRequests(keyword);
+
+        return new PageImpl<>(content, pageable, total);
     }
 
     // 진행상황에 따른 요청 조회
@@ -87,5 +84,25 @@ public class MaterialService {
 
     public List<MaterialCountsBean> getDateMaterialTotals(String serialCode) {
         return materialMapper.getDateMaterialTotals(serialCode);
+    }
+
+    // 발주 요청 통계
+    public Map<String, Integer> getRequestStatistics() {
+        Map<String, Integer> stats = new HashMap<>();
+
+        int pending = materialMapper.countByApproved(0);    // 확인중
+        int approved = materialMapper.countByApproved(1);   // 승인
+        int completed = materialMapper.countByApproved(2);  // 완료
+
+        stats.put("pending", pending);
+        stats.put("approved", approved);
+        stats.put("completed", completed);
+
+        return stats;
+    }
+
+    // 현재 재료 재고 목록
+    public List<MaterialStockDto> getCurrentMaterialStocks() {
+        return materialMapper.getCurrentMaterialStocks();
     }
 }

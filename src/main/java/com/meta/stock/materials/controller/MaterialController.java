@@ -3,15 +3,21 @@ package com.meta.stock.materials.controller;
 import com.meta.stock.materials.dto.MaterialDto;
 import com.meta.stock.materials.dto.MaterialRequestDto;
 import com.meta.stock.materials.dto.MaterialRequirementDto;
+import com.meta.stock.materials.dto.MaterialStockDto;
 import com.meta.stock.materials.service.MaterialService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Controller
 public class MaterialController {
@@ -21,11 +27,33 @@ public class MaterialController {
 
     // 전체 재료 요청 조회
     @GetMapping("material")
-    public String getAllMaterials(Model model) {
+    public String getAllMaterials(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(defaultValue = "requestDate") String sortBy,
+            @RequestParam(defaultValue = "DESC") String sortDir,
+            Model model) {
 
-        List<MaterialRequestDto> mrDto = materialService.findAllMaterialRequests();
+        Pageable pageable = PageRequest.of(page, size,
+                Sort.by(Sort.Direction.fromString(sortDir), sortBy));
 
-        model.addAttribute("mrDto", mrDto);
+        // 발주 요청 목록
+        Page<MaterialRequestDto> materialRequests =
+                materialService.findAllMaterialRequests(keyword, pageable);
+
+        // 발주 요청 통계
+        Map<String, Integer> requestStats = materialService.getRequestStatistics();
+
+        // 현재 재료 재고
+        List<MaterialStockDto> materialStocks = materialService.getCurrentMaterialStocks();
+
+        model.addAttribute("materialRequests", materialRequests);
+        model.addAttribute("requestStats", requestStats);
+        model.addAttribute("materialStocks", materialStocks);
+        model.addAttribute("sortBy", sortBy);
+        model.addAttribute("sortDir", sortDir);
+        model.addAttribute("keyword", keyword);
 
         return "material";
     }

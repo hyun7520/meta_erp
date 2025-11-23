@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>완제품 재고 전체 조회</title>
+  <link rel="stylesheet" type="text/css" th:href="@{/style/product/BaseStyle.css}" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script type="text/javascript" th:src="@{/script/baseJS.js}"></script>
+  <style>
+        .content-wrapper {
+            padding: 20px;
+        }
+
+        .fragement-box {
+            margin: 20px 0;
+            padding: 20px;
+        }
+
+        table {
+            font-size: 13px;
+        }
+
+        th {
+            padding: 12px 15px;
+            font-size: 12px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        th:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        th.sortable::after {
+            content: '⇅';
+            margin-left: 8px;
+            opacity: 0.3;
+        }
+
+        th.sortable.asc::after {
+            content: '▲';
+            opacity: 1;
+        }
+
+        th.sortable.desc::after {
+            content: '▼';
+            opacity: 1;
+        }
+
+        td {
+            padding: 12px 15px;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+  <!-- 네비게이션 바 -->
+  <div th:insert="~{navbar :: navbar('완제품 재고 관리', '')}"></div>
+
+  <div class="content-wrapper">
+    <div class="fragement-box">
+      <div class="action-bar">
+        <h2>
+          <i class="fas fa-box"></i> 완제품 재고 전체 목록
+          <span class="tab-count" th:text="${productStock.totalElements}">0</span>
+        </h2>
+        <a th:href="@{/product}" class="btn btn-cancel">
+          <i class="fas fa-arrow-left"></i> 대시보드로
+        </a>
+      </div>
+
+      <!-- 검색 및 정렬 폼 -->
+      <form method="get" action="/product/stock">
+        <div class="form-row">
+          <div class="form-group">
+            <input type="text" name="keyword" placeholder="제품명 검색" th:value="${keyword}">
+          </div>
+          <div class="form-group">
+            <select name="sortBy">
+              <option value="storageDate" th:selected="${sortBy == 'storageDate'}">입고일</option>
+              <option value="productName" th:selected="${sortBy == 'productName'}">제품명</option>
+              <option value="qty" th:selected="${sortBy == 'qty'}">재고수량</option>
+              <option value="shelfLifeDays" th:selected="${sortBy == 'shelfLifeDays'}">유통기한</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <select name="sortDir">
+              <option value="ASC" th:selected="${sortDir == 'ASC'}">오름차순</option>
+              <option value="DESC" th:selected="${sortDir == 'DESC'}">내림차순</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <button type="submit" class="btn btn-confirm">검색</button>
+          </div>
+        </div>
+      </form>
+
+      <!-- 재고 테이블 -->
+      <table>
+        <thead>
+        <tr>
+          <th class="sortable"
+              th:classappend="${sortBy == 'productName'} ? (${sortDir == 'ASC'} ? 'asc' : 'desc')"
+              th:onclick="|location.href='@{/product/stock(sortBy='productName', sortDir=${sortBy == 'productName' and sortDir == 'ASC' ? 'DESC' : 'ASC'}, keyword=${keyword})}'|">
+            제품명
+          </th>
+          <th>로트번호</th>
+          <th class="sortable"
+              th:classappend="${sortBy == 'qty'} ? (${sortDir == 'ASC'} ? 'asc' : 'desc')"
+              th:onclick="|location.href='@{/product/stock(sortBy='qty', sortDir=${sortBy == 'qty' and sortDir == 'ASC' ? 'DESC' : 'ASC'}, keyword=${keyword})}'|">
+            재고수량
+          </th>
+          <th>단위</th>
+          <th class="sortable"
+              th:classappend="${sortBy == 'storageDate'} ? (${sortDir == 'ASC'} ? 'asc' : 'desc')"
+              th:onclick="|location.href='@{/product/stock(sortBy='storageDate', sortDir=${sortBy == 'storageDate' and sortDir == 'ASC' ? 'DESC' : 'ASC'}, keyword=${keyword})}'|">
+            입고일
+          </th>
+          <th class="sortable"
+              th:classappend="${sortBy == 'shelfLifeDays'} ? (${sortDir == 'ASC'} ? 'asc' : 'desc')"
+              th:onclick="|location.href='@{/product/stock(sortBy='shelfLifeDays', sortDir=${sortBy == 'shelfLifeDays' and sortDir == 'ASC' ? 'DESC' : 'ASC'}, keyword=${keyword})}'|">
+            출하기한
+          </th>
+          <th>남은일</th>
+          <th>상태</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="stock : ${productStock.content}">
+          <td th:text="${stock.productName}">부대찌개</td>
+          <td th:text="${stock.lotId}">LOT-001</td>
+          <td><span class="qty-unit" th:text="${stock.qty}">480</span></td>
+          <td th:text="${stock.unit}">개</td>
+          <td th:text="${stock.storageDate}">2025-11-01</td>
+          <td th:text="${stock.shelfLifeDays}">2025-11-25</td>
+          <td>
+                            <span th:if="${stock.expired}" style="color: #EF4444; font-weight: 600;">
+                                <span th:text="${stock.daysLeft * -1}">3</span>일 지남
+                            </span>
+            <span th:unless="${stock.expired}" style="color: #6B7280;">
+                                <span th:text="${stock.daysLeft}">7</span>일
+                            </span>
+          </td>
+          <td>
+            <span th:class="${stock.statusBadgeClass}" th:text="${stock.statusText}">정상</span>
+          </td>
+        </tr>
+        <tr th:if="${productStock.isEmpty()}">
+          <td colspan="8" style="text-align: center; color: #9CA3AF; padding: 40px;">
+            재고가 없습니다.
+          </td>
+        </tr>
+        </tbody>
+      </table>
+
+      <!-- 페이지네이션 -->
+      <div class="pagination" th:if="${productStock.totalPages > 1}">
+        <button class="pagination-btn"
+                th:disabled="${productStock.first}"
+                th:onclick="|location.href='@{/product/stock(page=${productStock.number - 1}, sortBy=${sortBy}, sortDir=${sortDir}, keyword=${keyword})}'|">
+          ◀
+        </button>
+
+        <button class="pagination-btn"
+                th:each="i : ${#numbers.sequence(0, productStock.totalPages - 1)}"
+                th:classappend="${i == productStock.number} ? 'active'"
+                th:onclick="|location.href='@{/product/stock(page=${i}, sortBy=${sortBy}, sortDir=${sortDir}, keyword=${keyword})}'|"
+                th:text="${i + 1}">
+          1
+        </button>
+
+        <button class="pagination-btn"
+                th:disabled="${productStock.last}"
+                th:onclick="|location.href='@{/product/stock(page=${productStock.number + 1}, sortBy=${sortBy}, sortDir=${sortDir}, keyword=${keyword})}'|">
+          ▶
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

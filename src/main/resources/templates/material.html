@@ -1,88 +1,409 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>재료 관리 대시보드</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>재료 관리</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/style/product/BaseStyle.css}" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script type="text/javascript" th:src="@{/script/baseJS.js}"></script>
     <style>
-        .status-0 { background-color: #fff3cd; } /* 확인중 - 노랑 */
-        .status-1 { background-color: #d4edda; } /* 허가 - 초록 */
-        .status-2 { background-color: #f8d7da; } /* 완료 - 빨강 */
+        /* 레이아웃: 좌측 60%, 우측 40% */
+        .row {
+            display: flex;
+            gap: 20px;
+            height: calc(100vh - 140px);
+        }
+
+        .left-section {
+            width: 60%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .right-section {
+            width: 40%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .fragement-box {
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        /* 테이블 컨테이너 */
+        .table-container {
+            flex: 1;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+
+        .action-bar {
+            margin-bottom: 15px;
+            padding: 15px;
+            flex-shrink: 0;
+        }
+
+        table {
+            font-size: 13px;
+        }
+
+        th {
+            padding: 10px 15px;
+            font-size: 12px;
+            position: sticky;
+            top: 0;
+            background: #F8F9FA;
+            z-index: 1;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        th:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        th.sortable::after {
+            content: '⇅';
+            margin-left: 8px;
+            opacity: 0.3;
+        }
+
+        th.sortable.asc::after {
+            content: '▲';
+            opacity: 1;
+        }
+
+        th.sortable.desc::after {
+            content: '▼';
+            opacity: 1;
+        }
+
+        td {
+            padding: 10px 15px;
+            font-size: 13px;
+        }
+
+        /* 상태별 행 배경색 */
+        tr.status-0 {
+            background-color: #FEF3C7 !important;
+        }
+
+        tr.status-1 {
+            background-color: #D1FAE5 !important;
+        }
+
+        tr.status-2 {
+            background-color: #F3F4F6 !important;
+        }
+
+        .form-row {
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 0;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 8px;
+            font-size: 13px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            font-size: 13px;
+        }
+
+        .pagination {
+            margin-top: 15px;
+            padding-top: 15px;
+            flex-shrink: 0;
+        }
+
+        /* 통계 카드 스타일 */
+        .stats-card {
+            background: #F8F9FA;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .stat-item .stat-number {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .stat-item .stat-label {
+            font-size: 12px;
+            color: #6B7280;
+            font-weight: 600;
+        }
+
+        .stat-item.pending .stat-number {
+            color: #F59E0B;
+        }
+
+        .stat-item.approved .stat-number {
+            color: #10B981;
+        }
+
+        .stat-item.completed .stat-number {
+            color: #6B7280;
+        }
+
+        /* 재료 목록 카드 */
+        .material-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .material-card {
+            background: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border-left: 4px solid #2A9D8F;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+        }
+
+        .material-card:hover {
+            transform: translateX(3px);
+        }
+
+        .material-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .material-name {
+            font-weight: 600;
+            color: #374151;
+            font-size: 14px;
+        }
+
+        .material-qty {
+            font-size: 18px;
+            font-weight: 700;
+            color: #2A9D8F;
+        }
+
+        .material-progress {
+            background: #E5E7EB;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .material-progress-bar {
+            background: linear-gradient(90deg, #2A9D8F, #10B981);
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
     </style>
 </head>
-<body class="bg-light">
-<div class="container-fluid py-4">
+<body>
+<div class="container">
+    <!-- 네비게이션 바 -->
+    <div th:insert="~{navbar :: navbar('재료 관리', '')}"></div>
 
-    <h2 class="mb-4 text-primary">재료 관리 대시보드</h2>
+    <div class="content-wrapper">
+        <div class="row">
+            <!-- 좌측: 재료 발주 요청 목록 (60%) -->
+            <div class="left-section">
+                <div class="fragement-box">
+                    <div class="action-bar">
+                        <h2>
+                            <i class="fas fa-clipboard-list"></i>
+                            재료 발주 요청 현황
+                            <span class="tab-count" th:text="${materialRequests.totalElements}">0</span>
+                        </h2>
+                        <a th:href="@{/product}" class="btn btn-cancel">
+                            <i class="fas fa-arrow-left"></i> 대시보드로
+                        </a>
+                    </div>
 
-    <div class="row">
+                    <!-- 검색 및 정렬 폼 -->
+                    <form method="get" action="/material">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <input type="text" name="keyword" placeholder="재료명 또는 비고 검색" th:value="${keyword}">
+                            </div>
+                            <div class="form-group">
+                                <select name="sortBy">
+                                    <option value="requestDate" th:selected="${sortBy == 'requestDate'}">요청일</option>
+                                    <option value="materialName" th:selected="${sortBy == 'materialName'}">재료명</option>
+                                    <option value="qty" th:selected="${sortBy == 'qty'}">수량</option>
+                                    <option value="approved" th:selected="${sortBy == 'approved'}">상태</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <select name="sortDir">
+                                    <option value="ASC" th:selected="${sortDir == 'ASC'}">오름차순</option>
+                                    <option value="DESC" th:selected="${sortDir == 'DESC'}">내림차순</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-confirm">검색</button>
+                            </div>
+                        </div>
+                    </form>
 
-        <!-- 좌측: 모든 재료 발주 요청 (전체 상태) -->
-        <div class="col-lg-6 mb-4">
-            <div class="card shadow-sm h-100">
-                <div class="card-header bg-dark text-white d-flex justify-content">
-                    <h5 class="mb-0">재료 발주 요청 현황</h5>
-                    <!--<a th:href="@{material/{id}(id=${order.orderId})}" class="btn btn-sm btn-outline-primary">재료 발주 요청</a>-->
-                </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-hover mb-0">
-                            <thead class="table-secondary">
+                    <!-- 발주 요청 테이블 -->
+                    <div class="table-container">
+                        <table>
+                            <thead>
                             <tr>
-                                <th>요청ID</th>
-                                <th>재료명</th>
-                                <th>요청수량</th>
-                                <th>요청일</th>
-                                <th>상태</th>
+                                <th class="sortable"
+                                    th:classappend="${sortBy == 'mrId'} ? (${sortDir == 'ASC'} ? 'asc' : 'desc')"
+                                    th:onclick="|location.href='@{/material(sortBy='mrId', sortDir=${sortBy == 'mrId' and sortDir == 'ASC' ? 'DESC' : 'ASC'}, keyword=${keyword})}'|">
+                                    요청ID
+                                </th>
+                                <th class="sortable"
+                                    th:classappend="${sortBy == 'materialName'} ? (${sortDir == 'ASC'} ? 'asc' : 'desc')"
+                                    th:onclick="|location.href='@{/material(sortBy='materialName', sortDir=${sortBy == 'materialName' and sortDir == 'ASC' ? 'DESC' : 'ASC'}, keyword=${keyword})}'|">
+                                    재료명
+                                </th>
+                                <th class="sortable"
+                                    th:classappend="${sortBy == 'qty'} ? (${sortDir == 'ASC'} ? 'asc' : 'desc')"
+                                    th:onclick="|location.href='@{/material(sortBy='qty', sortDir=${sortBy == 'qty' and sortDir == 'ASC' ? 'DESC' : 'ASC'}, keyword=${keyword})}'|">
+                                    요청수량
+                                </th>
+                                <th class="sortable"
+                                    th:classappend="${sortBy == 'requestDate'} ? (${sortDir == 'ASC'} ? 'asc' : 'desc')"
+                                    th:onclick="|location.href='@{/material(sortBy='requestDate', sortDir=${sortBy == 'requestDate' and sortDir == 'ASC' ? 'DESC' : 'ASC'}, keyword=${keyword})}'|">
+                                    요청일
+                                </th>
+                                <th class="sortable"
+                                    th:classappend="${sortBy == 'approved'} ? (${sortDir == 'ASC'} ? 'asc' : 'desc')"
+                                    th:onclick="|location.href='@{/material(sortBy='approved', sortDir=${sortBy == 'approved' and sortDir == 'ASC' ? 'DESC' : 'ASC'}, keyword=${keyword})}'|">
+                                    상태
+                                </th>
                                 <th>비고</th>
                             </tr>
                             </thead>
                             <tbody>
-                            <tr th:each="req : ${materialRequests}"
+                            <tr th:each="req : ${materialRequests.content}"
                                 th:classappend="${req.approved == 0 ? 'status-0' : req.approved == 1 ? 'status-1' : 'status-2'}">
                                 <td th:text="${req.mrId}">1</td>
-                                <td th:text="${req.materialName}">김치</td>
-                                <td th:text="${req.qty}">2000</td>
+                                <td th:text="${req.materialName}">햄</td>
+                                <td><span class="qty-unit" th:text="${req.qty}">5000</span></td>
                                 <td th:text="${req.requestDate}">2025-11-05</td>
                                 <td>
-                                    <span th:switch="${req.approved}">
-                                        <span th:case="0" class="badge bg-warning">확인중</span>
-                                        <span th:case="1" class="badge bg-success">허가</span>
-                                        <span th:case="2" class="badge bg-secondary">완료</span>
-                                    </span>
+                                        <span th:switch="${req.approved}">
+                                            <span th:case="0" class="status-badge status-pending">확인중</span>
+                                            <span th:case="1" class="status-badge status-approved">승인</span>
+                                            <span th:case="2" class="status-badge status-rejected">완료</span>
+                                        </span>
                                 </td>
-                                <td th:text="${req.note}">김치 추가 발주</td>
+                                <td th:text="${req.note}">재고 부족</td>
                             </tr>
-                            <tr th:if="${materialRequests == null or materialRequests.isEmpty()}">
-                                <td colspan="6" class="text-center text-muted">발주 요청이 없습니다.</td>
+                            <tr th:if="${materialRequests.isEmpty()}">
+                                <td colspan="6" style="text-align: center; color: #9CA3AF; padding: 40px;">
+                                    발주 요청이 없습니다.
+                                </td>
                             </tr>
                             </tbody>
                         </table>
                     </div>
+
+                    <!-- 페이지네이션 -->
+                    <div class="pagination" th:if="${materialRequests.totalPages > 1}">
+                        <button class="pagination-btn"
+                                th:disabled="${materialRequests.first}"
+                                th:onclick="|location.href='@{/material(page=${materialRequests.number - 1}, sortBy=${sortBy}, sortDir=${sortDir}, keyword=${keyword})}'|">
+                            ◀
+                        </button>
+
+                        <button class="pagination-btn"
+                                th:each="i : ${#numbers.sequence(0, materialRequests.totalPages - 1)}"
+                                th:classappend="${i == materialRequests.number} ? 'active'"
+                                th:onclick="|location.href='@{/material(page=${i}, sortBy=${sortBy}, sortDir=${sortDir}, keyword=${keyword})}'|"
+                                th:text="${i + 1}">
+                            1
+                        </button>
+
+                        <button class="pagination-btn"
+                                th:disabled="${materialRequests.last}"
+                                th:onclick="|location.href='@{/material(page=${materialRequests.number + 1}, sortBy=${sortBy}, sortDir=${sortDir}, keyword=${keyword})}'|">
+                            ▶
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- 우측 그래프 -->
-        <div class="col-lg-6">
+            <!-- 우측: 통계 및 재료 재고 (40%) -->
+            <div class="right-section">
+                <!-- 상단: 발주 요청 통계 -->
+                <div class="fragement-box" style="flex: 0 0 auto; height: auto; margin-bottom: 20px;">
+                    <h3 style="font-size: 16px; color: #374151; margin-bottom: 15px; font-weight: 600;">
+                        <i class="fas fa-chart-bar"></i> 발주 요청 통계
+                    </h3>
+                    <div class="stats-grid">
+                        <div class="stat-item pending">
+                            <div class="stat-number" th:text="${requestStats != null ? requestStats.pending : 0}">4</div>
+                            <div class="stat-label">확인중</div>
+                        </div>
+                        <div class="stat-item approved">
+                            <div class="stat-number" th:text="${requestStats != null ? requestStats.approved : 0}">2</div>
+                            <div class="stat-label">승인</div>
+                        </div>
+                        <div class="stat-item completed">
+                            <div class="stat-number" th:text="${requestStats != null ? requestStats.completed : 0}">6</div>
+                            <div class="stat-label">완료</div>
+                        </div>
+                    </div>
+                </div>
 
-            <!-- 상단: 재고량 바 차트 (Chart.js) -->
-            <div class="card shadow-sm mb-4">
-                <div class="card-header bg-info text-white">
-                    <h5 class="mb-0">현재 재료 재고량</h5>
-                </div>
-                <div class="card-body">
-                    <canvas id="stockChart" height="200"></canvas>
-                </div>
-            </div>
+                <!-- 하단: 현재 재료 재고 -->
+                <div class="fragement-box" style="flex: 1;">
+                    <h3 style="font-size: 16px; color: #374151; margin-bottom: 15px; font-weight: 600;">
+                        <i class="fas fa-warehouse"></i> 현재 재료 재고
+                    </h3>
+                    <div class="material-list">
+                        <div class="material-card" th:each="material : ${materialStocks}">
+                            <div class="material-header">
+                                <span class="material-name" th:text="${material.materialName}">햄</span>
+                                <span class="material-qty" th:text="${material.qty}">5000 g</span>
+                            </div>
+                            <div class="material-progress">
+                                <div class="material-progress-bar"
+                                     th:style="'width: ' + ${material.qty > 10000 ? 100 : (material.qty * 100 / 10000)} + '%'">
+                                </div>
+                            </div>
+                        </div>
 
-            <!-- 하단: 로스율 도넛 차트 (ECharts) -->
-            <div class="card shadow-sm">
-                <div class="card-header bg-danger text-white">
-                    <h5 class="mb-0">재료별 평균 로스율 (%)</h5>
-                </div>
-                <div class="card-body">
-                    <div id="lossChart" style="width: 100%; height: 400px;"></div>
+                        <div th:if="${materialStocks == null or materialStocks.isEmpty()}"
+                             style="text-align: center; color: #9CA3AF; padding: 40px;">
+                            <i class="fas fa-box-open" style="font-size: 32px; opacity: 0.3; margin-bottom: 10px;"></i>
+                            <div>재고 정보가 없습니다.</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

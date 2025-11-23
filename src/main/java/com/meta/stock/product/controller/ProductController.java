@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 
 import java.util.List;
+import java.util.Map;
 
 // 제품과 연관된 기능 수행 컨트롤러
 @Controller
@@ -40,11 +41,6 @@ public class ProductController {
     // 생산 페이지 로드
     @GetMapping("product")
     public String getAllProducts(
-            @RequestParam(defaultValue = "0") int stockPage,
-            @RequestParam(defaultValue = "5") int stockSize,
-            @RequestParam(required = false) String stockKeyword,
-            @RequestParam(defaultValue = "storageDate") String stockSortBy,
-            @RequestParam(defaultValue = "DESC") String stockSortDir,
 
             // 생산 요청 파라미터
             @RequestParam(defaultValue = "0") int prPage,
@@ -62,15 +58,10 @@ public class ProductController {
 
             Model model) {
 
-        // 완제품 재고 페이징/검색/정렬
-        Pageable stockPageable = PageRequest.of(stockPage, stockSize, Sort.by(Sort.Direction.fromString(stockSortDir), stockSortBy));
-        Page<ProductStockDto> totalProductStock = productService.findTotalProductStock(stockKeyword, stockPageable);
-        model.addAttribute("totalProductStock", totalProductStock);
-        model.addAttribute("stockKeyword", stockKeyword);
-        model.addAttribute("stockSortBy", stockSortBy);
-        model.addAttribute("stockSortDir", stockSortDir);
 
-        int ongoingRequestsCount = productionRequestService.getOngoingRequestsCount(prKeyword);
+        List<ProductStockDto> allProducts = productService.getAllProductsStock();
+        model.addAttribute("allProducts", allProducts);
+
         // 진행 중인 생산 요청 페이징/검색/정렬
         Pageable prPageable = PageRequest.of(prPage, prSize, Sort.by(Sort.Direction.fromString(prSortDir), prSortBy));
         Page<ProductRequestDto> productRequests = productionRequestService.findOngoingProductRequests(prKeyword, prPageable);
@@ -92,6 +83,31 @@ public class ProductController {
         // model.addAttribute("prediction", prediction);
 
         return "productionMain";
+    }
+
+    // 완제품 재고 전체 조회 페이지
+    @GetMapping("/product/stock")
+    public String getProductStockList(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "15") int size,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(defaultValue = "storageDate") String sortBy,
+            @RequestParam(defaultValue = "DESC") String sortDir,
+            Model model) {
+
+        Pageable pageable = PageRequest.of(page, size,
+                Sort.by(Sort.Direction.fromString(sortDir), sortBy));
+
+        // 로트별 상세 재고 조회 (기존 방식)
+        Page<ProductStockDto> productStock =
+                productService.findTotalProductStock(keyword, pageable);
+
+        model.addAttribute("productStock", productStock);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("sortBy", sortBy);
+        model.addAttribute("sortDir", sortDir);
+
+        return "productionStocks";
     }
 
     @GetMapping

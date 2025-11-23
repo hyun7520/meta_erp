@@ -25,11 +25,11 @@ public class MaterialRequirementDto {
     }
 
     public int getRemainingQty() {
-        return remainingQty;
+        return requiredQty - currentStock;
     }
 
     public boolean isSufficient() {
-        return sufficient;
+        return currentStock > requiredQty;
     }
 
     public void setMaterialName(String materialName) {
@@ -46,13 +46,5 @@ public class MaterialRequirementDto {
 
     public void setCurrentStock(int currentStock) {
         this.currentStock = currentStock;
-    }
-
-    public void setSufficient(boolean sufficient) {
-        this.sufficient = sufficient;
-    }
-
-    public void setRemainingQty(int remainingQty) {
-        this.remainingQty = Math.max(0, remainingQty); // 음수 방지
     }
 }

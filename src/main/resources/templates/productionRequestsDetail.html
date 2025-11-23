@@ -47,7 +47,7 @@
     </div>
 
     <!-- 현재 완제품 재고 -->
-    <div class="card mb-4">
+    <div th:if="${productRequest.complete != 2}" class="card mb-4">
         <div class="card-header bg-info text-white">
             <h5 class="mb-0">현재 완제품 재고</h5>
         </div>
@@ -100,6 +100,7 @@
         </div>
     </div>
 
+
     <!-- ==================== 수주 상태일 때 ==================== -->
     <div th:if="${productRequest.complete == 1}">
         <div th:if="${currentProductStock < productRequest.targetQty}">
@@ -127,10 +128,8 @@
                             <td th:text="${req.currentStock} + ' ' + ${req.unit}"></td>
                             <td th:text="${req.remainingQty} + ' ' + ${req.unit}"></td>
                             <td>
-                                <span th:if="${req.remainingQty <= 0}" class="badge bg-success">충분</span>
-                                <span th:unless="${req.remainingQty <= 0}" class="badge bg-danger">
-                                    부족 (<span th:text="${req.remainingQty}"></span>)
-                                </span>
+                                <span th:if="${not req.sufficient}" class="badge bg-danger">부족</span>
+                                <span th:if="${req.sufficient}" class="badge bg-success">충분</span>
                             </td>
                         </tr>
                         </tbody>
@@ -145,10 +144,10 @@
         <div th:switch="${productRequest.complete}">
             <!-- 미수주 상태 -->
             <div th:case="0">
-                <form th:action="@{/productRequest/accept/{id}(id=${productRequest.prId})}" method="post" style="display:inline;">
+                <form th:action="@{/pr/accept/{id}(id=${productRequest.prId})}" method="post" style="display:inline;">
                     <button type="submit" class="btn btn-success btn-lg">주문 수주</button>
                 </form>
-                <a th:href="@{/productRequest}" class="btn btn-secondary btn-lg ms-3">목록으로</a>
+                <a th:href="@{/pr}" class="btn btn-secondary btn-lg ms-3">목록으로</a>
             </div>
 
             <!-- 수주 완료 상태 -->
@@ -162,10 +161,7 @@
                 <span th:if="${currentProductStock < productRequest.targetQty}" class="text-danger ms-3">
                     ※ 재고 부족으로 출하 불가
                 </span>
-                <form th:action="@{/productRequest/decline/{id}(id=${productRequest.prId})}" method="post" style="display:inline;">
-                    <button type="submit" class="btn btn-danger btn-lg ms-3">수주 취소</button>
-                </form>
-                <a th:href="@{/productRequest}" class="btn btn-secondary btn-lg ms-3">목록으로</a>
+                <a th:href="@{/pr}" class="btn btn-secondary btn-lg ms-3">목록으로</a>
             </div>
 
             <!-- 완료 상태 -->

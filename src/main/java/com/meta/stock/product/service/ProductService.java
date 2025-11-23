@@ -28,6 +28,10 @@ public class ProductService {
     @Autowired
     private ProductRepository productRepository;
 
+    public List<com.meta.stock.product.dto.ProductStockDto> getAllProductsStock() {
+        return productMapper.findTotalProductStock();
+    }
+
     public Page<ProductStockDto> findTotalProductStock(String keyword, Pageable pageable) {
         int offset = pageable.getPageNumber() * pageable.getPageSize();
         int limit = pageable.getPageSize();
@@ -55,7 +59,6 @@ public class ProductService {
         for (MaterialRequirementDto req : requirements) {
             int totalRequired = req.getRequiredQty() * productQty;
             req.setRequiredQty(totalRequired);
-
             // 현재 재료 재고 조회
             int currentStock = materialMapper.getCurrentStock(req.getMaterialName());
             req.setCurrentStock(currentStock);
@@ -83,4 +86,5 @@ public class ProductService {
                 .lotsId(entity.getLotsId())
                 .build();
     }
+
 }

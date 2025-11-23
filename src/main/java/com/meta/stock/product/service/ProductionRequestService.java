@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -146,10 +147,33 @@ public class ProductionRequestService {
         }
     }
 
+    public Map<String, Integer> getStatusStatistics() {
+        Map<String, Integer> stats = new HashMap<>();
+
+        // 완료 (end_date가 있음)
+        int completed = prMapper.countCompleted();
+
+        // 기간 초과 (deadline < 오늘 && end_date = null)
+        int overdue = prMapper.countOverdue();
+
+        // 진행 중 (production_start_date 있음 && end_date = null && deadline >= 오늘)
+        int ongoing = prMapper.countOngoing();
+
+        // 미수주 (production_start_date = null)
+        int pending = prMapper.countPending();
+
+        stats.put("completed", completed);
+        stats.put("overdue", overdue);
+        stats.put("ongoing", ongoing);
+        stats.put("pending", pending);
+
+        return stats;
+    }
+
     // 주문 수주
     @Transactional
-    public void acceptOrder(Long prId) {
-        prMapper.updateProductionStartDate(prId);
+    public void acceptOrder(Long employeeId, Long prId) {
+        prMapper.updateProductionStartDate(employeeId, prId);
     }
 
     // 전체 주문 목록 조회
