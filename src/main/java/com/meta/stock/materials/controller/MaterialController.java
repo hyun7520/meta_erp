@@ -16,6 +16,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -58,32 +59,38 @@ public class MaterialController {
         return "material";
     }
 
-    // 특정 재료 상세 정보 조회
-    @GetMapping("material/{materialId}")
-    public String getMaterialById(@PathVariable int mrId) {
-
-        MaterialDto foundMaterial = materialService.getMaterialRequestById(mrId);
-
-        return null;
-    }
-
-    // 이전에 요청한 재료 요청서 확인
-    @GetMapping("material/order/{mrId}")
-    public List<MaterialDto> getMaterialRequestDetails(@PathVariable int mrId) {
-        return materialService.getMaterialRequestDetails(mrId);
-    }
-
     // 선택한 제품에 대한 재료 요청서 작성 페이지로 이동
     // AI 추천에 승낙한 경우도 여기서 처리
-    @GetMapping("material/order-form/{productId}")
-    public String getMaterialRequestForm(@PathVariable(required = false) int productId,
-                                         @RequestParam List<Integer> materials,
-                                         Model model) {
+    @GetMapping("/material/request")
+    public String requestMaterials(
+            @RequestParam(name = "materialNames") List<String> materialNames,
+            @RequestParam(name = "quantities") List<String> quantities,
+            @RequestParam(name = "units") List<String> units,
+            Model model) {
 
-        List<MaterialDto> materialList =  materialService.getAllMaterials();
-        model.addAttribute(materialList);
+        // 받은 데이터 확인 (로그)
+        System.out.println("=== 선택된 재료 목록 ===");
+        for (int i = 0; i < materialNames.size(); i++) {
+            System.out.printf("재료명: %s, 수량: %s %s%n",
+                    materialNames.get(i),
+                    quantities.get(i),
+                    units.get(i));
+        }
 
-        return "material_request";
+        // DTO 리스트로 변환
+        List<MaterialRequestDto> materialRequests = new ArrayList<>();
+        for (int i = 0; i < materialNames.size(); i++) {
+            MaterialRequestDto dto = new MaterialRequestDto();
+            dto.setMaterialName(materialNames.get(i));
+            dto.setQuantity(Double.parseDouble(quantities.get(i)));
+            dto.setUnit(units.get(i));
+            materialRequests.add(dto);
+        }
+
+        // 모델에 담아서 뷰로 전달
+        model.addAttribute("materialRequests", materialRequests);
+
+        return "material/requestForm"; // 발주 입력 페이지
     }
 
     // 작성한 재료 발주 요청 전송 - DB 반영

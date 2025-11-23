@@ -63,77 +63,54 @@
         </div>
     </div>
 
-    <!-- ==================== 미수주 상태일 때 ==================== -->
-    <div th:if="${productRequest.complete == 0}">
+    <!-- ==================== 원자재 현황 (미수주 & 수주 상태 통합) ==================== -->
+    <div th:if="${productRequest.complete == 0 or productRequest.complete == 1}">
         <div th:if="${currentProductStock < productRequest.targetQty}">
             <div class="card mb-4">
                 <div class="card-header bg-warning text-dark">
-                    <h5 class="mb-0">이 주문을 수주하면 필요한 원자재 현황</h5>
+                    <h5 class="mb-0" th:text="${productRequest.complete == 0} ? '이 주문을 수주하면 필요한 원자재 현황' : '남은 생산을 위한 원자재 현황'"></h5>
+                    <button type="button" class="btn btn-primary" onclick="requestMaterials()">
+                        <i class="fas fa-shopping-cart"></i> 선택 재료 발주
+                    </button>
                 </div>
                 <div class="card-body">
-                    <table class="table table-bordered">
-                        <thead class="table-light">
-                        <tr>
-                            <th>재료명</th>
-                            <th>필요수량</th>
-                            <th>현재재고</th>
-                            <th>상태</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr th:each="req : ${requirements}"
-                            th:classappend="${!req.sufficient} ? 'table-danger' : 'table-success'">
-                            <td th:text="${req.materialName}"></td>
-                            <td th:text="${req.requiredQty} + ' ' + ${req.unit}"></td>
-                            <td th:text="${req.currentStock} + ' ' + ${req.unit}"></td>
-                            <td>
-                                <span th:if="${req.sufficient}" class="badge bg-success">충분</span>
-                                <span th:unless="${req.sufficient}" class="badge bg-danger">
-                                    부족 (<span th:text="${req.remainingQty}"></span>)
-                                </span>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-    <!-- ==================== 수주 상태일 때 ==================== -->
-    <div th:if="${productRequest.complete == 1}">
-        <div th:if="${currentProductStock < productRequest.targetQty}">
-            <div class="card mb-4">
-                <div class="card-header bg-warning text-dark">
-                    <h5 class="mb-0">남은 생산을 위한 원자재 현황</h5>
-                </div>
-                <div class="card-body">
-                    <p class="text-muted">남은 생산 필요량: <strong th:text="${productRequest.targetQty - currentProductStock} + ' ' + ${productRequest.unit}"></strong></p>
-                    <table class="table table-bordered">
-                        <thead class="table-light">
-                        <tr>
-                            <th>재료명</th>
-                            <th>필요수량</th>
-                            <th>현재재고</th>
-                            <th>남은 필요량</th>
-                            <th>상태</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr th:each="req : ${remainingRequirements}"
-                            th:classappend="${req.remainingQty > 0} ? 'table-danger' : 'table-success'">
-                            <td th:text="${req.materialName}"></td>
-                            <td th:text="${req.requiredQty} + ' ' + ${req.unit}"></td>
-                            <td th:text="${req.currentStock} + ' ' + ${req.unit}"></td>
-                            <td th:text="${req.remainingQty} + ' ' + ${req.unit}"></td>
-                            <td>
-                                <span th:if="${not req.sufficient}" class="badge bg-danger">부족</span>
-                                <span th:if="${req.sufficient}" class="badge bg-success">충분</span>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
+                    <form id="materialRequestForm">
+                        <table class="table table-bordered">
+                            <thead class="table-light">
+                            <tr>
+                                <th>재료명</th>
+                                <th>필요수량</th>
+                                <th>현재재고</th>
+                                <th>부족수량</th>
+                                <th>상태</th>
+                                <th>
+                                    <input type="checkbox" id="selectAll" onclick="toggleSelectAll(this)">발주
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="req : ${requirements}"
+                                th:classappend="${!req.sufficient} ? 'table-danger' : 'table-success'">
+                                <td th:text="${req.materialName}">햄</td>
+                                <td th:text="${req.requiredQty} + ' ' + ${req.unit}">200 g</td>
+                                <td th:text="${req.currentStock} + ' ' + ${req.unit}">150 g</td>
+                                <td>
+                                <span th:if="${!req.sufficient}"
+                                      style="color: #EF4444; font-weight: 600;"
+                                      th:text="${req.remainingQty} + ' ' + ${req.unit}">50 g</span>
+                                    <span th:if="${req.sufficient}" style="color: #10B981;">-</span>
+                                </td>
+                                <td>
+                                    <span th:if="${req.sufficient}" class="badge bg-success">충분</span>
+                                    <span th:unless="${req.sufficient}" class="badge bg-danger">부족</span>
+                                </td>
+                                <td>
+                                    <input type="checkbox" class="material-checkbox"/>[[${req.materialName}]]
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </form>
                 </div>
             </div>
         </div>
@@ -172,5 +149,44 @@
     </div>
 
 </div>
+<script>
+    function toggleSelectAll(checkbox) {
+        const checkboxes = document.querySelectorAll('.material-checkbox:not(:disabled)');
+        checkboxes.forEach(cb => {
+            cb.checked = checkbox.checked;
+        });
+    }
+
+    // 선택된 재료 발주
+    function requestMaterials() {
+        const checkboxes = document.querySelectorAll('.material-checkbox:checked');
+
+        if (checkboxes.length === 0) {
+            alert('발주할 재료를 선택해주세요.');
+            return;
+        }
+
+        // 선택된 재료 정보 수집
+        const materials = [];
+        checkboxes.forEach(cb => {
+            materials.push({
+                name: cb.value,
+                qty: cb.dataset.qty,
+                unit: cb.dataset.unit
+            });
+        });
+
+        // URL 파라미터로 전달
+        const params = new URLSearchParams();
+        materials.forEach((material, index) => {
+            params.append('materialNames', material.name);
+            params.append('quantities', material.qty);
+            params.append('units', material.unit);
+        });
+
+        // 발주 페이지로 이동
+        window.location.href = '/material/request?' + params.toString();
+    }
+</script>
 </body>
 </html>

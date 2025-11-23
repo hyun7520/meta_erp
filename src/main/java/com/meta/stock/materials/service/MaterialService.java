@@ -18,11 +18,6 @@ public class MaterialService {
     @Autowired
     private MaterialMapper materialMapper;
 
-    // 전체 재료 조회
-    public List<MaterialDto> getAllMaterials() {
-        return materialMapper.getAllMaterials();
-    }
-
     // 전체 재료 요청 조회
     public Page<MaterialRequestDto> findAllMaterialRequests(String keyword, Pageable pageable) {
         int offset = pageable.getPageNumber() * pageable.getPageSize();

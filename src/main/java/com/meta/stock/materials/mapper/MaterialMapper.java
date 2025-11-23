@@ -21,8 +21,6 @@ public interface MaterialMapper {
 
     List<MaterialRequirementDto> calculateRequiredMaterials(Map<String, Object> param);
 
-    List<MaterialDto> getAllMaterials();
-
     List<MaterialCountsBean> getDateMaterialTotals(String serialCode);
 
     int countByApproved(int i);
