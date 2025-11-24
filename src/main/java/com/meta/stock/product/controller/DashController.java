@@ -8,6 +8,7 @@ import com.meta.stock.product.dto.ProductDemandBean;
 import com.meta.stock.product.dto.ProductsAmountListBean;
 import com.meta.stock.product.service.GraphService;
 import com.meta.stock.product.service.ProductsService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -36,7 +37,10 @@ public class DashController {
     private final int limit = 5;
 
     @GetMapping("/dash")
-    private String dashboard() {
+    private String dashboard(HttpSession session) {
+        if (session.getAttribute("employee") == null) {
+            return "redirect:/login";
+        }
         return "dashboard/dashboard";
     }
 
