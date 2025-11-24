@@ -227,11 +227,7 @@
                                     th:onclick="|location.href='@{/pr(sortBy='prId', sortDir=${sortBy == 'prId' and sortDir == 'ASC' ? 'DESC' : 'ASC'}, keyword=${keyword})}'|">
                                     주문ID
                                 </th>
-                                <th class="sortable"
-                                    th:classappend="${sortBy == 'managementEmployee'} ? (${sortDir == 'ASC'} ? 'asc' : 'desc')"
-                                    th:onclick="|location.href='@{/pr(sortBy='managementEmployee', sortDir=${sortBy == 'managementEmployee' and sortDir == 'ASC' ? 'DESC' : 'ASC'}, keyword=${keyword})}'|">
-                                    경영담당자
-                                </th>
+                                <th>경영담당자</th>
                                 <th class="sortable"
                                     th:classappend="${sortBy == 'productName'} ? (${sortDir == 'ASC'} ? 'asc' : 'desc')"
                                     th:onclick="|location.href='@{/pr(sortBy='productName', sortDir=${sortBy == 'productName' and sortDir == 'ASC' ? 'DESC' : 'ASC'}, keyword=${keyword})}'|">
@@ -252,7 +248,11 @@
                                     th:onclick="|location.href='@{/pr(sortBy='deadline', sortDir=${sortBy == 'deadline' and sortDir == 'ASC' ? 'DESC' : 'ASC'}, keyword=${keyword})}'|">
                                     납기
                                 </th>
-                                <th>상태</th>
+                                <th class="sortable"
+                                    th:classappend="${sortBy == 'complete'} ? (${sortDir == 'ASC'} ? 'asc' : 'desc')"
+                                    th:onclick="|location.href='@{/pr(sortBy='complete', sortDir=${sortBy == 'complete' and sortDir == 'ASC' ? 'DESC' : 'ASC'}, keyword=${keyword})}'|">
+                                    상태
+                                </th>
                                 <th>액션</th>
                             </tr>
                             </thead>

@@ -123,7 +123,12 @@
         TO_CHAR(pr.deadline, 'YYYY-MM-DD') as deadline,
         TO_CHAR(pr.production_start_date, 'YYYY-MM-DD') as production_start_date,
         TO_CHAR(pr.request_date, 'YYYY-MM-DD') as request_date,
-        TO_CHAR(pr.end_date, 'YYYY-MM-DD') as end_date
+        TO_CHAR(pr.end_date, 'YYYY-MM-DD') as end_date,
+        CASE
+        WHEN pr.production_start_date is null THEN 0
+        WHEN pr.production_start_date is not null AND pr.end_date is null THEN 1
+        ELSE 2
+        END AS complete
         FROM Production_Request pr
         LEFT JOIN Fixed_Product fp ON pr.serial_code = fp.serial_code
         WHERE 1=1
@@ -134,7 +139,6 @@
         ORDER BY
         <choose>
             <when test="sortBy == 'prId'">pr.pr_id</when>
-            <when test="sortBy == 'managementEmployee'">pr.management_employee</when>
             <when test="sortBy == 'productName'">fp.name</when>
             <when test="sortBy == 'toCompany'">pr.to_company</when>
             <when test="sortBy == 'targetQty'">pr.target_qty</when>
