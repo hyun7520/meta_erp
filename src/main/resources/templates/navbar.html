@@ -7,7 +7,7 @@
 <body>
     <div th:fragment="navbar(mainTitle, subTitle)" class="header">
         <div class="header-left">
-            <div class="logo" th:onclick="|location.href='@{/}'|">
+            <div class="logo" th:onclick="|location.href='@{/dash}'|">
                 <img src="/file/logo.png" alt="회사로고">
             </div>
             <div class="header-text" th:unless="${mainTitle eq '대시보드' || mainTitle eq ''}">
@@ -15,16 +15,25 @@
                 <p th:text="${subTitle}" class="subtitle"></p>
             </div>
             <div class="header-nav" th:unless="${session.employee eq null}">
-                <a th:href="${'/showEmployees'}" class="nav-btn" th:classappend="${#rootpath eq '/showEmployees' ? 'active' : ''}">
+                <a th:href="${session.employee.department == '경영' and session.employee.role != '사원' ? '/showEmployees' : null}"
+                   class="nav-btn"
+                   th:classappend="(${#rootpath == '/showEmployees'} ? ' active' : '') + (${session.employee.department == '생산'} ? ' prevent' : '')"
+                >
                     🏢 사원 관리
                 </a>
-                <a href="/order.html" class="nav-btn" th:classappend="${#rootpath eq '/order' ? 'active' : ''}">
+                <a th:href="${session.employee.department == '경영' and session.employee.role != '사원' ? '/order.html' : null}"
+                   class="nav-btn"
+                   th:classappend="(${#rootpath eq '/order' ? 'active' : ''}) + (${session.employee.department == '생산'} ? ' prevent' : '')">
                     📋 완제품 발주 요청
                 </a>
-                <a href="/material_request.html" class="nav-btn" th:classappend="${#rootpath eq '/order' ? 'active' : ''}">
+                <a th:href="${session.employee.department == '경영' and session.employee.role != '사원' ? '/material_request.html' : null}"
+                   class="nav-btn"
+                   th:classappend="(${#rootpath eq '/order' ? 'active' : ''}) + (${session.employee.department == '생산'} ? ' prevent' : '')">
                     📦 원재료 발주 허가
                 </a>
-                <a th:href="${'/product'}" class="nav-btn" th:classappend="${#rootpath eq '/product' ? 'active' : ''}">
+                <a th:href="${session.employee.department == '생산' and session.employee.role != '사원' ? '/product' : null}"
+                   class="nav-btn"
+                   th:classappend="(${#rootpath eq '/product' ? 'active' : ''}) + (${session.employee.department == '경영'} ? ' prevent' : '')">
                     🏭 생산 관리
                 </a>
             </div>

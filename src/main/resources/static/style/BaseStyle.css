@@ -113,6 +113,13 @@ body {
     border-color: white;
 }
 
+/* 접속 불가한 페이지 버튼 */
+.nav-btn.prevent {
+    background: rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.3);
+    cursor: default;
+}
+
 /* ==============================================
    사용자 상태 배너 (User Status Banner)
    - 헤더 오른쪽의 시간 & 로그인 정보
