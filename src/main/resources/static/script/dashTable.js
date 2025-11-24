@@ -92,14 +92,31 @@ const dashSearch = () => {
     renderDashTable(params);
 }
 
-const dashSort = (isDescending) => {
-    const sortKey = document.getElementsByName("sort").item(0).selectedOptions.item(0).value;
+const dashSort = (element) => {
+    const sortKey = element.getAttribute("name");
+    const sortDir = element.className.includes("desc") ? "asc" : "desc";
+    const thTags = document.getElementsByTagName("th");
+    for (let el of thTags) {
+        if (el.getAttribute("name") === sortKey) {
+            el.className = "sortable " + sortDir;
+        } else if (el.className.includes("sortable")) {
+            el.className = "sortable";
+        }
+    }
+
     params.sort = sortKey;
-    params.order = isDescending ? 'desc' : 'asc';
+    params.order = sortDir;
     renderDashTable(params);
 }
 
-const reset = () => {
+const resetDash = () => {
+    const thTags = document.getElementsByTagName("th");
+    for (let el of thTags) {
+        if (el.className.includes("sortable")) {
+            el.className = "sortable";
+        }
+    }
+
     params = {
         page: 1,
         column: '',

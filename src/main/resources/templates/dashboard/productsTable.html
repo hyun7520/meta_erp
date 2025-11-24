@@ -23,18 +23,7 @@
                     <input type="date" name="start_date" />
                 </div>
                 <button type="button" class="btn btn-approve" onclick="dashSearch()">검색</button>
-                <button type="button" class="btn btn-cancel" onclick="reset()">초기화</button>
-            </div>
-            <div class="sort-group">
-                <div class="form-group">
-                    <select name="sort">
-                        <option value="product_id" >정렬 조건 선택</option>
-                        <option value="storage_date" >제조일</option>
-                        <option value="shelf_life_days" >유효기한</option>
-                    </select>
-                </div>
-                <button type="button" class="btn btn-approve" onclick="dashSort(false)">오름차순</button>
-                <button type="button" class="btn btn-reject" onclick="dashSort(true)">내림차순</button>
+                <button type="button" class="btn btn-cancel" onclick="resetDash()">초기화</button>
             </div>
         </form>
         <table>
@@ -42,10 +31,10 @@
                 <tr>
                     <th>제품 코드</th>
                     <th>상품 명</th>
-                    <th>제품 갯수</th>
+                    <th name="qty" class="sortable" onclick="dashSort(this)">제품 갯수</th>
                     <th>제품 상태</th>
-                    <th>제조일</th>
-                    <th>유효기한</th>
+                    <th name="storage_date" class="sortable" onclick="dashSort(this)">제조일</th>
+                    <th name="shelf_life_days" class="sortable" onclick="dashSort(this)">유효기한</th>
                  </tr>
             </thead>
             <tbody id="dash_table_body"></tbody>
@@ -53,7 +42,7 @@
         <div class="pagination" id="pagination"></div>
         <div class="refresh-area">
             <span class="refresh-time" id="products_table_refresh_time"></span>
-            <button class="refresh-btn" onclick="reset()">
+            <button class="refresh-btn" onclick="resetDash()">
                 <i class="fa-solid fa-rotate-right"></i>
             </button>
         </div>

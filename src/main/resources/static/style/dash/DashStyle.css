@@ -45,17 +45,6 @@
     padding-right: 10px;
 }
 
-.sort-group {
-    margin: 10px 0;
-    display: flex;
-    justify-content: end;
-    align-items: baseline;
-}
-
-.sort-group .form-group {
-    margin-right: 10px;
-}
-
 .flex-center {
     display: flex;
     flex-wrap: wrap;
