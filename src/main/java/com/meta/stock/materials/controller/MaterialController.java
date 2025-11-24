@@ -121,4 +121,30 @@ public class MaterialController {
 
         return "redirect:/product"; // 주문 목록으로 리다이렉트
     }
+
+    @GetMapping("material/update/{mrId}")
+    public String getMaterialRequestUpdateForm(
+            @PathVariable(name = "mrId") Long mrId,
+            Model model) {
+
+        // 데이터 확인
+        MaterialRequestDto materialRequestDto = materialService.getMaterialRequestById(mrId);
+
+        model.addAttribute("materialRequest", materialRequestDto);
+        model.addAttribute("requestBy", materialService.getRequestByName(materialRequestDto.getRequestBy()));
+
+        return "materialRequestUpdateForm";
+    }
+
+    @PostMapping("material/update-req/{mrId}")
+    public String updateMaterialRequests(@PathVariable Long mrId,
+                                         @RequestParam Integer qty,
+                                         @RequestParam(required = false) String note,
+                                         RedirectAttributes redirectAttributes) {
+
+        // 데이터 확인
+        materialService.updateMaterialRequest(mrId, qty, note);
+
+        return "redirect:/material";
+    }
 }

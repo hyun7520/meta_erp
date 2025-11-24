@@ -50,19 +50,9 @@ public class MaterialService {
         return new PageImpl<>(content, pageable, total);
     }
 
-    // 세부 재료 요청 조회
-    public List<MaterialDto> getMaterialRequestDetails(int mrId) {
-        return null;
-    }
-
-    // 재료 요청
-    public String addRequest() {
-        return null;
-    }
-
     // 상세 재료 정보 조회
-    public MaterialDto getMaterialRequestById(int materialId) {
-        return null;
+    public MaterialRequestDto getMaterialRequestById(Long mrId) {
+        return materialMapper.getMaterialRequestById(mrId);
     }
 
     // 현재 남은 재고의 개수를 반환한다.
@@ -107,5 +97,9 @@ public class MaterialService {
 
     public void save(MaterialRequestDto req) {
         materialMapper.save(req);
+    }
+
+    public void updateMaterialRequest(Long mrId, Integer qty, String note) {
+        materialMapper.updateMaterialRequest(mrId, qty, note);
     }
 }

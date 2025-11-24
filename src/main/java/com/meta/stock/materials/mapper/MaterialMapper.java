@@ -30,4 +30,8 @@ public interface MaterialMapper {
     String getRequestByName(Long id);
 
     void save(MaterialRequestDto req);
+
+    MaterialRequestDto getMaterialRequestById(Long mrId);
+
+    void updateMaterialRequest(Long mrId, Integer qty, String note);
 }

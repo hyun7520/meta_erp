@@ -304,7 +304,7 @@
                                     th:onclick="|location.href='@{/material(sortBy='approved', sortDir=${sortBy == 'approved' and sortDir == 'ASC' ? 'DESC' : 'ASC'}, keyword=${keyword})}'|">
                                     상태
                                 </th>
-                                <th>비고</th>
+                                <th>수정</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -321,7 +321,9 @@
                                             <span th:case="2" class="status-badge status-rejected">완료</span>
                                         </span>
                                 </td>
-                                <td th:text="${req.note}">재고 부족</td>
+                                <td th:if="${req.approved} == 0">
+                                    <a th:href="@{material/update/{id}(id=${req.mrId})}" class="btn btn-approve">수정</a>
+                                </td>
                             </tr>
                             <tr th:if="${materialRequests.isEmpty()}">
                                 <td colspan="6" style="text-align: center; color: #9CA3AF; padding: 40px;">

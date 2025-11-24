@@ -2,6 +2,7 @@ package com.meta.stock.product.service;
 
 import com.meta.stock.materials.dto.MaterialRequirementDto;
 import com.meta.stock.materials.mapper.MaterialMapper;
+import com.meta.stock.product.DTO.FixedProductDto;
 import com.meta.stock.product.dto.ProductDTO;
 import com.meta.stock.product.dto.ProductStockDto;
 import com.meta.stock.product.entity.ProductEntity;
@@ -86,5 +87,4 @@ public class ProductService {
                 .lotsId(entity.getLotsId())
                 .build();
     }
-
 }

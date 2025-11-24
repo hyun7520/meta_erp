@@ -1,7 +1,9 @@
 package com.meta.stock.product.controller;
 
+import com.meta.stock.materials.dto.MaterialDto;
 import com.meta.stock.materials.dto.MaterialRequestDto;
 import com.meta.stock.materials.service.MaterialService;
+import com.meta.stock.product.DTO.FixedProductDto;
 import com.meta.stock.product.dto.ProductDTO;
 import com.meta.stock.product.dto.ProductRequestDto;
 import com.meta.stock.product.dto.ProductStockDto;
@@ -17,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 
@@ -108,6 +111,26 @@ public class ProductController {
         model.addAttribute("sortDir", sortDir);
 
         return "productionStocks";
+    }
+
+    @GetMapping("/product/form")
+    public String getProductionForm(Model model) {
+        
+        // 제품 이름과 제품 재고 수량 조회
+        List<ProductStockDto> productStockDto = productService.getAllProductsStock();
+        
+        // 주문 요청을 확인하여 제품별 필요 수량 조회
+
+
+        return "productionForm";
+    }
+
+    @PostMapping("/product")
+    public String beginProduction(Model model) {
+
+
+
+        return "redirect:/product";
     }
 
     @GetMapping

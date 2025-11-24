@@ -33,6 +33,29 @@
         <result property="currentStock" column="current_stock" />
     </resultMap>
 
+    <!-- MaterialDto ResultMap -->
+    <resultMap id="MaterialDtoMap" type="com.meta.stock.materials.dto.MaterialDto">
+        <id property="fmId" column="fm_id"/>
+        <result property="name" column="material_name"/>
+        <result property="qty" column="material_qty"/>
+        <result property="unit" column="material_unit"/>
+        <result property="currentStock" column="current_stock"/>
+        <result property="sufficient" column="sufficient"/>
+    </resultMap>
+
+    <!-- FixedProductDto ResultMap (재료 리스트 포함) -->
+    <resultMap id="FixedProductWithMaterialsMap" type="com.meta.stock.product.DTO.FixedProductDto">
+        <id property="fpId" column="fp_id"/>
+        <result property="serialCode" column="serial_code"/>
+        <result property="name" column="product_name"/>
+        <result property="currentStock" column="product_current_stock"/>
+
+        <!-- 재료 리스트 매핑 -->
+        <collection property="requiredMaterials"
+                    ofType="com.example.dto.MaterialDto"
+                    resultMap="MaterialDtoMap"/>
+    </resultMap>
+
     <!-- 전체 완제품 재고 조회 -->
     <select id="findTotalProductStock" resultMap="ProductStockMap">
         SELECT
@@ -176,4 +199,5 @@
         DELETE FROM Products
         WHERE lots_id = #{lotId}
     </delete>
+
 </mapper>

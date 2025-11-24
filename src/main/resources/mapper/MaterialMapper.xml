@@ -175,4 +175,18 @@
         VALUES
         (SEQ_MATERIAL_REQUEST.NEXTVAL, #{fmId}, ${requestBy}, SYSDATE, #{qty}, 'g', 0, null, #{note})
     </insert>
+
+    <select id="getMaterialRequestById" resultMap="MaterialRequestMap">
+        select mr.*, fp.name as MATERIAL_NAME
+        from Material_Request mr
+        join Fixed_material fp
+        on mr.fm_id = fp.FM_ID
+        where mr_id = #{mrId}
+    </select>
+
+    <update id="updateMaterialRequest">
+        UPDATE MATERIAL_REQUEST
+        SET QTY = #{qty}, NOTE = #{note}
+        WHERE MR_ID = #{mrId}
+    </update>
 </mapper>
