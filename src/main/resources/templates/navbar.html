@@ -15,25 +15,29 @@
                 <p th:text="${subTitle}" class="subtitle"></p>
             </div>
             <div class="header-nav" th:unless="${session.employee eq null}">
-                <a th:href="${session.employee.department == '경영' and session.employee.role != '사원' ? '/showEmployees' : null}"
+                <a th:with="allowPage = ${session.employee.department == '경영' and session.employee.role != '사원'}"
+                   th:href="${allowPage ? '/showEmployees' : null}"
                    class="nav-btn"
-                   th:classappend="(${#rootpath == '/showEmployees'} ? ' active' : '') + (${session.employee.department == '생산' or session.employee.role eq '사원'} ? ' prevent' : '')"
+                   th:classappend="(${#rootpath == '/showEmployees'} ? ' active' : '') + (${allowPage} ? ' ' : 'prevent')"
                 >
                     🏢 사원 관리
                 </a>
-                <a th:href="${session.employee.department == '경영' and session.employee.role != '사원' ? '/order.html' : null}"
+                <a th:with="allowPage = ${session.employee.department == '경영' and session.employee.role != '사원'}"
+                   th:href="${allowPage ? '/order.html' : null}"
                    class="nav-btn"
-                   th:classappend="(${#rootpath eq '/order' ? 'active' : ''}) + (${session.employee.department == '생산' or session.employee.role eq '사원'} ? ' prevent' : '')">
+                   th:classappend="(${#rootpath eq '/order' ? 'active' : ''}) + (${allowPage} ? ' prevent' : '')">
                     📋 완제품 발주 요청
                 </a>
-                <a th:href="${session.employee.department == '경영' and session.employee.role != '사원' ? '/material_request.html' : null}"
+                <a th:with="allowPage = ${session.employee.department == '경영' and session.employee.role != '사원'}"
+                   th:href="${allowPage ? '/material_request.html' : null}"
                    class="nav-btn"
-                   th:classappend="(${#rootpath eq '/order' ? 'active' : ''}) + (${session.employee.department == '생산' or session.employee.role eq '사원'} ? ' prevent' : '')">
+                   th:classappend="(${#rootpath eq '/order' ? 'active' : ''}) + (${allowPage} ? ' prevent' : '')">
                     📦 원재료 발주 허가
                 </a>
-                <a th:href="${session.employee.department == '생산' and session.employee.role != '사원' ? '/product' : null}"
+                <a th:with="allowPage = ${session.employee.department == '생산' and session.employee.role != '사원'}"
+                   th:href="${allowPage ? '/product' : null}"
                    class="nav-btn"
-                   th:classappend="(${#rootpath eq '/product' ? 'active' : ''}) + (${session.employee.department == '경영' or session.employee.role eq '사원'} ? ' prevent' : '')">
+                   th:classappend="(${#rootpath eq '/product' ? 'active' : ''}) + (${allowPage} ? ' prevent' : '')">
                     🏭 생산 관리
                 </a>
             </div>
