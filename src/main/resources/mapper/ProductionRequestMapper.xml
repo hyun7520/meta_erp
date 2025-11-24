@@ -188,6 +188,7 @@
         UPDATE Production_Request
         SET
         PRODUCTION_EMPLOYEE = #{employeeId},
+        PLANNED_QTY = ${plannedQty},
         production_start_date = SYSDATE
         WHERE pr_id = #{prId}
     </update>

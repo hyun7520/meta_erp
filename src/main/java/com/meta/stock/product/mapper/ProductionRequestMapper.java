@@ -20,10 +20,7 @@ public interface ProductionRequestMapper {
 
     ProductRequestDto findProductRequestById(long orderId);
 
-
     void updateEndDate(Long prId);
-
-    void updateProductionStartDate(@Param("employeeId") Long employeeId, @Param("prId") Long prId);
 
     int getOngoingRequestsCount(String keyword);
 

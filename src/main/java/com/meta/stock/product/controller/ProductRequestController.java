@@ -83,9 +83,6 @@ public class ProductRequestController {
                 // 미수주 상태: 수주 시 필요한 원자재 계산
                 List<MaterialRequirementDto> requirements =
                         productService.calculateMaterialRequirements(productRequest.getSerialCode(), productRequest.getTargetQty());
-                for(MaterialRequirementDto dto : requirements) {
-                    System.out.println("fmId:" + dto.getFmId());
-                }
                 response.put("requirements", requirements);
 
             } else if (productRequest.getEndDate() == null) {
@@ -94,9 +91,6 @@ public class ProductRequestController {
                 if (remainingQty > 0) {
                     List<MaterialRequirementDto> remainingRequirements =
                             productService.calculateMaterialRequirements(productRequest.getSerialCode(), remainingQty);
-                    for(MaterialRequirementDto dto : remainingRequirements) {
-                        System.out.println("fmId:" + dto.getFmId());
-                    }
                     response.put("remainingRequirements", remainingRequirements);
                 }
             }
@@ -108,14 +102,7 @@ public class ProductRequestController {
         return response;
     }
 
-    // 주문 수주
-    @GetMapping("/pr/accept/{id}")
-    public String acceptOrder(@PathVariable Long id) {
-        productionRequestService.acceptOrder(1L, id);
-        return "redirect:/pr/" + id;
-    }
-
-    // 생산 확인
+    // 주문수주
     @PostMapping("/pr/accept/{prId}")
     public String beginProduction(@PathVariable long prId) {
         productionRequestService.acceptProductionRequest(prId);

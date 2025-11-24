@@ -81,6 +81,8 @@ public class ProductionRequestService {
     // id로 production request 생산 시작
     public void acceptProductionRequest(long prId) {
         ProductionRequestEntity productionRequest = productionRequestRepository.findProductRequestByPrId(prId);
+        productionRequest.setProductionEmployee(1L);
+        productionRequest.setPlannedQty((int) (productionRequest.getTargetQty() + productionRequest.getTargetQty() * Math.random()));
         productionRequest.setProductionStartDate(String.valueOf(LocalDate.now()));
         productionRequestRepository.save(productionRequest);
     }
@@ -168,12 +170,6 @@ public class ProductionRequestService {
         stats.put("pending", pending);
 
         return stats;
-    }
-
-    // 주문 수주
-    @Transactional
-    public void acceptOrder(Long employeeId, Long prId) {
-        prMapper.updateProductionStartDate(employeeId, prId);
     }
 
     // 전체 주문 목록 조회
