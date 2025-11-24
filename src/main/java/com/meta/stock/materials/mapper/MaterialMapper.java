@@ -26,4 +26,8 @@ public interface MaterialMapper {
     int countByApproved(int i);
 
     List<MaterialStockDto> getCurrentMaterialStocks();
+
+    String getRequestByName(Long id);
+
+    void save(MaterialRequestDto req);
 }

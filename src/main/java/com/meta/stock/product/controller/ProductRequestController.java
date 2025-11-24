@@ -28,7 +28,6 @@ public class ProductRequestController {
     private ProductService productService;
 
     // 주문 조회
-    // 검색 기능 추가할 것
     @GetMapping("/pr")
     public String getAllOrders(
             @RequestParam(defaultValue = "0") int page,
@@ -84,6 +83,9 @@ public class ProductRequestController {
                 // 미수주 상태: 수주 시 필요한 원자재 계산
                 List<MaterialRequirementDto> requirements =
                         productService.calculateMaterialRequirements(productRequest.getSerialCode(), productRequest.getTargetQty());
+                for(MaterialRequirementDto dto : requirements) {
+                    System.out.println("fmId:" + dto.getFmId());
+                }
                 response.put("requirements", requirements);
 
             } else if (productRequest.getEndDate() == null) {
@@ -92,6 +94,9 @@ public class ProductRequestController {
                 if (remainingQty > 0) {
                     List<MaterialRequirementDto> remainingRequirements =
                             productService.calculateMaterialRequirements(productRequest.getSerialCode(), remainingQty);
+                    for(MaterialRequirementDto dto : remainingRequirements) {
+                        System.out.println("fmId:" + dto.getFmId());
+                    }
                     response.put("remainingRequirements", remainingRequirements);
                 }
             }

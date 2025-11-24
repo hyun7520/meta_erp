@@ -100,4 +100,12 @@ public class MaterialService {
     public List<MaterialStockDto> getCurrentMaterialStocks() {
         return materialMapper.getCurrentMaterialStocks();
     }
+
+    public String getRequestByName(Long id) {
+        return materialMapper.getRequestByName(id);
+    }
+
+    public void save(MaterialRequestDto req) {
+        materialMapper.save(req);
+    }
 }

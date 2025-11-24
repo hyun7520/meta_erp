@@ -26,6 +26,7 @@
     </resultMap>
 
     <resultMap id="MaterialRequirementMap" type="com.meta.stock.materials.dto.MaterialRequirementDto">
+        <result property="fmId" column="fm_id" />
         <result property="materialName" column="material_name" />
         <result property="requiredQty" column="required_qty" />
         <result property="unit" column="unit" />
@@ -98,6 +99,7 @@
     <!-- BOM 정보 조회 (필요 원자재) -->
     <select id="getMaterialRequirements" resultMap="MaterialRequirementMap">
         SELECT
+        fm.fm_id,
         fm.name as material_name,
         fm.qty as required_qty,
         fm.unit,

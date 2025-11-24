@@ -7,12 +7,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script type="text/javascript" th:src="@{/script/baseJS.js}"></script>
     <style>
-        /* hover 효과 제거 */
-        tbody tr:hover {
-            background: transparent;
-            transform: none;
-        }
-
         /* 레이아웃: 좌측 65%, 우측 35% */
         .row {
             display: flex;
@@ -470,10 +464,11 @@
                     <tr style="background: ${bgColor};">
                         <td style="padding: 10px; border-bottom: 1px solid #F3F4F6; text-align: center;">
                             <input type="checkbox"
-                                   class="material-checkbox"
-                                   value="${req.materialName}"
-                                   data-qty="${req.remainingQty}"
-                                   data-unit="${req.unit}" />
+                               class="material-checkbox"
+                               value="${req.materialName}"
+                               data-fmid="${req.fmId}"
+                               data-qty="${req.remainingQty}"
+                               data-unit="${req.unit}" />
                         </td>
                         <td style="padding: 10px; border-bottom: 1px solid #F3F4F6;">${req.materialName}</td>
                         <td style="padding: 10px; border-bottom: 1px solid #F3F4F6;">${req.requiredQty} ${req.unit}</td>
@@ -532,10 +527,11 @@
                     <tr style="background: ${bgColor};">
                         <td style="padding: 10px; border-bottom: 1px solid #F3F4F6; text-align: center;">
                             <input type="checkbox"
-                                   class="material-checkbox"
-                                   value="${req.materialName}"
-                                   data-qty="${req.remainingQty}"
-                                   data-unit="${req.unit}" />
+                               class="material-checkbox"
+                               value="${req.materialName}"
+                               data-fmid="${req.fmId}"
+                               data-qty="${req.remainingQty}"
+                               data-unit="${req.unit}" />
                         </td>
                         <td style="padding: 10px; border-bottom: 1px solid #F3F4F6;">${req.materialName}</td>
                         <td style="padding: 10px; border-bottom: 1px solid #F3F4F6;">${req.requiredQty} ${req.unit}</td>
@@ -593,6 +589,11 @@
     function requestMaterials() {
         const checkboxes = document.querySelectorAll('.material-checkbox:checked');
 
+        checkboxes.forEach(cb => {
+            console.log('fmId:', cb.dataset.fmid);
+            console.log('materialName:', cb.value);
+        });
+
         if (checkboxes.length === 0) {
             alert('발주할 재료를 선택해주세요.');
             return;
@@ -602,6 +603,7 @@
         const materials = [];
         checkboxes.forEach(cb => {
             materials.push({
+                fmid: cb.dataset.fmid,
                 name: cb.value,
                 qty: cb.dataset.qty,
                 unit: cb.dataset.unit
@@ -611,6 +613,7 @@
         // URL 파라미터로 전달
         const params = new URLSearchParams();
         materials.forEach((material, index) => {
+            params.append('fmIds', material.fmid);
             params.append('materialNames', material.name);
             params.append('quantities', material.qty);
             params.append('units', material.unit);
@@ -674,94 +677,6 @@
             });
         }
     });
-</script>
-</body>
-</html>
-    /*<![CDATA[*/
-        // Thymeleaf에서 데이터 가져오기
-        var completedCount = /*[[${statusStats.completed}]]*/ 12;
-        var overdueCount = /*[[${statusStats.overdue}]]*/ 3;
-        var ongoingCount = /*[[${statusStats.ongoing}]]*/ 8;
-        var pendingCount = /*[[${statusStats.pending}]]*/ 5;
-
-        // ECharts 초기화
-        var chartDom = document.getElementById('statusPieChart');
-        var myChart = echarts.init(chartDom);
-
-        var option = {
-            tooltip: {
-                trigger: 'item',
-                formatter: '{a} <br/>{b}: {c}건 ({d}%)'
-            },
-            legend: {
-                orient: 'horizontal',
-                bottom: '0',
-                data: ['완료', '기간 초과', '진행 중', '미수주']
-            },
-            series: [
-                {
-                    name: '주문 상태',
-                    type: 'pie',
-                    radius: ['40%', '70%'],
-                    avoidLabelOverlap: false,
-                    itemStyle: {
-                    borderRadius: 10,
-                    borderColor: '#fff',
-                    borderWidth: 2
-                },
-                    label: {
-                    show: true,
-                    formatter: '{b}\n{c}건',
-                    fontSize: 12,
-                    fontWeight: 'bold'
-                },
-                    emphasis: {
-                    label: {
-                    show: true,
-                    fontSize: 14,
-                    fontWeight: 'bold'
-                },
-                itemStyle: {
-                    shadowBlur: 10,
-                    shadowOffsetX: 0,
-                    shadowColor: 'rgba(0, 0, 0, 0.5)'
-                }
-            },
-            labelLine: {
-                show: true
-            },
-            data: [
-            {
-                value: completedCount,
-                name: '완료',
-                itemStyle: { color: '#10B981' }
-            },
-            {
-                value: overdueCount,
-                name: '기간 초과',
-                itemStyle: { color: '#EF4444' }
-            },
-            {
-                value: ongoingCount,
-                name: '진행 중',
-                itemStyle: { color: '#F59E0B' }
-            },
-            {
-                value: pendingCount,
-                name: '미수주',
-                    itemStyle: { color: '#6B7280' }
-            }
-        ]
-        }
-        ]
-        };
-            myChart.setOption(option);
-
-            // 반응형 처리
-            window.addEventListener('resize', function() {
-            myChart.resize();
-        });
-    /*]]>*/
 </script>
 </body>
 </html>
