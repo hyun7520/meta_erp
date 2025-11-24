@@ -315,6 +315,34 @@ tbody tr:last-child td {
     border-bottom: none;
 }
 
+.sortable {
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    padding-right: 20px;
+}
+
+.sortable:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.sortable::after {
+    content: '⇅';
+    position: absolute;
+    right: 5px;
+    opacity: 0.3;
+}
+
+.sortable.asc::after {
+    content: '▲';
+    opacity: 1;
+}
+
+.sortable.desc::after {
+    content: '▼';
+    opacity: 1;
+}
+
 /* ==============================================
    페이지네이션 (Pagination)
    - 하단 페이지 번호 버튼

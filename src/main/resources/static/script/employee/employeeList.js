@@ -4,6 +4,8 @@ let params = {
     page: 1,
     whatColumn: '',
     keyword: '',
+    sortBy: 'employee_id',
+    sortDir: 'desc'
 };
 
 window.addEventListener('DOMContentLoaded', (event) => {
@@ -64,8 +66,8 @@ const movePage = (pageNum) => {
     renderEmployeeList(params);
 }
 
-const renderEmployeeList = ({page, whatColumn, keyword} = params) => {
-    const apiWithParms = GET_EMPLOYEES_API + `?page=${page}&whatColumn=${whatColumn}&keyword=${keyword}`;
+const renderEmployeeList = ({page, whatColumn, keyword, sortBy, sortDir} = params) => {
+    const apiWithParms = GET_EMPLOYEES_API + `?page=${page}&sortBy=${sortBy}&sortDir=${sortDir}&whatColumn=${whatColumn}&keyword=${keyword}`;
     fetch(apiWithParms, {method: "GET"})
         .then(response => response.json())
         .then(({list, totalPage, ...data}) => {
@@ -90,15 +92,41 @@ const onSearchEmployees = () => {
     renderEmployeeList(params);
 }
 
+const sortEmployees = (element) => {
+    const key = element.getAttribute("name");
+    const sortDir = element.className.includes("desc") ? "asc" : "desc";
+    const thTags = document.getElementsByTagName("th");
+    for (let el of thTags) {
+        if (el.getAttribute("name") === key) {
+            el.className = "sortable " + sortDir;
+        } else if (el.className.includes("sortable")) {
+            el.className = "sortable";
+        }
+    }
+
+    params.sortBy = key;
+    params.sortDir = sortDir;
+    console.log(params)
+    renderEmployeeList(params);
+}
+
 const resetSearchEmployees = () => {
     const form = document.getElementById("employee_search");
     form.querySelector("select[name='whatColumn']").selectedIndex = 0;
     form.querySelector("input[name='keyword']").value = "";
+    const thTags = document.getElementsByTagName("th");
+    for (let el of thTags) {
+        if (el.className.includes("sortable")) {
+            el.className = "sortable";
+        }
+    }
 
     params = {
         page: 1,
         whatColumn: '',
         keyword: '',
+        sortBy: 'employee_id',
+        sortDir: 'desc'
     }
 
     renderEmployeeList(params);

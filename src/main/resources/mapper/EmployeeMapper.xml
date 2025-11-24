@@ -77,7 +77,7 @@
             </choose>
         </where>
 
-        order by e.employee_id desc
+        order by ${sortBy} ${sortDir}
         offset #{offset} rows fetch next #{limit} rows only
     </select>
 

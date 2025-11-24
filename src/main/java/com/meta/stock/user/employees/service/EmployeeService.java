@@ -15,7 +15,7 @@ public class EmployeeService {
     @Autowired
     private EmployeesMapper employeesMapper;
 
-    public Map<String, Object> getEmployeeList(String whatColumn, String keyword, int page) {
+    public Map<String, Object> getEmployeeList(String whatColumn, String keyword, int page, String sortBy, String sortDir) {
         int limit = 4;
         int offset = (page - 1) * limit;
 
@@ -24,6 +24,8 @@ public class EmployeeService {
         map.put("keyword", keyword);
         map.put("offset", offset);
         map.put("limit", limit);
+        map.put("sortBy", sortBy);
+        map.put("sortDir", sortDir);
 
         List<EmployeeGetDto> elist = employeesMapper.selectAll(map);
 

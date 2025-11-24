@@ -71,9 +71,11 @@ public class EmployeesController {
     public ResponseEntity<Map<String, Object>> getEmployeeList(
             @RequestParam(value = "whatColumn",required = false)String whatColumn,
             @RequestParam(value = "keyword",required = false)String keyword,
-            @RequestParam(value = "page", defaultValue = "1")int page
+            @RequestParam(value = "page", defaultValue = "1")int page,
+            @RequestParam(defaultValue = "employee_id") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDir
     ){
-        return ResponseEntity.ok(employeeService.getEmployeeList(whatColumn, keyword, page));
+        return ResponseEntity.ok(employeeService.getEmployeeList(whatColumn, keyword, page, sortBy, sortDir));
     }
 
     @GetMapping("/employee/{employeeId}")
