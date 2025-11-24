@@ -44,16 +44,11 @@
     </resultMap>
 
     <!-- FixedProductDto ResultMap (재료 리스트 포함) -->
-    <resultMap id="FixedProductWithMaterialsMap" type="com.meta.stock.product.DTO.FixedProductDto">
+    <resultMap id="FixedProductWithStockQtyMap" type="com.meta.stock.product.dto.FixedProductDto">
         <id property="fpId" column="fp_id"/>
         <result property="serialCode" column="serial_code"/>
-        <result property="name" column="product_name"/>
-        <result property="currentStock" column="product_current_stock"/>
-
-        <!-- 재료 리스트 매핑 -->
-        <collection property="requiredMaterials"
-                    ofType="com.example.dto.MaterialDto"
-                    resultMap="MaterialDtoMap"/>
+        <result property="name" column="name"/>
+        <result property="currentStock" column="stock_qty"/>
     </resultMap>
 
     <!-- 전체 완제품 재고 조회 -->
@@ -64,6 +59,24 @@
         FROM PRODUCTS p
         JOIN LOTS l ON p.LOTS_ID = l.LOT_ID
         GROUP BY p.PRODUCT_NAME
+    </select>
+
+    <select id="getFixedProductWithStockQty" resultMap="FixedProductWithStockQtyMap">
+        SELECT
+        fp.fp_id,
+        fp.serial_code,
+        fp.name,
+        NVL(st.total_qty, 0) AS stock_qty
+        FROM fixed_product fp
+        LEFT JOIN (
+        SELECT
+        p.product_name,
+        SUM(l.qty) AS total_qty
+        FROM products p
+        JOIN lots l ON p.lots_id = l.lot_id
+        GROUP BY p.product_name
+        ) st
+        ON fp.name = st.product_name
     </select>
 
     <!-- 특정 제품 재고 조회 (productId로) -->

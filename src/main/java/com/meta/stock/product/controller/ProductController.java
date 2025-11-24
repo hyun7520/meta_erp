@@ -3,7 +3,7 @@ package com.meta.stock.product.controller;
 import com.meta.stock.materials.dto.MaterialDto;
 import com.meta.stock.materials.dto.MaterialRequestDto;
 import com.meta.stock.materials.service.MaterialService;
-import com.meta.stock.product.DTO.FixedProductDto;
+import com.meta.stock.product.dto.FixedProductDto;
 import com.meta.stock.product.dto.ProductDTO;
 import com.meta.stock.product.dto.ProductRequestDto;
 import com.meta.stock.product.dto.ProductStockDto;
@@ -22,9 +22,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-
 import java.util.List;
-import java.util.Map;
 
 // 제품과 연관된 기능 수행 컨트롤러
 @Controller
@@ -42,7 +40,7 @@ public class ProductController {
     private final int limit = 3;
 
     // 생산 페이지 로드
-    @GetMapping("product")
+    @GetMapping("/product")
     public String getAllProducts(
 
             // 생산 요청 파라미터
@@ -117,19 +115,30 @@ public class ProductController {
     public String getProductionForm(Model model) {
         
         // 제품 이름과 제품 재고 수량 조회
-        List<ProductStockDto> productStockDto = productService.getAllProductsStock();
+        List<FixedProductDto> fpDto = productService.getFixedProductWithStockQty();
         
-        // 주문 요청을 확인하여 제품별 필요 수량 조회
-
-
+        // 제품별 재료 조회
+        for(FixedProductDto dto: fpDto) {
+            List<MaterialDto> requiredMaterials = productService.getRequiredMaterials(dto.getFpId());
+            dto.setRequiredMaterials(requiredMaterials);
+        }
+        model.addAttribute("fpDto", fpDto);
 
         return "productionForm";
     }
 
     @PostMapping("/product")
-    public String beginProduction(Model model) {
+    public String beginProduction(Model model,
+                                  @RequestParam List<Long> fpIds,
+                                  @RequestParam List<Integer> quantities) {
 
+        for(Long id : fpIds) {
+            System.out.println("id:" + id);
+        }
 
+        for(int qty: quantities) {
+            System.out.println("qty:"+qty);
+        }
 
         return "redirect:/product";
     }

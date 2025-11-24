@@ -1,4 +1,4 @@
-package com.meta.stock.product.DTO;
+package com.meta.stock.product.dto;
 
 import com.meta.stock.materials.dto.MaterialDto;
 

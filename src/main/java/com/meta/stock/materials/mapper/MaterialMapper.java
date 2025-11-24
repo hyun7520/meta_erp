@@ -34,4 +34,6 @@ public interface MaterialMapper {
     MaterialRequestDto getMaterialRequestById(Long mrId);
 
     void updateMaterialRequest(Long mrId, Integer qty, String note);
+
+    List<MaterialDto> getRequiredMaterials(Long fpId);
 }

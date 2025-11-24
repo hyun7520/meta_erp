@@ -82,6 +82,7 @@ public class ProductRequestController {
         return "productionRequestsDetail :: content";
     }
 
+
     // 주문수주
     @PostMapping("/pr/accept/{prId}")
     public String beginProduction(@PathVariable long prId) {

@@ -1,8 +1,9 @@
 package com.meta.stock.product.service;
 
+import com.meta.stock.materials.dto.MaterialDto;
 import com.meta.stock.materials.dto.MaterialRequirementDto;
 import com.meta.stock.materials.mapper.MaterialMapper;
-import com.meta.stock.product.DTO.FixedProductDto;
+import com.meta.stock.product.dto.FixedProductDto;
 import com.meta.stock.product.dto.ProductDTO;
 import com.meta.stock.product.dto.ProductStockDto;
 import com.meta.stock.product.entity.ProductEntity;
@@ -29,8 +30,12 @@ public class ProductService {
     @Autowired
     private ProductRepository productRepository;
 
-    public List<com.meta.stock.product.dto.ProductStockDto> getAllProductsStock() {
+    public List<ProductStockDto> getAllProductsStock() {
         return productMapper.findTotalProductStock();
+    }
+
+    public List<FixedProductDto> getFixedProductWithStockQty() {
+        return productMapper.getFixedProductWithStockQty();
     }
 
     public Page<ProductStockDto> findTotalProductStock(String keyword, Pageable pageable) {
@@ -66,6 +71,10 @@ public class ProductService {
         }
 
         return requirements;
+    }
+
+    public List<MaterialDto> getRequiredMaterials(Long fpId) {
+        return materialMapper.getRequiredMaterials(fpId);
     }
 
     // 전체 제품 목록 조회

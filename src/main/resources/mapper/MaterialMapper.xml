@@ -165,6 +165,26 @@
         ORDER BY SUM(l.qty) ASC
     </select>
 
+    <select id="getRequiredMaterials" resultType="com.meta.stock.materials.dto.MaterialDto">
+        SELECT
+        fm.fm_id AS fmId,
+        fm.name AS name,
+        fm.qty AS qty,
+        fm.unit AS unit,
+        NVL(st.current_stock, 0) AS currentStock
+        FROM Fixed_Material fm
+        LEFT JOIN (
+        SELECT
+        m.material_name,
+        SUM(l.qty) AS current_stock
+        FROM materials m
+        JOIN lots l ON m.lots_id = l.lot_id
+        GROUP BY m.material_name
+        ) st ON fm.name = st.material_name
+        WHERE fm.fp_id = #{fpId}
+        ORDER BY fm.fm_id
+    </select>
+
     <select id="getRequestByName" resultType="String">
         SELECT NAME FROM EMPLOYEES WHERE EMPLOYEE_ID = #{id}
     </select>

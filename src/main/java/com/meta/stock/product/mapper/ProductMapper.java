@@ -1,7 +1,7 @@
 package com.meta.stock.product.mapper;
 
 import com.meta.stock.materials.dto.MaterialRequirementDto;
-import com.meta.stock.product.DTO.FixedProductDto;
+import com.meta.stock.product.dto.FixedProductDto;
 import com.meta.stock.product.dto.ProductStockDto;
 import com.meta.stock.product.dto.ProductDemandBean;
 import com.meta.stock.product.dto.ProductsAmountListBean;
@@ -28,4 +28,6 @@ public interface ProductMapper {
     List<MaterialRequirementDto> getMaterialRequirements(String serialCode);
 
     List<ProductStockDto> findTotalProductStock();
+
+    List<FixedProductDto> getFixedProductWithStockQty();
 }

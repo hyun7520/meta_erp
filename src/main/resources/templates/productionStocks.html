@@ -65,6 +65,9 @@
           <i class="fas fa-box"></i> 완제품 재고 전체 목록
           <span class="tab-count" th:text="${productStock.totalElements}">0</span>
         </h2>
+        <a th:href="@{/product/form}" class="btn btn-cancel">
+          <i class="fa-solid fa-boxes-stacked"></i> 제품 생산
+        </a>
         <a th:href="@{/product}" class="btn btn-cancel">
           <i class="fas fa-arrow-left"></i> 대시보드로
         </a>
