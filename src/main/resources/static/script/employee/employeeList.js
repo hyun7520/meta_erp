@@ -15,11 +15,24 @@ const onClickEdit = (employeeId) => {
 }
 
 const onClickDelete = (employeeId) => {
+    const modal = document.getElementById("employee_delete_modal");
+    modal.style.display = 'block';
+    modal.querySelector(".btn-submit").setAttribute("name", employeeId);
+}
+
+const closeDeleteModal = () => {
+    const modal = document.getElementById("employee_delete_modal");
+    modal.style.display = 'none';
+    modal.querySelector(".btn-submit").removeAttribute("name");
+}
+
+const deleteEmployee = (element) => {
+    const employeeId = element.name;
     fetch("/employee/delete/" + employeeId, {method: "GET"})
-    .then(() => {
-        alert("사원 정보가 삭제되었습니다.")
-        renderEmployeeList(params);
-    }).catch(error => {
+        .then(() => {
+            alert("사원 정보가 삭제되었습니다.")
+            renderEmployeeList(params);
+        }).catch(error => {
         console.error('Error:', error);
         alert("사원 정보를 삭제하지 못했습니다. 잠시후 다시 시도해주세요.");
     });

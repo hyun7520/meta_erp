@@ -25,19 +25,19 @@
                 <a th:with="allowPage = ${session.employee.department == '경영' and session.employee.role != '사원'}"
                    th:href="${allowPage ? '/order.html' : null}"
                    class="nav-btn"
-                   th:classappend="(${#rootpath eq '/order' ? 'active' : ''}) + (${allowPage} ? ' prevent' : '')">
+                   th:classappend="(${#rootpath eq '/order' ? 'active' : ''}) + (${allowPage} ? ' ' : 'prevent')">
                     📋 완제품 발주 요청
                 </a>
                 <a th:with="allowPage = ${session.employee.department == '경영' and session.employee.role != '사원'}"
                    th:href="${allowPage ? '/material_request.html' : null}"
                    class="nav-btn"
-                   th:classappend="(${#rootpath eq '/order' ? 'active' : ''}) + (${allowPage} ? ' prevent' : '')">
+                   th:classappend="(${#rootpath eq '/order' ? 'active' : ''}) + (${allowPage} ? ' ' : 'prevent')">
                     📦 원재료 발주 허가
                 </a>
                 <a th:with="allowPage = ${session.employee.department == '생산' and session.employee.role != '사원'}"
                    th:href="${allowPage ? '/product' : null}"
                    class="nav-btn"
-                   th:classappend="(${#rootpath eq '/product' ? 'active' : ''}) + (${allowPage} ? ' prevent' : '')">
+                   th:classappend="(${#rootpath eq '/product' ? 'active' : ''}) + (${allowPage} ? ' ' : 'prevent')">
                     🏭 생산 관리
                 </a>
             </div>

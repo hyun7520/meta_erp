@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>사원 삭제여부 모달</title>
+</head>
+<body>
+<div th:fragment="employeeDeleteModal" id="employee_delete_modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>➕ 사원 정보 삭제</h3>
+        </div>
+        <div class="modal-body">
+            해당 사원의 정보를 삭제하시겠습니까?
+        </div>
+        <div class="modal-footer">
+            <button class="btn-modal btn-cancel" onclick="closeDeleteModal(this)">취소</button>
+            <button class="btn-modal btn-submit" onclick="deleteEmployee(this)">삭제</button>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -625,7 +625,7 @@ tbody tr:last-child td {
 
 .modal-content {
     background: white;
-    margin: 10% auto;
+    margin: 6% auto;
     padding: 0;
     border-radius: 16px;
     width: 480px;
@@ -661,7 +661,7 @@ tbody tr:last-child td {
 .modal-body {
     padding: 28px;
     max-height: 420px;
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 
 .modal-body label {
