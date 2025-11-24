@@ -1,5 +1,12 @@
 window.addEventListener("keypress", (event) => {
     if (event.key === "Enter") {
+        event.preventDefault();
+        event.stopPropagation();
+
+        if (document.activeElement && document.activeElement.tagName === "BUTTON") {
+            document.activeElement.blur();
+        }
+
         onLoginSubmit();
     }
 });
