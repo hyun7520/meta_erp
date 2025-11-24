@@ -11,7 +11,7 @@
                 <img src="/file/logo.png" alt="회사로고">
             </div>
             <div class="header-text" th:unless="${mainTitle eq '대시보드' || mainTitle eq ''}">
-                <h1 th:text="${mainTitle}" th:onclick="|location.href='@{/}'|"></h1>
+                <h1 th:text="${mainTitle}"></h1>
                 <p th:text="${subTitle}" class="subtitle"></p>
             </div>
             <div class="header-nav" th:unless="${session.employee eq null}">

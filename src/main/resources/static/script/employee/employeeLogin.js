@@ -45,7 +45,13 @@ const login = (data) => {
         .then(({status, value}) => {
             alert(value);
             if (status === "login") {
-                location.href = "/dash";
+                const prevURL = new URL(document.referrer);
+                const loginURL = window.location;
+                if (prevURL.origin === loginURL.origin && prevURL.href !== loginURL.href) {
+                    location.replace(prevURL.pathname);
+                } else {
+                    location.replace("/dash");
+                }
             } else {
                 resetInput();
             }

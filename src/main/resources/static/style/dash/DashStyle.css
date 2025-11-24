@@ -7,6 +7,10 @@
     height: 300px;
 }
 
+.content form {
+    margin-top: 15px;
+}
+
 /* Refresh 영역 */
 .refresh-area {
     width: 95%;
