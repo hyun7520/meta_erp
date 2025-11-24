@@ -89,3 +89,17 @@ const onSearchEmployees = () => {
     params.keyword = search.value;
     renderEmployeeList(params);
 }
+
+const resetSearchEmployees = () => {
+    const form = document.getElementById("employee_search");
+    form.querySelector("select[name='whatColumn']").selectedIndex = 0;
+    form.querySelector("input[name='keyword']").value = "";
+
+    params = {
+        page: 1,
+        whatColumn: '',
+        keyword: '',
+    }
+
+    renderEmployeeList(params);
+}

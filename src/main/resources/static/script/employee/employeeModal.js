@@ -10,12 +10,17 @@ window.onclick = (event) => {
     }
 }
 
+
 const openEmployeeModal = (employeeId = 0) => {
+    const defaultTitle = "➕ 사원 정보 ";
     document.getElementById('employee_modal').style.display = 'block';
+    const title = document.getElementById("employee_modal_h3");
     if (employeeId > 0) {
-        renderUpdateEmployeeModal(employeeId);
+        title.innerText = defaultTitle + "수정";
         updateEmployeeId = employeeId;
+        renderUpdateEmployeeModal(employeeId);
     } else {
+        title.innerText = defaultTitle + "추가";
         renderInsertEmployeeModal();
     }
 }
