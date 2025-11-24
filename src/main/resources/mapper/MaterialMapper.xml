@@ -24,7 +24,7 @@
     <select id="findMaterialRequestsWithPaging" resultMap="MaterialRequestMap">
         SELECT
         mr.mr_id,
-        m.material_name,
+        fm.name as material_name,
         mr.qty,
         mr.unit,
         mr.request_date,
@@ -33,7 +33,7 @@
         mr.note,
         e.name as request_by_name
         FROM Material_Request mr
-        LEFT JOIN Materials m ON mr.mr_id = m.mr_id
+        LEFT JOIN Fixed_Material fm ON fm.fm_id = mr.fm_id
         LEFT JOIN Employees e ON mr.request_by = e.employee_id
         WHERE mr.approved = 0
         <if test="keyword != null and keyword != ''">
@@ -69,13 +69,13 @@
         LEFT JOIN Employees e ON mr.request_by = e.employee_id
         WHERE 1=1
         <if test="keyword != null and keyword != ''">
-            AND (m.material_name LIKE '%' || #{keyword} || '%'
+            AND (fm.name LIKE '%' || #{keyword} || '%'
             OR mr.note LIKE '%' || #{keyword} || '%')
         </if>
         ORDER BY
         <choose>
             <when test="sortBy == 'mrId'">mr.mr_id</when>
-            <when test="sortBy == 'materialName'">m.material_name</when>
+            <when test="sortBy == 'materialName'">material_name</when>
             <when test="sortBy == 'qty'">mr.qty</when>
             <when test="sortBy == 'requestDate'">mr.request_date</when>
             <when test="sortBy == 'approved'">mr.approved</when>

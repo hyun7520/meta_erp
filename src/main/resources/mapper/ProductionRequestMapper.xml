@@ -144,6 +144,7 @@
             <when test="sortBy == 'targetQty'">pr.target_qty</when>
             <when test="sortBy == 'deadline'">pr.deadline</when>
             <when test="sortBy == 'endDate'">pr.end_date</when>
+            <when test="sortBy == 'complete'">complete</when>
             <otherwise>pr.pr_id</otherwise>
         </choose>
         <choose>

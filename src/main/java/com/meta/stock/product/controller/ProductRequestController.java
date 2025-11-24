@@ -54,52 +54,32 @@ public class ProductRequestController {
         return "productionRequests";
     }
 
-    @GetMapping("/pr/{id}/ajax")
-    @ResponseBody
-    public Map<String, Object> getProductionRequestDetailAjax(@PathVariable Long id) {
-        Map<String, Object> response = new HashMap<>();
+    @GetMapping("/pr/{id}")
+    public String getProductRequestDetail(@PathVariable Long id, Model model) {
+        ProductRequestDto productRequest = productionRequestService.findProductRequestById(id);
 
-        try {
-            // 1. 생산 요청 기본 정보 조회
-            ProductRequestDto productRequest = productionRequestService.findProductRequestById(id);
-            response.put("prId", productRequest.getPrId());
-            response.put("productName", productRequest.getProductName());
-            response.put("toCompany", productRequest.getToCompany());
-            response.put("targetQty", productRequest.getTargetQty());
-            response.put("unit", productRequest.getUnit());
-            response.put("requestDate", productRequest.getRequestDate());
-            response.put("deadline", productRequest.getDeadline());
-            response.put("productionStartDate", productRequest.getProductionStartDate());
-            response.put("endDate", productRequest.getEndDate());
-            response.put("note", productRequest.getNote());
-            response.put("complete", productRequest.getComplete());
+        // 재고 및 요구사항 계산
+        int currentProductStock = productService.getCurrentProductStock(productRequest.getSerialCode());
+        if (productRequest.getProductionStartDate() == null) {
+            // 미수주 상태: 수주 시 필요한 원자재 계산
+            List<MaterialRequirementDto> requirements =
+                    productService.calculateMaterialRequirements(productRequest.getSerialCode(), productRequest.getTargetQty());
+            model.addAttribute("requirements", requirements);
 
-            // 2. 현재 완제품 재고 조회
-            int currentProductStock = productService.getCurrentProductStock(productRequest.getSerialCode());
-            response.put("currentProductStock", currentProductStock);
-
-            // 3. 상태에 따른 추가 정보 조회
-            if (productRequest.getProductionStartDate() == null) {
-                // 미수주 상태: 수주 시 필요한 원자재 계산
-                List<MaterialRequirementDto> requirements =
-                        productService.calculateMaterialRequirements(productRequest.getSerialCode(), productRequest.getTargetQty());
-                response.put("requirements", requirements);
-
-            } else if (productRequest.getEndDate() == null) {
-                // 수주 완료 상태: 남은 생산을 위한 원자재 현황
-                int remainingQty = productRequest.getTargetQty() - currentProductStock;
-                if (remainingQty > 0) {
-                    List<MaterialRequirementDto> remainingRequirements =
-                            productService.calculateMaterialRequirements(productRequest.getSerialCode(), remainingQty);
-                    response.put("remainingRequirements", remainingRequirements);
-                }
+        } else if (productRequest.getEndDate() == null) {
+            // 수주 완료 상태: 남은 생산을 위한 원자재 현황
+            int remainingQty = productRequest.getTargetQty() - currentProductStock;
+            if (remainingQty > 0) {
+                List<MaterialRequirementDto> remainingRequirements =
+                        productService.calculateMaterialRequirements(productRequest.getSerialCode(), remainingQty);
+                model.addAttribute("requirements", remainingRequirements);
             }
-
-        } catch (Exception e) {
-            response.put("error", "데이터 로딩 중 오류가 발생했습니다.");
         }
 
-        return response;
+        model.addAttribute("productRequest", productRequest);
+        model.addAttribute("currentProductStock", currentProductStock);
+
+        return "productionRequestsDetail :: content";
     }
 
     // 주문수주

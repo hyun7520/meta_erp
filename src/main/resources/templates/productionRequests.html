@@ -365,18 +365,18 @@
         </div>
     </div>
 </div>
-
+<!-- JavaScript 함수들 -->
 <script>
     function showDetailModal(prId) {
         // 모달 표시
         document.getElementById('detailModal').style.display = 'block';
         document.body.style.overflow = 'hidden';
 
-        // AJAX로 상세 정보 가져오기
-        fetch('/pr/' + prId + '/ajax')
-            .then(response => response.json())
-            .then(data => {
-                renderModalContent(data);
+        // AJAX로 기존 HTML fragment 로드
+        fetch('/pr/' + prId)
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('modalContent').innerHTML = html;
             })
             .catch(error => {
                 document.getElementById('modalContent').innerHTML =
@@ -389,195 +389,25 @@
         document.body.style.overflow = 'auto';
     }
 
-    function renderModalContent(data) {
-        const statusBadge = data.complete === 0 ? '<span class="status-badge status-pending">미수주</span>' :
-                           data.complete === 1 ? '<span class="status-badge status-approved">수주완료</span>' :
-                           '<span class="status-badge status-rejected">완료</span>';
-
-        let content = `
-            <div style="background: #F8F9FA; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                    <h4 style="margin: 0; color: #374151;">주문 ID: ${data.prId}</h4>
-                    ${statusBadge}
-                </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; font-size: 14px;">
-                    <div><strong>제품:</strong> ${data.productName}</div>
-                    <div><strong>거래처:</strong> ${data.toCompany}</div>
-                    <div><strong>주문수량:</strong> <span class="qty-unit">${data.targetQty}</span> ${data.unit}</div>
-                    <div><strong>요청일:</strong> ${data.requestDate}</div>
-                    <div><strong>납기:</strong> ${data.deadline}</div>
-                    ${data.productionStartDate ? `<div><strong>수주일:</strong> ${data.productionStartDate}</div>` : ''}
-                    ${data.endDate ? `<div><strong>완료일:</strong> ${data.endDate}</div>` : ''}
-                </div>
-                ${data.note ? `<div style="margin-top: 10px;"><strong>비고:</strong> ${data.note}</div>` : ''}
-            </div>
-        `;
-
-        // 현재 재고 정보 (완료 상태가 아닐 때)
-        if (data.complete !== 2) {
-            const stockAlert = data.currentProductStock >= data.targetQty ? 'alert-success' : 'alert-danger';
-            const stockBadge = data.currentProductStock >= data.targetQty ?
-                '<span class="status-badge status-approved">충분</span>' :
-                `<span class="status-badge status-pending">부족 (필요: ${data.targetQty - data.currentProductStock})</span>`;
-
-            content += `
-                <div style="background: ${data.currentProductStock >= data.targetQty ? '#D1FAE5' : '#FEE2E2'}; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-                    <h5 style="margin: 0 0 10px 0; color: #374151; font-size: 16px;">현재 완제품 재고</h5>
-                    <div><strong>${data.productName}:</strong> <span class="qty-unit">${data.currentProductStock}</span> ${data.unit} ${stockBadge}</div>
-                </div>
-            `;
+    // ESC 키로 모달 닫기
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            closeModal();
         }
+    });
 
-        // 원자재 정보 (미수주 상태)
-        if (data.complete === 0 && data.requirements && data.requirements.length > 0) {
-            content += `
-                <div style="margin-bottom: 20px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                        <h5 style="margin: 0; color: #374151; font-size: 16px;">수주 시 필요한 원자재</h5>
-                        <button onclick="requestMaterials()" class="btn btn-approve" style="font-size: 13px; padding: 8px 16px;">
-                            <i class="fas fa-shopping-cart"></i> 선택 재료 발주
-                        </button>
-                    </div>
-                    <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
-                        <thead>
-                            <tr style="background: #F3F4F6;">
-                                <th style="padding: 10px; text-align: center; border-bottom: 2px solid #E5E7EB; width: 50px;">
-                                    <input type="checkbox" id="selectAll" onclick="toggleSelectAll(this)" />
-                                </th>
-                                <th style="padding: 10px; text-align: left; border-bottom: 2px solid #E5E7EB;">재료명</th>
-                                <th style="padding: 10px; text-align: left; border-bottom: 2px solid #E5E7EB;">필요수량</th>
-                                <th style="padding: 10px; text-align: left; border-bottom: 2px solid #E5E7EB;">현재재고</th>
-                                <th style="padding: 10px; text-align: left; border-bottom: 2px solid #E5E7EB;">부족수량</th>
-                                <th style="padding: 10px; text-align: left; border-bottom: 2px solid #E5E7EB;">상태</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-            `;
-
-            data.requirements.forEach(req => {
-                const bgColor = req.sufficient ? '#D1FAE5' : '#FEE2E2';
-                const badge = req.sufficient ?
-                    '<span class="status-badge status-approved">충분</span>' :
-                    '<span class="status-badge status-pending">부족</span>';
-
-                content += `
-                    <tr style="background: ${bgColor};">
-                        <td style="padding: 10px; border-bottom: 1px solid #F3F4F6; text-align: center;">
-                            <input type="checkbox"
-                               class="material-checkbox"
-                               value="${req.materialName}"
-                               data-fmid="${req.fmId}"
-                               data-qty="${req.remainingQty}"
-                               data-unit="${req.unit}" />
-                        </td>
-                        <td style="padding: 10px; border-bottom: 1px solid #F3F4F6;">${req.materialName}</td>
-                        <td style="padding: 10px; border-bottom: 1px solid #F3F4F6;">${req.requiredQty} ${req.unit}</td>
-                        <td style="padding: 10px; border-bottom: 1px solid #F3F4F6;">${req.currentStock} ${req.unit}</td>
-                        <td style="padding: 10px; border-bottom: 1px solid #F3F4F6;">
-                            ${!req.sufficient ? `<span style="color: #EF4444; font-weight: 600;">${req.remainingQty} ${req.unit}</span>` : '<span style="color: #10B981;">-</span>'}
-                        </td>
-                        <td style="padding: 10px; border-bottom: 1px solid #F3F4F6;">${badge}</td>
-                    </tr>
-                `;
+    // 모달 외부 클릭 시 닫기
+    document.addEventListener('DOMContentLoaded', function() {
+        const modal = document.getElementById('detailModal');
+        if (modal) {
+            modal.addEventListener('click', function(event) {
+                if (event.target === this) {
+                    closeModal();
+                }
             });
-
-            content += `
-                        </tbody>
-                    </table>
-                </div>
-            `;
         }
+    });
 
-        // 원자재 정보 (수주 완료 상태)
-        if (data.complete === 1 && data.remainingRequirements && data.remainingRequirements.length > 0) {
-            content += `
-                <div style="margin-bottom: 20px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                        <h5 style="margin: 0; color: #374151; font-size: 16px;">남은 생산을 위한 원자재</h5>
-                        <button onclick="requestMaterials()" class="btn btn-approve" style="font-size: 13px; padding: 8px 16px;">
-                            <i class="fas fa-shopping-cart"></i> 선택 재료 발주
-                        </button>
-                    </div>
-                    <p style="color: #6B7280; margin-bottom: 10px; font-size: 13px;">
-                        남은 생산 필요량: <strong>${data.targetQty - data.currentProductStock} ${data.unit}</strong>
-                    </p>
-                    <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
-                        <thead>
-                            <tr style="background: #F3F4F6;">
-                                <th style="padding: 10px; text-align: center; border-bottom: 2px solid #E5E7EB; width: 50px;">
-                                    <input type="checkbox" id="selectAll" onclick="toggleSelectAll(this)" />
-                                </th>
-                                <th style="padding: 10px; text-align: left; border-bottom: 2px solid #E5E7EB;">재료명</th>
-                                <th style="padding: 10px; text-align: left; border-bottom: 2px solid #E5E7EB;">필요수량</th>
-                                <th style="padding: 10px; text-align: left; border-bottom: 2px solid #E5E7EB;">현재재고</th>
-                                <th style="padding: 10px; text-align: left; border-bottom: 2px solid #E5E7EB;">남은 필요량</th>
-                                <th style="padding: 10px; text-align: left; border-bottom: 2px solid #E5E7EB;">상태</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-            `;
-
-            data.remainingRequirements.forEach(req => {
-                const bgColor = req.sufficient ? '#D1FAE5' : '#FEE2E2';
-                const badge = req.sufficient ?
-                    '<span class="status-badge status-approved">충분</span>' :
-                    '<span class="status-badge status-pending">부족</span>';
-
-                content += `
-                    <tr style="background: ${bgColor};">
-                        <td style="padding: 10px; border-bottom: 1px solid #F3F4F6; text-align: center;">
-                            <input type="checkbox"
-                               class="material-checkbox"
-                               value="${req.materialName}"
-                               data-fmid="${req.fmId}"
-                               data-qty="${req.remainingQty}"
-                               data-unit="${req.unit}" />
-                        </td>
-                        <td style="padding: 10px; border-bottom: 1px solid #F3F4F6;">${req.materialName}</td>
-                        <td style="padding: 10px; border-bottom: 1px solid #F3F4F6;">${req.requiredQty} ${req.unit}</td>
-                        <td style="padding: 10px; border-bottom: 1px solid #F3F4F6;">${req.currentStock} ${req.unit}</td>
-                        <td style="padding: 10px; border-bottom: 1px solid #F3F4F6;">${req.remainingQty} ${req.unit}</td>
-                        <td style="padding: 10px; border-bottom: 1px solid #F3F4F6;">${badge}</td>
-                    </tr>
-                `;
-            });
-
-            content += `
-                        </tbody>
-                    </table>
-                </div>
-            `;
-        }
-
-        // 버튼 영역
-        content += '<div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #E5E7EB; display: flex; gap: 10px; justify-content: flex-end;">';
-
-        if (data.complete === 0) {
-            content += `
-                <button onclick="acceptOrder(${data.prId})" class="btn btn-approve">
-                    <i class="fas fa-check"></i> 주문 수주
-                </button>
-            `;
-        } else if (data.complete === 1) {
-            const disabled = data.currentProductStock < data.targetQty ? 'disabled' : '';
-            content += `
-                <button onclick="shipOrder(${data.prId})" class="btn btn-approve" ${disabled}>
-                    <i class="fas fa-shipping-fast"></i> 제품 출하
-                </button>
-                ${data.currentProductStock < data.targetQty ? '<span style="color: #EF4444; font-size: 13px;">※ 재고 부족으로 출하 불가</span>' : ''}
-            `;
-        }
-
-        content += `
-            <button onclick="closeModal()" class="btn btn-cancel">
-                <i class="fas fa-times"></i> 닫기
-            </button>
-        </div>`;
-
-        document.getElementById('modalContent').innerHTML = content;
-    }
-
-    // 전체 선택 토글
     function toggleSelectAll(checkbox) {
         const checkboxes = document.querySelectorAll('.material-checkbox');
         checkboxes.forEach(cb => {
@@ -585,21 +415,14 @@
         });
     }
 
-    // 선택된 재료 발주
     function requestMaterials() {
         const checkboxes = document.querySelectorAll('.material-checkbox:checked');
-
-        checkboxes.forEach(cb => {
-            console.log('fmId:', cb.dataset.fmid);
-            console.log('materialName:', cb.value);
-        });
 
         if (checkboxes.length === 0) {
             alert('발주할 재료를 선택해주세요.');
             return;
         }
 
-        // 선택된 재료 정보 수집
         const materials = [];
         checkboxes.forEach(cb => {
             materials.push({
@@ -610,16 +433,14 @@
             });
         });
 
-        // URL 파라미터로 전달
         const params = new URLSearchParams();
-        materials.forEach((material, index) => {
+        materials.forEach((material) => {
             params.append('fmIds', material.fmid);
             params.append('materialNames', material.name);
             params.append('quantities', material.qty);
             params.append('units', material.unit);
         });
 
-        // 발주 페이지로 이동
         window.location.href = '/material/request?' + params.toString();
     }
 
@@ -658,25 +479,6 @@
                 });
         }
     }
-
-    // ESC 키로 모달 닫기
-    document.addEventListener('keydown', function(event) {
-        if (event.key === 'Escape') {
-            closeModal();
-        }
-    });
-
-    // 모달 외부 클릭 시 닫기
-    document.addEventListener('DOMContentLoaded', function() {
-        const modal = document.getElementById('detailModal');
-        if (modal) {
-            modal.addEventListener('click', function(event) {
-                if (event.target === this) {
-                    closeModal();
-                }
-            });
-        }
-    });
 </script>
 </body>
 </html>
