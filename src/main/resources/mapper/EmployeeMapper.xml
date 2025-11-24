@@ -14,8 +14,12 @@
         <result property="role" column="role_name"></result>
     </resultMap>
 
-    <select id="findByEmail">
-        select * from Employees where email = #{email}
+    <select id="findByEmail" resultMap="EmployeesResultMap">
+        select employee_id, name, email, password, hire_date, department_name, role_name
+        from employees e
+        left join departments d on e.department_id = d.department_id
+        left join roles r on e.role_id = r.role_id
+        where email = #{email}
     </select>
 
     <insert id="insertEmployee">

@@ -38,10 +38,10 @@
                 </div>
             </div>
             <div class="user-status" th:unless="${session.employee eq null}">
-                <div class="user-avatar" id="userAvatar">홍</div>
+                <div class="user-avatar" id="userAvatar" th:text="${session.employee.name.substring(0, 1)}"></div>
                 <div class="user-info-text">
-                    <div class="user-name" id="userName" th:text="${'이름'}"></div>
-                    <div class="user-role" id="userRole" th:text="${'부서  ·  지위'}"></div>
+                    <div class="user-name" id="userName" th:text="${session.employee.name.substring(1)}"></div>
+                    <div class="user-role" id="userRole" th:text="${session.employee.department + '  ·  ' + session.employee.role}"></div>
                 </div>
             </div>
         </div>

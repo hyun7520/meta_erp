@@ -35,7 +35,7 @@ public class EmployeesController {
 
     @PostMapping(value = "login.mb")
     public ResponseEntity<Map<String, String>> login(@RequestBody EmployeeInsertDto eDto, HttpSession session) {
-        EmployeeInsertDto employee = employeesMapper.findByEmail(eDto.getEmail());
+        EmployeeGetDto employee = employeesMapper.findByEmail(eDto.getEmail());
         Map<String, String> status = new HashMap<>();
         if (employee == null) {
             status.put("status", "no email");
@@ -49,8 +49,6 @@ public class EmployeesController {
             status.put("value", "비밀번호가 일치하지않습니다. 다시 입력하세요.");
         }
 
-//        session.setAttribute("loginId", employee.getEmployee_id());
-//        return "dashboard/dashboard";
         return ResponseEntity.ok(status);
     }
 

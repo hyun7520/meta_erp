@@ -1,3 +1,9 @@
+window.addEventListener("keypress", (event) => {
+    if (event.key === "Enter") {
+        onLoginSubmit();
+    }
+});
+
 const onLoginSubmit = () => {
     const loginForm = document.getElementById("login_form");
 
@@ -8,6 +14,11 @@ const onLoginSubmit = () => {
         login({email: email, password: password});
     } else {
         alert("이메일과 비밀번호를 입력하세요.");
+        if (!email.trim()) {
+            loginForm.querySelector("#employee_login_email").focus();
+        } else {
+            loginForm.querySelector("#employee_login_pw").focus();
+        }
     }
 }
 
