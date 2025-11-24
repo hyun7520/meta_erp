@@ -27,10 +27,6 @@
         values(#{employee_id},#{name},#{email},#{password},#{hire_date},#{department_id},#{role_id})
     </insert>
 
-    <select id="selectCountById" resultType="int">
-        select count(*) from Employees where employee_id = #{employee_id}
-    </select>
-
     <select id="selectEmployeeById">
         select * from Employees
         where employee_id=#{employee_id}

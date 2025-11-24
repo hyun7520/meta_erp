@@ -13,8 +13,6 @@ public interface EmployeesMapper {
 
     void insertEmployee(EmployeeInsertDto eDto);
 
-    int selectCountById(String id);
-
     List<EmployeeGetDto> selectAll(Map<String, Object> params);
 
     EmployeeInsertDto selectEmployeeById(int employeeId);

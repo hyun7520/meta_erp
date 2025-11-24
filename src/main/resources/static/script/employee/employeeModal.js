@@ -13,14 +13,17 @@ window.onclick = (event) => {
 
 const openEmployeeModal = (employeeId = 0) => {
     const defaultTitle = "➕ 사원 정보 ";
-    document.getElementById('employee_modal').style.display = 'block';
+    const modal =  document.getElementById('employee_modal');
+    modal.style.display = 'block';
     const title = document.getElementById("employee_modal_h3");
     if (employeeId > 0) {
         title.innerText = defaultTitle + "수정";
+        modal.querySelector(".btn-submit").innerHTML = "정보 수정";
         updateEmployeeId = employeeId;
         renderUpdateEmployeeModal(employeeId);
     } else {
         title.innerText = defaultTitle + "추가";
+        modal.querySelector(".btn-submit").innerHTML = "정보 추가";
         renderInsertEmployeeModal();
     }
 }
@@ -127,8 +130,12 @@ const checkDataIn = () => {
         return false;
     }
 
-    if (form.querySelector("input[id='employee_hire_date']").value === '') {
+    const hireDate = form.querySelector("input[id='employee_hire_date']").value;
+    if (hireDate === '') {
         alert("사원의 입사일을 입력하세요.")
+        return false;
+    } else if (hireDate > new Date()) {
+        alert("사원의 입사일은 오늘 혹은 오늘 이전이여야 합니다.")
         return false;
     }
 

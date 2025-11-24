@@ -13,6 +13,8 @@ import java.util.Date;
 @Table(name = "Employees")
 public class EmployeeEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "eid_seq")
+    @SequenceGenerator(name = "eid_seq", sequenceName = "SEQ_EMPLOYEES", allocationSize = 1)
     @Column(name = "employee_id")
     private Integer employee_id;
 
