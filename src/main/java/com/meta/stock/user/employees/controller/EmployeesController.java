@@ -3,7 +3,6 @@ package com.meta.stock.user.employees.controller;
 import com.meta.stock.user.employees.dto.EmployeeGetDto;
 import com.meta.stock.user.employees.dto.EmployeeInsertDto;
 import com.meta.stock.user.employees.mapper.EmployeesMapper;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +12,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -37,36 +34,24 @@ public class EmployeesController {
     }
 
     @PostMapping(value = "login.mb")
-    public String login(EmployeeInsertDto eDto, HttpServletResponse response,
-                        HttpSession session) throws IOException {
-        EmployeeInsertDto employee = employeesMapper.findById(eDto.getEmployee_id());
-
-        response.setContentType("text/html;charset=UTF-8");
-        PrintWriter pw = response.getWriter();
-
-        if(employee == null){
-            pw.println("<script type='text/javascript'>");
-            pw.println("alert('해당 아이디가 존재하지 않습니다.')");
-            pw.println("history.back();"); // 이전 페이지로 돌아가기
-            pw.println("</script>");
-            pw.flush();
-            return null;
+    public ResponseEntity<Map<String, String>> login(@RequestBody EmployeeInsertDto eDto, HttpSession session) {
+        EmployeeInsertDto employee = employeesMapper.findByEmail(eDto.getEmail());
+        Map<String, String> status = new HashMap<>();
+        if (employee == null) {
+            status.put("status", "no email");
+            status.put("value", "존재하지 않는 이메일입니다. 다시 입력하세요.");
+        } else if (employee.getPassword().equals(eDto.getPassword())) {
+            status.put("status", "login");
+            status.put("value", "로그인 되었습니다.");
+            session.setAttribute("employee", employee);
+        } else {
+            status.put("status", "no password");
+            status.put("value", "비밀번호가 일치하지않습니다. 다시 입력하세요.");
         }
 
-        else{
-            if(employee.getPassword().equals(eDto.getPassword())){
-                session.setAttribute("loginId", employee.getEmployee_id()); // ID를 세션에 저장
-                return "dashboard/dashboard";
-            }
-            else{
-                pw.println("<script type='text/javascript'>");
-                pw.println("alert('비밀번호가 일치하지 않습니다.')");
-                pw.println("history.back();"); // 이전 페이지로 돌아가기
-                pw.println("</script>");
-                pw.flush();
-                return null;
-            }
-        }
+//        session.setAttribute("loginId", employee.getEmployee_id());
+//        return "dashboard/dashboard";
+        return ResponseEntity.ok(status);
     }
 
     @GetMapping(value = "/register")

@@ -2,46 +2,33 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
-    <script>
-        function register(){
-            location.href = "/register";
-        }
-    </script>
-    <link rel="stylesheet" th:href="@{/style/styles.css}">
+    <title>사원 로그인</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/style/BaseStyle.css}" />
+    <link rel="stylesheet" type="text/css" th:href="@{/style/Login.css}" />
+    <script type="text/javascript" th:src="@{/script/baseJS.js}"></script>
+    <script type="text/javascript" th:src="@{/script/employee/employeeLogin.js}"></script>
 </head>
 <body>
-<h1>로그인</h1>
-<form method="post" action="login.mb">
-    <table border="1">
-        <tr>
-            <td rowspan="2" class="icon-cell">
-                <img th:src="@{/style/logo.png}" alt="회사 로고" class="company-logo">
-            </td>
-
-            <td>아이디</td>
-
-            <td><input type="text" name="employee_id" class="input-text"></td>
-        </tr>
-
-        <tr>
-            <td>비번</td>
-            <td><input type="password" name="password"></td>
-        </tr>
-
-        <tr>
-            <td colspan="3" id="buttons">
-                <input type="submit" value="로그인">
-                <input type="button" value="회원가입" onclick="register()">
-            </td>
-        </tr>
-
-        <tr>
-            <td colspan="3" id="showListCell">
-                <input type="button" id="showList" value="사용자 리스트 출력" onclick="location.href='/showEmployees'">
-            </td>
-        </tr>
-    </table>
-</form>
+<div class="container">
+    <div th:insert="~{navbar :: navbar('', '')}"></div>
+    <div class="content-wrapper">
+        <div class="fragement-box w-40">
+            <div class="company-logo">
+                <img th:src="@{/file/logo.png}" alt="회사 로고">
+            </div>
+            <form id="login_form">
+                <div class="form-group">
+                    <label for="employee_login_email">이메일 <span class="required">*</span></label>
+                    <input type="text" id="employee_login_email" placeholder="이름을 입력하세요" required>
+                </div>
+                <div class="form-group">
+                    <label for="employee_login_pw">비밀번호 <span class="required">*</span></label>
+                    <input type="password" id="employee_login_pw" name="password" placeholder="비밀번호를 입력하세요" required>
+                </div>
+                <button type="button" class="btn-modal btn-submit" onclick="onLoginSubmit()">로그인</button>
+            </form>
+        </div>
+    </div>
+</div>
 </body>
 </html>

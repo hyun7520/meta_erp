@@ -9,7 +9,7 @@ import java.util.Map;
 
 @Mapper
 public interface EmployeesMapper {
-    EmployeeInsertDto findById(int employeeId);
+    EmployeeInsertDto findByEmail(String email);
 
     void insertEmployee(EmployeeInsertDto eDto);
 

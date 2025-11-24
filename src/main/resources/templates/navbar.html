@@ -10,11 +10,11 @@
             <div class="logo" th:onclick="|location.href='@{/}'|">
                 <img src="/file/logo.png" alt="회사로고">
             </div>
-            <div class="header-text" th:unless="${mainTitle eq '대시보드'}">
+            <div class="header-text" th:unless="${mainTitle eq '대시보드' || mainTitle eq ''}">
                 <h1 th:text="${mainTitle}" th:onclick="|location.href='@{/}'|"></h1>
                 <p th:text="${subTitle}" class="subtitle"></p>
             </div>
-            <div class="header-nav">
+            <div class="header-nav" th:unless="${session.employee eq null}">
                 <a th:href="${'/showEmployees'}" class="nav-btn" th:classappend="${#rootpath eq '/showEmployees' ? 'active' : ''}">
                     🏢 사원 관리
                 </a>
@@ -32,7 +32,12 @@
 
         <div class="status-banner">
             <div class="current-time" id="currentTime"></div>
-            <div class="user-status">
+            <div class="user-status" th:if="${session.employee eq null}" th:onclick="|location.href='@{/login}'|">
+                <div class="user-info-text">
+                    <div class="user-name" th:text="${'로그인'}"></div>
+                </div>
+            </div>
+            <div class="user-status" th:unless="${session.employee eq null}">
                 <div class="user-avatar" id="userAvatar">홍</div>
                 <div class="user-info-text">
                     <div class="user-name" id="userName" th:text="${'이름'}"></div>

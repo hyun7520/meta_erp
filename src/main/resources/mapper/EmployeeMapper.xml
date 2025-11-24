@@ -14,8 +14,8 @@
         <result property="role" column="role_name"></result>
     </resultMap>
 
-    <select id="findById">
-        select * from Employees where employee_id = #{employee_id}
+    <select id="findByEmail">
+        select * from Employees where email = #{email}
     </select>
 
     <insert id="insertEmployee">
