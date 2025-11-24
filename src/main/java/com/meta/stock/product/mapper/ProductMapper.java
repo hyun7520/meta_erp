@@ -30,4 +30,6 @@ public interface ProductMapper {
     List<ProductStockDto> findTotalProductStock();
 
     List<FixedProductDto> getFixedProductWithStockQty();
+
+    int getProductionLoss(Long fpId);
 }

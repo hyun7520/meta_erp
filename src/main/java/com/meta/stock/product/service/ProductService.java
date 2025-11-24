@@ -77,6 +77,10 @@ public class ProductService {
         return materialMapper.getRequiredMaterials(fpId);
     }
 
+    public int getProductionLoss(Long fpId) {
+        return productMapper.getProductionLoss(fpId);
+    }
+
     // 전체 제품 목록 조회
     @Transactional(readOnly = true)
     public List<ProductDTO.Response> getAllProducts() {

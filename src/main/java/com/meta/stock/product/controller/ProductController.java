@@ -132,12 +132,17 @@ public class ProductController {
                                   @RequestParam List<Long> fpIds,
                                   @RequestParam List<Integer> quantities) {
 
-        for(Long id : fpIds) {
-            System.out.println("id:" + id);
-        }
+        for (int i = 0; i < fpIds.size(); i++) {
+            Long fpId = fpIds.get(i);
+            Integer qty = quantities.get(i);
 
-        for(int qty: quantities) {
-            System.out.println("qty:"+qty);
+            int loss = (int) (Math.random() * 8) + 1;
+
+            // 수량이 0보다 큰 것만 생산
+            if (qty != null && qty > 0) {
+                System.out.println("  → 제품 ID: " + fpId + ", 수량: " + qty);
+                productService.produceProduct(fpId, qty);
+            }
         }
 
         return "redirect:/product";

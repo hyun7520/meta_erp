@@ -61,6 +61,10 @@
         GROUP BY p.PRODUCT_NAME
     </select>
 
+    <select id="getProductionLoss">
+        SELECT
+    </select>
+
     <select id="getFixedProductWithStockQty" resultMap="FixedProductWithStockQtyMap">
         SELECT
         fp.fp_id,
