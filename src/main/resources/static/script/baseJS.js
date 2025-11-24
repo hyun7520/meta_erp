@@ -14,6 +14,10 @@ const updateTime = () => {
     document.getElementById('currentTime').innerHTML = '🕐 ' + calcDrawDate(now);
 }
 
+const logout = () => {
+    location.href = "/logout";
+}
+
 const renderPagination = (currentPage, totalPage, callback) => {
     const pagination = document.getElementById('pagination');
     pagination.innerHTML = '';

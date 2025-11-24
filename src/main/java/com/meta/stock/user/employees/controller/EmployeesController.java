@@ -28,6 +28,12 @@ public class EmployeesController {
         return "employees/login";
     }
 
+    @GetMapping("/logout")
+    public String logout(HttpSession session){
+        session.invalidate();
+        return "redirect:/login";
+    }
+
     @GetMapping(value = "/showEmployees")
     public String showEmployees(){
         return "employees/employeesList";

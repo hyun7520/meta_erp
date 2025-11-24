@@ -52,6 +52,7 @@
                     <div class="user-name" id="userName" th:text="${session.employee.name.substring(1)}"></div>
                     <div class="user-role" id="userRole" th:text="${session.employee.department + '  ·  ' + session.employee.role}"></div>
                 </div>
+                <button class="btn btn-reject" onclick="logout()">로그아웃</button>
             </div>
         </div>
     </div>
