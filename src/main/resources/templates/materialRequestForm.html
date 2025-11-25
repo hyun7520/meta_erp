@@ -5,6 +5,7 @@
     <title>재료 발주 요청</title>
     <link rel="stylesheet" type="text/css" th:href="@{/style/BaseStyle.css}" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script type="text/javascript" th:src="@{/script/baseJS.js}"></script>
 </head>
 <body>
 <div class="container">
@@ -108,23 +109,6 @@
 </div>
 
 <script>
-    // 현재 시간 표시
-    function updateTime() {
-        const now = new Date();
-        const timeString = now.toLocaleString('ko-KR', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit'
-        });
-        document.getElementById('currentTime').textContent = timeString;
-    }
-
-    updateTime();
-    setInterval(updateTime, 1000);
-
     // 폼 제출 전 확인
     document.querySelector('form').addEventListener('submit', function(e) {
         const materialCount = document.querySelectorAll('tbody tr').length;

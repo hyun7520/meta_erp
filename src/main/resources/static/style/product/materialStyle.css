@@ -1,0 +1,201 @@
+/* 레이아웃: 좌측 60%, 우측 40% */
+.row {
+    display: flex;
+    gap: 20px;
+    height: calc(100vh - 140px);
+}
+
+.left-section {
+    width: 60%;
+    display: flex;
+    flex-direction: column;
+}
+
+.right-section {
+    width: 40%;
+    display: flex;
+    flex-direction: column;
+}
+
+.fragement-box {
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+/* 테이블 컨테이너 */
+.table-container {
+    flex: 1;
+    overflow-y: auto;
+    margin-top: 10px;
+}
+
+.action-bar {
+    margin-bottom: 15px;
+    padding: 15px;
+    flex-shrink: 0;
+}
+
+table {
+    font-size: 13px;
+}
+
+th {
+    padding: 10px 15px;
+    font-size: 12px;
+    position: sticky;
+    top: 0;
+    background: #F8F9FA;
+    z-index: 1;
+    cursor: pointer;
+    user-select: none;
+}
+
+th:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+td {
+    padding: 10px 15px;
+    font-size: 13px;
+}
+
+/* 상태별 행 배경색 */
+tr.status-0 {
+    background-color: #FEF3C7 !important;
+}
+
+tr.status-1 {
+    background-color: #D1FAE5 !important;
+}
+
+tr.status-2 {
+    background-color: #F3F4F6 !important;
+}
+
+.form-row {
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.form-group {
+    margin-bottom: 0;
+}
+
+.form-group input,
+.form-group select {
+    padding: 8px;
+    font-size: 13px;
+}
+
+.btn {
+    padding: 8px 16px;
+}
+
+.pagination {
+    margin-top: 15px;
+    padding-top: 15px;
+    flex-shrink: 0;
+}
+
+/* 통계 카드 스타일 */
+.stats-card {
+    background: #F8F9FA;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.stat-item {
+    text-align: center;
+    padding: 15px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.stat-item .stat-number {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.stat-item .stat-label {
+    font-size: 12px;
+    color: #6B7280;
+    font-weight: 600;
+}
+
+.stat-item.pending .stat-number {
+    color: #F59E0B;
+}
+
+.stat-item.approved .stat-number {
+    color: #10B981;
+}
+
+.stat-item.completed .stat-number {
+    color: #6B7280;
+}
+
+/* 재료 목록 카드 */
+.material-list {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.material-card {
+    background: white;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    border-left: 4px solid #2A9D8F;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    transition: transform 0.2s;
+}
+
+.material-card:hover {
+    transform: translateX(3px);
+}
+
+.material-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.material-name {
+    font-weight: 600;
+    color: #374151;
+    font-size: 14px;
+}
+
+.material-qty {
+    font-size: 18px;
+    font-weight: 700;
+    color: #2A9D8F;
+}
+
+.material-progress {
+    background: #E5E7EB;
+    height: 8px;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.material-progress-bar {
+    background: linear-gradient(90deg, #2A9D8F, #10B981);
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.3s;
+}
