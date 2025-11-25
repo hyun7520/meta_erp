@@ -20,9 +20,17 @@ function loadProducts() {
 }
 
 const openOrderModal = (orderId) => {
-    if (orderId > 0) fillEditModal(orderId);
-    else fillModal();
-    document.getElementById('order_modal').style.display = 'block';
+    const modal = document.getElementById('order_modal')
+    if (orderId > 0) {
+        modal.querySelector("h3").innerText = "📝 발주 요청 수정";
+        modal.querySelector(".btn-submit").innerHTML = "수정";
+        fillEditModal(orderId);
+    } else {
+        modal.querySelector("h3").innerText = "➕ 새 발주 요청";
+        modal.querySelector(".btn-submit").innerHTML = "추가";
+        fillModal();
+    }
+    modal.style.display = 'block';
 }
 
 const closeOrderModal = () => {
