@@ -3,6 +3,7 @@ package com.meta.stock.product.mapper;
 import com.meta.stock.product.dto.ProductRequestDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -19,9 +20,17 @@ public interface ProductionRequestMapper {
 
     ProductRequestDto findProductRequestById(long orderId);
 
-    void updateOrderStatus(Long orderId, int status);
-
     void updateEndDate(Long prId);
 
-    void updateProductionStartDate(Long prId);
+    int getOngoingRequestsCount(String keyword);
+
+    int countCompleted();
+
+    int countOverdue();
+
+    int countOngoing();
+
+    int countPending();
+
+    long getPrId(Long fpId);
 }

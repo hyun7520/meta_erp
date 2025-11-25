@@ -2,6 +2,8 @@ package com.meta.stock.lots.dto;
 
 public class LotStockDto {
     private Long lotId;
+    private Long fmId;
+    private String materialName;
     private Long productId;
     private String productName;
     private Integer qty;
@@ -11,6 +13,8 @@ public class LotStockDto {
     private String note;
 
     public Long getLotId() {return lotId;}
+    public Long getFmId() {return fmId;}
+    public String getMaterialName() {return materialName;}
     public Long getProductId() {return productId;}
     public String getProductName() {return productName;}
     public Integer getQty() {return qty;}
@@ -20,6 +24,8 @@ public class LotStockDto {
     public String getNote() {return note;}
 
     public void setLotId(Long lotId) {this.lotId = lotId;}
+    public void setFmId(Long fmId) {this.fmId = fmId;}
+    public void setMaterialName(String materialName) {this.materialName = materialName;}
     public void setProductId(Long productId) {this.productId = productId;}
     public void setProductName(String productName) {this.productName = productName;}
     public void setQty(Integer qty) {this.qty = qty;}

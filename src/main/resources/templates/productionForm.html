@@ -1,10 +1,547 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>생산 계획</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/style/product/BaseStyle.css}" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script type="text/javascript" th:src="@{/script/baseJS.js}"></script>
+    <style>
+        .content-wrapper {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .product-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #E5E7EB;
+        }
+
+        .product-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: #374151;
+        }
+
+        .product-stock {
+            font-size: 14px;
+            color: #6B7280;
+        }
+
+        .qty-input-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .qty-input-group label {
+            font-weight: 600;
+            color: #374151;
+            min-width: 80px;
+        }
+
+        .qty-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .qty-btn {
+            width: 36px;
+            height: 36px;
+            border: 1px solid #D1D5DB;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: 600;
+            color: #374151;
+            transition: all 0.2s;
+        }
+
+        .qty-btn:hover {
+            background: #F3F4F6;
+            border-color: #2A9D8F;
+            color: #2A9D8F;
+        }
+
+        .qty-btn:active {
+            transform: scale(0.95);
+        }
+
+        .qty-input {
+            width: 100px;
+            height: 36px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: 600;
+            border: 2px solid #D1D5DB;
+            border-radius: 6px;
+            padding: 0 10px;
+        }
+
+        .qty-input:focus {
+            outline: none;
+            border-color: #2A9D8F;
+        }
+
+        .material-list {
+            margin-top: 15px;
+        }
+
+        .material-list-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #6B7280;
+            margin-bottom: 10px;
+        }
+
+        .material-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            background: #F9FAFB;
+            border-radius: 6px;
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
+
+        .material-item.sufficient {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+
+        .material-item.insufficient {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+
+        .material-name {
+            font-weight: 600;
+        }
+
+        .material-qty {
+            display: flex;
+            gap: 15px;
+            font-size: 12px;
+        }
+
+        .action-bar {
+            position: sticky;
+            bottom: 0;
+            background: white;
+            padding: 20px;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .total-summary {
+            font-size: 16px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .total-qty {
+            font-size: 24px;
+            color: #2A9D8F;
+            margin-left: 10px;
+        }
+
+        .total-qty.over-limit {
+            color: #EF4444;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #2A9D8F;
+            color: white;
+            border: none;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: #238276;
+        }
+
+        .btn-primary:disabled {
+            background: #D1D5DB;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #374151;
+            border: 2px solid #D1D5DB;
+        }
+
+        .btn-secondary:hover {
+            background: #F9FAFB;
+        }
+    </style>
 </head>
 <body>
+<div class="container">
+    <!-- 네비게이션 바 -->
+    <div th:insert="~{navbar :: navbar('생산 계획', '')}"></div>
 
+    <div class="content-wrapper">
+        <form id="productionForm" action="/product" method="post">
+            <!-- 제품 카드들 -->
+            <div th:each="product, iterStat : ${fpDto}" class="product-card">
+                <div class="product-header">
+                    <div>
+                        <div class="product-name" th:text="${product.name}">부대찌개</div>
+                        <div class="product-stock">
+                            현재 재고: <span class="qty-unit" th:text="${product.currentStock}">150</span>개
+                        </div>
+                    </div>
+                </div>
+
+                <div class="qty-input-group">
+                    <label>생산 수량:</label>
+                    <div class="qty-control">
+                        <!-- - 버튼 -->
+                        <button type="button" class="qty-btn"
+                                th:onclick="|decrementQty('qty-${iterStat.index}')|">
+                            −
+                        </button>
+
+                        <!-- 수량 입력 -->
+                        <input type="number"
+                               class="qty-input production-qty"
+                               th:id="'qty-' + ${iterStat.index}"
+                               name="quantities"
+                               th:data-fp-id="${product.fpId}"
+                               th:data-card-index="${iterStat.index}"
+                               value="0"
+                               min="0"
+                               max="200"
+                               oninput="validateQty(this); updateTotal(); updateMaterialRequirements(this);">
+
+                        <!-- + 버튼 -->
+                        <button type="button" class="qty-btn"
+                                th:onclick="|incrementQty('qty-${iterStat.index}')|">
+                            +
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 필요 재료 목록 -->
+                <div class="material-list" th:if="${product.requiredMaterials != null}">
+                    <div class="material-list-title">필요 재료</div>
+                    <div th:each="material : ${product.requiredMaterials}"
+                         class="material-item"
+                         th:classappend="${material.currentStock >= material.qty ? 'sufficient' : 'insufficient'}"
+                         th:data-fm-id="${material.fmId}"
+                         th:data-required-qty-per-unit="${material.qty}"
+                         th:data-current-stock="${material.currentStock}"
+                         th:data-unit="${material.unit}">
+                        <span class="material-name" th:text="${material.name}">된장</span>
+                        <div class="material-qty">
+                            <span>필요: <span class="required-qty">0</span><span th:text="${material.unit}">g</span></span>
+                            <span>|</span>
+                            <span>재고: <span th:text="${material.currentStock}">500</span><span th:text="${material.unit}">g</span></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hidden inputs -->
+                <input type="hidden" name="fpIds" th:value="${product.fpId}">
+            </div>
+
+            <!-- 하단 액션 바 -->
+            <div class="action-bar">
+                <div class="total-summary">
+                    총 생산량: <span id="totalQty" class="total-qty">0</span> / 200개
+                </div>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-secondary" onclick="history.back()">
+                        <i class="fas fa-arrow-left"></i> 취소
+                    </button>
+                    <button type="button" class="btn btn-primary" id="submitBtn" onclick="validateAndSubmit()">
+                        <i class="fas fa-check"></i> 생산하기
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // 수량 증가
+    function incrementQty(inputId) {
+        const input = document.getElementById(inputId);
+        let value = parseInt(input.value) || 0;
+        if (value < 200) {
+            input.value = value + 1;
+            updateTotal();
+            updateMaterialRequirements(input);
+        }
+    }
+
+    // 수량 감소
+    function decrementQty(inputId) {
+        const input = document.getElementById(inputId);
+        let value = parseInt(input.value) || 0;
+        if (value > 0) {
+            input.value = value - 1;
+            updateTotal();
+            updateMaterialRequirements(input);
+        }
+    }
+
+    // 입력값 검증
+    function validateQty(input) {
+        let value = parseInt(input.value);
+        if (isNaN(value) || value < 0) {
+            input.value = 0;
+        } else if (value > 200) {
+            input.value = 200;
+        }
+    }
+
+    // 총 수량 업데이트
+    function updateTotal() {
+        const inputs = document.querySelectorAll('.production-qty');
+        let total = 0;
+        inputs.forEach(input => {
+            total += parseInt(input.value) || 0;
+        });
+
+        const totalQtyElement = document.getElementById('totalQty');
+        totalQtyElement.textContent = total;
+
+        // 200개 초과 시 빨간색
+        if (total > 200) {
+            totalQtyElement.classList.add('over-limit');
+        } else {
+            totalQtyElement.classList.remove('over-limit');
+        }
+
+        // 버튼 활성화/비활성화
+        updateSubmitButton();
+    }
+
+    // 버튼 활성화/비활성화
+    function updateSubmitButton() {
+        const submitBtn = document.getElementById('submitBtn');
+        const inputs = document.querySelectorAll('.production-qty');
+        let total = 0;
+
+        inputs.forEach(input => {
+            total += parseInt(input.value) || 0;
+        });
+
+        // 0개이거나 200개 초과 시 비활성화
+        if (total === 0 || total > 200) {
+            submitBtn.disabled = true;
+        } else {
+            submitBtn.disabled = false;
+        }
+    }
+
+    // 재료 필요량 업데이트
+    function updateMaterialRequirements(input) {
+        const productQty = parseInt(input.value) || 0;
+        const card = input.closest('.product-card');
+        const materialItems = card.querySelectorAll('.material-item');
+
+        materialItems.forEach(item => {
+            const qtyPerUnit = parseFloat(item.dataset.requiredQtyPerUnit);
+            const currentStock = parseFloat(item.dataset.currentStock);
+            const unit = item.dataset.unit;
+
+            // 필요량 계산
+            const totalRequired = qtyPerUnit * productQty;
+
+            // 필요량 표시 업데이트
+            const requiredQtySpan = item.querySelector('.required-qty');
+            requiredQtySpan.textContent = totalRequired.toFixed(1);
+
+            // 충분/부족 클래스 업데이트
+            item.classList.remove('sufficient', 'insufficient');
+            if (productQty === 0) {
+                // 생산 안 할 경우 기본 스타일
+                item.classList.remove('sufficient', 'insufficient');
+            } else if (currentStock >= totalRequired) {
+                item.classList.add('sufficient');
+            } else {
+                item.classList.add('insufficient');
+            }
+        });
+    }
+
+    // 제출 버튼 상태 업데이트
+    function updateSubmitButton() {
+        const submitBtn = document.getElementById('submitBtn');
+        const inputs = document.querySelectorAll('.production-qty');
+        let total = 0;
+
+        inputs.forEach(input => {
+            total += parseInt(input.value) || 0;
+        });
+
+        // 0개이거나 200개 초과 시 비활성화
+        if (total === 0 || total > 200) {
+            submitBtn.disabled = true;
+        } else {
+            submitBtn.disabled = false;
+        }
+    }
+
+    // 재료 부족 확인 및 제출
+    function validateAndSubmit() {
+        const inputs = document.querySelectorAll('.production-qty');
+        let total = 0;
+        const productions = [];
+
+        // 생산 목록 수집
+        inputs.forEach(input => {
+            const qty = parseInt(input.value) || 0;
+            total += qty;
+            if (qty > 0) {
+                productions.push({
+                    fpId: input.dataset.fpId,
+                    qty: qty
+                });
+            }
+        });
+
+        // 검증 1: 아무것도 생산하지 않음
+        if (total === 0) {
+            alert('생산할 제품을 선택해주세요.');
+            return;
+        }
+
+        // 검증 2: 200개 초과
+        if (total > 200) {
+            alert('총 생산량이 200개를 초과할 수 없습니다.\n현재: ' + total + '개');
+            return;
+        }
+
+        // 검증 3: 재료 부족 확인
+        const insufficientMaterials = checkMaterialSufficiency(productions);
+
+        if (insufficientMaterials.length > 0) {
+            const materialNames = insufficientMaterials.map(m => m.name).join(', ');
+            const confirmed = confirm(
+                '다음 재료가 부족합니다:\n' + materialNames +
+                '\n\n재료 발주 페이지로 이동하시겠습니까?'
+            );
+
+            if (confirmed) {
+                // 부족한 재료 정보를 URL 파라미터로 전달
+                const params = new URLSearchParams();
+                insufficientMaterials.forEach(material => {
+                    params.append('fmIds', material.fmId);
+                    params.append('materialNames', material.name);
+                    params.append('quantities', material.requiredQty);
+                    params.append('units', material.unit);
+                });
+
+                window.location.href = '/material/request?' + params.toString();
+            }
+            return;
+        }
+
+        // 모든 검증 통과 → 제출
+        document.getElementById('productionForm').submit();
+    }
+
+    // 재료 충분성 확인
+    function checkMaterialSufficiency(productions) {
+        const insufficientMaterials = [];
+
+        productions.forEach(production => {
+            const fpId = production.fpId;
+            const productQty = production.qty;
+
+            // 해당 제품의 재료들 찾기
+            const input = document.querySelector(`[data-fp-id="${fpId}"]`);
+            const card = input.closest('.product-card');
+            const materialItems = card.querySelectorAll('.material-item');
+
+            materialItems.forEach(item => {
+                const fmId = item.dataset.fmId;
+                const requiredQtyPerUnit = parseFloat(item.dataset.requiredQtyPerUnit);
+                const currentStock = parseFloat(item.dataset.currentStock);
+                const unit = item.dataset.unit;
+                const totalRequired = requiredQtyPerUnit * productQty;
+
+                // 부족한 경우
+                if (currentStock < totalRequired) {
+                    const materialName = item.querySelector('.material-name').textContent;
+                    const shortage = totalRequired - currentStock;  // 부족한 양
+
+                    // 정수로 변환 (소수점 있으면 그대로, 없으면 정수로)
+                    const shortageStr = Number.isInteger(shortage) ?
+                        shortage.toString() :
+                        shortage.toFixed(1);
+
+                    // 중복 체크 (같은 재료가 여러 제품에 사용될 수 있음)
+                    const existing = insufficientMaterials.find(m => m.fmId === fmId);
+                    if (!existing) {
+                        insufficientMaterials.push({
+                            fmId: fmId,
+                            name: materialName,
+                            requiredQty: shortageStr,  // 문자열로 전달
+                            unit: unit
+                        });
+                    } else {
+                        // 이미 있으면 부족한 양 누적
+                        const currentShortage = parseFloat(existing.requiredQty);
+                        const totalShortage = currentShortage + shortage;
+                        existing.requiredQty = Number.isInteger(totalShortage) ?
+                            totalShortage.toString() :
+                            totalShortage.toFixed(1);
+                    }
+                }
+            });
+        });
+
+        return insufficientMaterials;
+    }
+
+    // 페이지 로드 시 초기화
+    document.addEventListener('DOMContentLoaded', function() {
+        updateTotal();
+
+        // 모든 제품의 재료 필요량 초기화 (0개 기준)
+        const inputs = document.querySelectorAll('.production-qty');
+        inputs.forEach(input => {
+            updateMaterialRequirements(input);
+        });
+    });
+</script>
 </body>
 </html>

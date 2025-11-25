@@ -25,6 +25,23 @@
         <result property="shelfLifeDays" column="shelf_life_days" />
     </resultMap>
 
+    <resultMap id="MaterialRequirementMap" type="com.meta.stock.materials.dto.MaterialRequirementDto">
+        <result property="fmId" column="fm_id" />
+        <result property="materialName" column="material_name" />
+        <result property="requiredQty" column="required_qty" />
+        <result property="unit" column="unit" />
+        <result property="currentStock" column="current_stock" />
+    </resultMap>
+
+    <resultMap id="MaterialDtoMap" type="com.meta.stock.materials.dto.MaterialDto">
+        <id property="fmId" column="fm_id"/>
+        <result property="name" column="material_name"/>
+        <result property="qty" column="material_qty"/>
+        <result property="unit" column="material_unit"/>
+        <result property="currentStock" column="current_stock"/>
+        <result property="sufficient" column="sufficient"/>
+    </resultMap>
+
     <!-- 전체 완제품 재고 조회 -->
     <select id="findTotalProductStock" resultMap="ProductStockMap">
         SELECT
@@ -33,6 +50,33 @@
         FROM PRODUCTS p
         JOIN LOTS l ON p.LOTS_ID = l.LOT_ID
         GROUP BY p.PRODUCT_NAME
+    </select>
+
+    <!-- FixedProductDto ResultMap (재료 리스트 포함) -->
+    <resultMap id="FixedProductWithStockQtyMap" type="com.meta.stock.product.dto.FixedProductDto">
+        <id property="fpId" column="fp_id"/>
+        <result property="serialCode" column="serial_code"/>
+        <result property="name" column="name"/>
+        <result property="lifeTime" column="life_time"></result>
+        <result property="currentStock" column="stock_qty"/>
+    </resultMap>
+
+    <select id="getFixedProductWithStockQty" resultMap="FixedProductWithStockQtyMap">
+        SELECT
+        fp.fp_id,
+        fp.serial_code,
+        fp.name,
+        NVL(st.total_qty, 0) AS stock_qty
+        FROM fixed_product fp
+        LEFT JOIN (
+        SELECT
+        p.product_name,
+        SUM(l.qty) AS total_qty
+        FROM products p
+        JOIN lots l ON p.lots_id = l.lot_id
+        GROUP BY p.product_name
+        ) st
+        ON fp.name = st.product_name
     </select>
 
     <!-- 특정 제품 재고 조회 (productId로) -->
@@ -89,8 +133,9 @@
     </select>
 
     <!-- BOM 정보 조회 (필요 원자재) -->
-    <select id="getMaterialRequirements" resultType="com.meta.stock.materials.dto.MaterialRequirementDto">
+    <select id="getMaterialRequirements" resultMap="MaterialRequirementMap">
         SELECT
+        fm.fm_id,
         fm.name as material_name,
         fm.qty as required_qty,
         fm.unit,
@@ -102,6 +147,16 @@
         WHERE serial_code = #{serialCode}
         )
     </select>
+
+    <select id="getNameAndLifeTime" resultMap="FixedProductWithStockQtyMap">
+        select name, life_time from fixed_product
+        where fp_id = #{fpId}
+    </select>
+
+    <insert id="produceProduct">
+        INSERT INTO Products (product_id, product_name, production_loss, pr_id, lots_id)
+        VALUES (SEQ_PRODUCTS.NEXTVAL, #{productName}, #{loss}, #{prId}, #{lotsId})
+    </insert>
 
     <select id="getDashProductsList" resultMap="parseDashProductsList">
         select product_id, serial_code, product_name, qty, unit, storage_date, shelf_life_days
@@ -161,4 +216,11 @@
         )
         AND ROWNUM = 1
     </update>
+
+    <!-- Products 테이블에서 해당 로트 연결 제거 -->
+    <delete id="deleteProductByLotId">
+        DELETE FROM Products
+        WHERE lots_id = #{lotId}
+    </delete>
+
 </mapper>

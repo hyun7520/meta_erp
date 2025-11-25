@@ -54,32 +54,30 @@
     <!-- 진행중인 주문 조회 (JOIN)-->
     <select id="findOngoingRequestsWithPaging" resultMap="ProductRequestMap">
         SELECT
-        pr.pr_id,
-        pr.serial_code,
-        fp.name as product_name,
-        pr.to_company,
-        pr.target_qty,
-        NVL(pr.planned_qty, 0) as planned_qty,
-        NVL(pr.completed_qty, 0) as completed_qty,
-        pr.unit,
-        TO_CHAR(pr.request_date, 'YYYY-MM-DD') as request_date,
-        TO_CHAR(pr.deadline, 'YYYY-MM-DD') as deadline,
-        TO_CHAR(pr.production_start_date, 'YYYY-MM-DD') as production_start_date,
-        TO_CHAR(pr.end_date, 'YYYY-MM-DD') as end_date,
-        pr.note,
-        NVL(stock.in_stock_qty, 0) as in_stock_qty
-        FROM Production_Request pr
-        LEFT JOIN Fixed_Product fp ON pr.serial_code = fp.serial_code
-        LEFT JOIN (
-        SELECT
-        fp2.serial_code,
-        SUM(l.qty) as in_stock_qty
-        FROM Products p
-        INNER JOIN Lots l ON p.lots_id = l.lot_id
-        INNER JOIN Fixed_Product fp2 ON p.product_name = fp2.name
-        WHERE l.qty > 0
-        GROUP BY fp2.serial_code
-        ) stock ON pr.serial_code = stock.serial_code
+            pr.pr_id,
+            pr.serial_code,
+            fp.name as product_name,
+            pr.to_company,
+            pr.target_qty,
+            NVL(pr.planned_qty, 0) as planned_qty,
+            NVL(pr.completed_qty, 0) as completed_qty,
+            pr.unit,
+            TO_CHAR(pr.request_date, 'YYYY-MM-DD') as request_date,
+            TO_CHAR(pr.deadline, 'YYYY-MM-DD') as deadline,
+            TO_CHAR(pr.production_start_date, 'YYYY-MM-DD') as production_start_date,
+            TO_CHAR(pr.end_date, 'YYYY-MM-DD') as end_date,
+            pr.note,
+            NVL(stock.in_stock_qty, 0) as in_stock_qty
+        FROM PRODUCTION_REQUEST pr
+        LEFT JOIN FIXED_PRODUCT fp on pr.serial_code = fp.serial_code
+        LEFT JOIN
+            (SELECT p.product_name, sum(l.qty) as in_stock_qty
+            FROM PRODUCTS p
+            JOIN LOTS l
+            ON p.lots_id = l.lot_id
+            GROUP BY p.product_name
+            ) STOCK
+        ON fp.name = stock.product_name
         WHERE pr.end_date IS NULL
         <if test="keyword != null and keyword != ''">
             AND fp.name LIKE '%' || #{keyword} || '%'
@@ -123,7 +121,12 @@
         TO_CHAR(pr.deadline, 'YYYY-MM-DD') as deadline,
         TO_CHAR(pr.production_start_date, 'YYYY-MM-DD') as production_start_date,
         TO_CHAR(pr.request_date, 'YYYY-MM-DD') as request_date,
-        TO_CHAR(pr.end_date, 'YYYY-MM-DD') as end_date
+        TO_CHAR(pr.end_date, 'YYYY-MM-DD') as end_date,
+        CASE
+        WHEN pr.production_start_date is null THEN 0
+        WHEN pr.production_start_date is not null AND pr.end_date is null THEN 1
+        ELSE 2
+        END AS complete
         FROM Production_Request pr
         LEFT JOIN Fixed_Product fp ON pr.serial_code = fp.serial_code
         WHERE 1=1
@@ -134,12 +137,12 @@
         ORDER BY
         <choose>
             <when test="sortBy == 'prId'">pr.pr_id</when>
-            <when test="sortBy == 'managementEmployee'">pr.management_employee</when>
             <when test="sortBy == 'productName'">fp.name</when>
             <when test="sortBy == 'toCompany'">pr.to_company</when>
             <when test="sortBy == 'targetQty'">pr.target_qty</when>
             <when test="sortBy == 'deadline'">pr.deadline</when>
             <when test="sortBy == 'endDate'">pr.end_date</when>
+            <when test="sortBy == 'complete'">complete</when>
             <otherwise>pr.pr_id</otherwise>
         </choose>
         <choose>
@@ -186,7 +189,10 @@
     <!-- 생산 시작일 업데이트 (수주) -->
     <update id="updateProductionStartDate">
         UPDATE Production_Request
-        SET production_start_date = SYSDATE
+        SET
+        PRODUCTION_EMPLOYEE = #{employeeId},
+        PLANNED_QTY = ${plannedQty},
+        production_start_date = SYSDATE
         WHERE pr_id = #{prId}
     </update>
 
@@ -196,4 +202,43 @@
         SET end_date = SYSDATE
         WHERE pr_id = #{prId}
     </update>
+
+    <select id="getOngoingRequestsCount">
+        SELECT count(*)
+        FROM Production_Request pr
+        LEFT JOIN Fixed_Product fp ON pr.serial_code = fp.serial_code
+        WHERE pr.end_date IS NULL
+    </select>
+
+    <select id="countCompleted" resultType="int">
+        SELECT COUNT(*) FROM Production_Request WHERE end_date IS NOT NULL
+    </select>
+
+    <select id="countOverdue" resultType="int">
+        <![CDATA[
+        SELECT COUNT(*) FROM Production_Request
+        WHERE end_date IS NULL
+        AND deadline < SYSDATE
+        ]]>
+    </select>
+
+    <select id="countOngoing" resultType="int">
+        SELECT COUNT(*) FROM Production_Request
+        WHERE production_start_date IS NOT NULL
+        AND end_date IS NULL
+        AND deadline >= SYSDATE
+    </select>
+
+    <select id="countPending" resultType="int">
+        SELECT COUNT(*) FROM Production_Request WHERE production_start_date IS NULL
+    </select>
+
+    <select id="getPrId">
+        select pr.pr_id, fp.serial_code
+        from production_request pr
+        join fixed_product fp
+        on pr.serial_code = fp.SERIAL_CODE
+        where fp_id = #{fpId} and pr.end_date is null
+    </select>
+
 </mapper>
