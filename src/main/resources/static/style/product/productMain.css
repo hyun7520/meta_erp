@@ -1,0 +1,125 @@
+/* 2열 그리드 레이아웃 */
+.row {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 0;
+}
+
+/* 오른쪽 영역 (50%) - 상하 2개로 분할 */
+.right-column {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* fragement-box 높이 조정 */
+.fragement-box {
+    margin: 0;
+    padding: 20px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.fragement-box.small-height {
+    height: calc(30% - 10px);
+}
+
+.fragement-box.large-height {
+    height: calc(70% - 10px);
+}
+
+.fragement-box.full-height {
+    height: 100%;
+}
+
+/* 테이블 컨테이너 - 스크롤 가능 */
+.table-container {
+    flex: 1;
+    margin-top: 10px;
+}
+
+/* 완제품 재고 스크롤 영역 */
+.product-stock-scroll {
+    flex: 1;
+    margin-top: 10px;
+}
+
+.action-bar {
+    margin-bottom: 10px;
+    padding: 15px;
+    flex-shrink: 0;
+}
+
+.action-bar h2 {
+    font-size: 16px;
+    margin: 0;
+}
+
+table {
+    font-size: 12px;
+}
+
+th {
+    padding: 8px 12px;
+    font-size: 11px;
+    position: sticky;
+    top: 0;
+    background: #F8F9FA;
+    z-index: 1;
+}
+
+td {
+    padding: 8px 12px;
+    font-size: 12px;
+}
+
+.form-row {
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.tab-count {
+    font-size: 11px;
+    padding: 2px 8px;
+}
+
+/* 완제품 재고 아이템 스타일 - 더 컴팩트하게 */
+.product-stock-item {
+    padding: 10px;
+    border-bottom: 1px solid #E5E7EB;
+}
+
+.product-stock-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.product-name {
+    font-weight: 600;
+    color: #374151;
+    font-size: 13px;
+}
+
+.product-qty {
+    font-size: 16px;
+    font-weight: 700;
+    color: #2A9D8F;
+}
+
+.product-progress-bar {
+    background: #E5E7EB;
+    border-radius: 6px;
+    height: 8px;
+    overflow: hidden;
+}
+
+.product-progress-fill {
+    background: linear-gradient(90deg, #2A9D8F, #10B981);
+    height: 100%;
+    border-radius: 6px;
+    transition: width 0.3s;
+}
