@@ -24,7 +24,7 @@
     <select id="findMaterialRequestsWithPaging" resultMap="MaterialRequestMap">
         SELECT
         mr.mr_id,
-        m.material_name,
+        fm.name as material_name,
         mr.qty,
         mr.unit,
         mr.request_date,
@@ -33,9 +33,9 @@
         mr.note,
         e.name as request_by_name
         FROM Material_Request mr
-        LEFT JOIN Materials m ON mr.mr_id = m.mr_id
+        LEFT JOIN Fixed_Material fm ON fm.fm_id = mr.fm_id
         LEFT JOIN Employees e ON mr.request_by = e.employee_id
-        WHERE mr.approved = 1
+        WHERE mr.approved = 0
         <if test="keyword != null and keyword != ''">
             AND m.material_name LIKE '%' || #{keyword} || '%'
         </if>
@@ -53,6 +53,53 @@
         FETCH NEXT #{limit} ROWS ONLY
     </select>
 
+    <select id="findAllMaterialRequestsWithPaging" resultMap="MaterialRequestMap">
+        SELECT
+        mr.mr_id,
+        fm.name as material_name,
+        mr.qty,
+        mr.unit,
+        TO_CHAR(mr.request_date, 'YYYY-MM-DD') as request_date,
+        mr.approved,
+        TO_CHAR(mr.approved_date, 'YYYY-MM-DD') as approved_date,
+        mr.note,
+        e.name as request_by_name
+        FROM Material_Request mr
+        LEFT JOIN fixed_material fm ON mr.fm_id = fm.fm_id
+        LEFT JOIN Employees e ON mr.request_by = e.employee_id
+        WHERE 1=1
+        <if test="keyword != null and keyword != ''">
+            AND (fm.name LIKE '%' || #{keyword} || '%'
+            OR mr.note LIKE '%' || #{keyword} || '%')
+        </if>
+        ORDER BY
+        <choose>
+            <when test="sortBy == 'mrId'">mr.mr_id</when>
+            <when test="sortBy == 'materialName'">material_name</when>
+            <when test="sortBy == 'qty'">mr.qty</when>
+            <when test="sortBy == 'requestDate'">mr.request_date</when>
+            <when test="sortBy == 'approved'">mr.approved</when>
+            <otherwise>mr.request_date</otherwise>
+        </choose>
+        <choose>
+            <when test="sortDir == 'DESC'">DESC</when>
+            <otherwise>ASC</otherwise>
+        </choose>
+        OFFSET #{offset} ROWS
+        FETCH NEXT #{limit} ROWS ONLY
+    </select>
+
+    <select id="countAllMaterialRequests" resultType="long">
+        SELECT COUNT(*)
+        FROM Material_Request mr
+        LEFT JOIN Materials m ON mr.mr_id = m.mr_id
+        WHERE 1=1
+        <if test="keyword != null and keyword != ''">
+            AND (m.material_name LIKE '%' || #{keyword} || '%'
+            OR mr.note LIKE '%' || #{keyword} || '%')
+        </if>
+    </select>
+
     <select id="countMaterialRequests" resultType="long">
         SELECT COUNT(*)
         FROM Material_Request mr
@@ -65,19 +112,21 @@
 
     <select id="calculateRequiredMaterials" resultType="com.meta.stock.materials.dto.MaterialRequirementDto">
         SELECT
-        fm.MATERIAL_NAME,
-        fm.QTY * #{qty} AS REQUIRED_QTY,
+        fm.fm_id as fmId,
+        fm.NAME AS materialName,
+        fm.QTY AS requiredQty,
         fm.UNIT
         FROM FIXED_MATERIAL fm
-        WHERE fm.FP_ID = #{productId}
+        WHERE fm.FP_ID = #{fpId}
     </select>
 
     <!-- 현재 재고 조회 (같은 이름 재료 합계) -->
     <select id="getCurrentStock" parameterType="string" resultType="int">
-        SELECT COALESCE(SUM(l.QTY), 0)
-        FROM MATERIAL m
-        JOIN LOTS l ON m.LOTS_ID = l.LOT_ID
-        WHERE m.MATERIAL_NAME = #{materialName}
+        SELECT NVL(SUM(l.qty), 0) as total_stock
+        FROM Materials m
+        INNER JOIN Lots l ON m.lots_id = l.lot_id
+        WHERE m.material_name = #{materialName}
+        AND l.qty > 0
     </select>
 
     <select id="getDateMaterialTotals" resultMap="parseMaterialCounts">
@@ -97,4 +146,82 @@
         </where>
         group by material_name
     </select>
+
+    <!-- 상태별 발주 요청 개수 -->
+    <select id="countByApproved" resultType="int">
+        SELECT COUNT(*)
+        FROM Material_Request
+        WHERE approved = #{approved}
+    </select>
+
+    <!-- 현재 재료 재고 조회 -->
+    <select id="getCurrentMaterialStocks" resultType="com.meta.stock.materials.dto.MaterialStockDto">
+        SELECT
+        m.material_name as materialName,
+        SUM(l.qty) as qty
+        FROM Materials m
+        INNER JOIN Lots l ON m.lots_id = l.lot_id
+        WHERE l.qty > 0
+        GROUP BY m.material_name
+        ORDER BY SUM(l.qty) ASC
+    </select>
+
+    <select id="getRequiredMaterials" resultType="com.meta.stock.materials.dto.MaterialDto">
+        SELECT
+        fm.fm_id AS fmId,
+        fm.name AS name,
+        fm.qty AS qty,
+        fm.unit AS unit,
+        NVL(st.current_stock, 0) AS currentStock
+        FROM Fixed_Material fm
+        LEFT JOIN (
+        SELECT
+        m.material_name,
+        SUM(l.qty) AS current_stock
+        FROM materials m
+        JOIN lots l ON m.lots_id = l.lot_id
+        GROUP BY m.material_name
+        ) st ON fm.name = st.material_name
+        WHERE fm.fp_id = #{fpId}
+        ORDER BY fm.fm_id
+    </select>
+
+    <select id="getRequestByName" resultType="String">
+        SELECT NAME FROM EMPLOYEES WHERE EMPLOYEE_ID = #{id}
+    </select>
+
+    <insert id="save" parameterType="com.meta.stock.materials.dto.MaterialRequestDto">
+        INSERT INTO Material_Request
+        (mr_id, fm_id, request_by, request_date, qty, unit, approved, approved_date, note)
+        VALUES
+        (SEQ_MATERIAL_REQUEST.NEXTVAL, #{fmId}, ${requestBy}, SYSDATE, #{qty}, 'g', 0, null, #{note})
+    </insert>
+
+    <select id="getMaterialRequestById" resultMap="MaterialRequestMap">
+        select mr.*, fp.name as MATERIAL_NAME
+        from Material_Request mr
+        join Fixed_material fp
+        on mr.fm_id = fp.FM_ID
+        where mr_id = #{mrId}
+    </select>
+
+    <update id="updateMaterialRequest">
+        UPDATE MATERIAL_REQUEST
+        SET QTY = #{qty}, NOTE = #{note}
+        WHERE MR_ID = #{mrId}
+    </update>
+
+    <update id="decreaseMaterialStock">
+        UPDATE Lots l
+        SET l.qty = l.qty - #{qty}
+        WHERE l.lot_id IN (
+        SELECT m.lots_id
+        FROM materials m
+        INNER JOIN fixed_material fm ON m.MATERIAL_NAME = fm.name
+        WHERE fm.fm_id = #{fmId}
+        AND l.qty > 0
+        ORDER BY l.storage_date ASC
+        )
+        AND ROWNUM = 1
+    </update>
 </mapper>

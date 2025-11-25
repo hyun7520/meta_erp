@@ -21,6 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -62,7 +64,7 @@ public class ProductionRequestService {
     }
 
     // keyword 0, 1, 2에 따라 production request 가져오기
-    public Page<ProductRequestDto> findOngoingProductRequests(String keyword, Pageable pageable) {
+    public Page<ProductRequestDto> findOngoingRequestsWithPaging(String keyword, Pageable pageable) {
         int offset = pageable.getPageNumber() * pageable.getPageSize();
         int limit = pageable.getPageSize();
         String sortBy = pageable.getSort().iterator().next().getProperty();
@@ -80,6 +82,8 @@ public class ProductionRequestService {
     // id로 production request 생산 시작
     public void acceptProductionRequest(long prId) {
         ProductionRequestEntity productionRequest = productionRequestRepository.findProductRequestByPrId(prId);
+        productionRequest.setProductionEmployee(1L);
+        productionRequest.setPlannedQty((int) (productionRequest.getTargetQty() + productionRequest.getTargetQty() * Math.random()));
         productionRequest.setProductionStartDate(String.valueOf(LocalDate.now()));
         productionRequestRepository.save(productionRequest);
     }
@@ -146,10 +150,27 @@ public class ProductionRequestService {
         }
     }
 
-    // 주문 수주
-    @Transactional
-    public void acceptOrder(Long prId) {
-        prMapper.updateProductionStartDate(prId);
+    public Map<String, Integer> getStatusStatistics() {
+        Map<String, Integer> stats = new HashMap<>();
+
+        // 완료 (end_date가 있음)
+        int completed = prMapper.countCompleted();
+
+        // 기간 초과 (deadline < 오늘 && end_date = null)
+        int overdue = prMapper.countOverdue();
+
+        // 진행 중 (production_start_date 있음 && end_date = null && deadline >= 오늘)
+        int ongoing = prMapper.countOngoing();
+
+        // 미수주 (production_start_date = null)
+        int pending = prMapper.countPending();
+
+        stats.put("completed", completed);
+        stats.put("overdue", overdue);
+        stats.put("ongoing", ongoing);
+        stats.put("pending", pending);
+
+        return stats;
     }
 
     // 전체 주문 목록 조회
@@ -375,7 +396,7 @@ public class ProductionRequestService {
                 .endDate(entity.getEndDate())
                 .build();
     }
-    // 단일 생산 요청 조회
+
     @Transactional(readOnly = true)
     public ProductionRequestDTO.Response getProductionRequestById(long prId) {
         ProductionRequestEntity entity = productionRequestRepository.findById(prId)
@@ -383,7 +404,7 @@ public class ProductionRequestService {
         return convertToResponse(entity);
     }
 
-    // 생산 요청 수정
+    // 생산 요청 수정 (Repository 쿼리 메서드 사용)
     @Transactional
     public ProductionRequestDTO.Response updateProductionRequest(long prId, ProductionRequestDTO.Request request) {
         ProductionRequestEntity entity = productionRequestRepository.findById(prId)
@@ -396,9 +417,9 @@ public class ProductionRequestService {
 
         // Serial Code 업데이트
         if (request.getProductId() != null) {
-            ProductEntity product = productRepository.findById(request.getProductId())
+            String serialCode = productRepository.findProductNameById(request.getProductId())
                     .orElseThrow(() -> new IllegalArgumentException("제품을 찾을 수 없습니다. ID: " + request.getProductId()));
-            entity.setSerialCode(product.getProductName());
+            entity.setSerialCode(serialCode);
         } else if (request.getSerialCode() != null && !request.getSerialCode().isEmpty()) {
             entity.setSerialCode(request.getSerialCode());
         }
@@ -423,5 +444,9 @@ public class ProductionRequestService {
 
         ProductionRequestEntity saved = productionRequestRepository.save(entity);
         return convertToResponse(saved);
+    }
+
+    public int getOngoingRequestsCount(String prKeyword) {
+        return prMapper.getOngoingRequestsCount(prKeyword);
     }
 }

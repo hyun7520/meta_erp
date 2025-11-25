@@ -17,4 +17,10 @@ public interface LotsMapper {
 
     // 로트 삭제
     void deleteLotById(Long lotId);
+
+    long storeProduct(Integer qty, int lifeTime);
+
+    Long getLatestLot();
+
+    List<LotStockDto> findLotsByFmIdByExpiry(Long fmId);
 }

@@ -11,13 +11,13 @@ public class ProductionRequestEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "pr_seq")
     @SequenceGenerator(name = "pr_seq", sequenceName = "SEQ_PRODUCTION_REQUEST", allocationSize = 1)
     @Column(name = "PR_ID")
-    private long prId;
+    private Long prId;
 
     @Column(name = "MANAGEMENT_EMPLOYEE")
-    private long managementEmployee;
+    private Long managementEmployee;
 
     @Column(name = "PRODUCTION_EMPLOYEE")
-    private long productionEmployee;
+    private Long productionEmployee;
 
     @Column(name = "TO_COMPANY")
     private String toCompany;
@@ -34,7 +34,7 @@ public class ProductionRequestEntity {
     @Column(name = "UNIT")
     private String unit;
 
-    // ⭐ DateStringConverter 적용
+    //  DateStringConverter 적용
     @Column(name = "REQUEST_DATE")
     @Convert(converter = DateStringConverter.class)
     private String requestDate;

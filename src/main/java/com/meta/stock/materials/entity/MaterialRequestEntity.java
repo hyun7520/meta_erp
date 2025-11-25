@@ -1,6 +1,7 @@
 package com.meta.stock.materials.entity;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 
 // 재료 요청서 
 @Entity
@@ -120,4 +121,5 @@ public class MaterialRequestEntity {
     public void setNote(String note) {
         this.note = note;
     }
+
 }
