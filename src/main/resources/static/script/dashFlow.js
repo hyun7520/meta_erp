@@ -66,7 +66,7 @@ function renderTimeline(items) {
 
         const text = document.createElement("div");
         text.className = "center-text";
-        text.innerHTML = `${label.name} <span class='count'>${count}개</span>`;
+        text.innerHTML = `${label.name} <span class='count'>${count}건</span>`;
         box.appendChild(text);
 
         container.appendChild(box);
