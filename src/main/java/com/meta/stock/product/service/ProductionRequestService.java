@@ -173,12 +173,6 @@ public class ProductionRequestService {
         return stats;
     }
 
-    // 주문 수주
-    @Transactional
-    public void acceptOrder(Long prId) {
-        prMapper.updateProductionStartDate(prId);
-    }
-
     // 전체 주문 목록 조회
     @Transactional(readOnly = true)
     public List<ProductionRequestDTO.Response> getAllOrders() {
