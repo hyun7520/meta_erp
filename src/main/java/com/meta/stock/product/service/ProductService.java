@@ -8,8 +8,10 @@ import com.meta.stock.product.dto.FixedProductDto;
 import com.meta.stock.product.dto.ProductDTO;
 import com.meta.stock.product.dto.ProductListDTO;
 import com.meta.stock.product.dto.ProductStockDto;
+import com.meta.stock.product.entity.FixedProductEntity;
 import com.meta.stock.product.entity.ProductEntity;
 import com.meta.stock.product.mapper.ProductionRequestMapper;
+import com.meta.stock.product.repository.FixedProductRepository;
 import com.meta.stock.product.repository.ProductRepository;
 import com.meta.stock.product.mapper.ProductMapper;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +21,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,6 +38,8 @@ public class ProductService {
     private LotsMapper lotsMapper;
     @Autowired
     private ProductRepository productRepository;
+    @Autowired
+    private FixedProductRepository fixedProductRepository;
 
     public List<ProductStockDto> findTotalProductStock() {
         return productMapper.findTotalProductStock();
@@ -82,7 +87,12 @@ public class ProductService {
     //  주문 페이지용 제품 목록 조회
     @Transactional(readOnly = true)
     public List<ProductListDTO> getProductsForOrder() {
-        return productRepository.findAllProductsForOrder();
+        List<FixedProductEntity> getProducts = fixedProductRepository.findAll();
+        List<ProductListDTO> list = new ArrayList<>();
+        for (FixedProductEntity product : getProducts) {
+            list.add(new ProductListDTO(product.getFpId(), product.getName()));
+        }
+        return list;
     }
 
     public List<MaterialDto> getRequiredMaterials(Long fpId) {

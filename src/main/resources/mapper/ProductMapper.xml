@@ -178,7 +178,7 @@
     </select>
 
     <select id="getDashProductDemand">
-        select product_name as name, request_date as requestDate, sum(qty) as demand
+        select product_name as name, request_date as requestDate, sum(planned_qty) as demand
         from production_request pr
                  join products p on pr.pr_id = p.pr_id
                  left join lots l on p.lots_id = l.lot_id

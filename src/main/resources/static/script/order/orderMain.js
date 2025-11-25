@@ -2,7 +2,6 @@ let currentTab = 'pending';
 let currentPage = 1;
 let itemsPerPage = 10;
 let allData = [];
-let products = [];
 
 window.onload = function() {
     updateTime();
@@ -10,28 +9,6 @@ window.onload = function() {
     loadProducts();
     loadData('pending');
 };
-
-function loadProducts() {
-    fetch('/products')  // 수정
-        .then(response => response.json())
-        .then(data => {
-            products = data;
-            updateProductSelect();
-        })
-        .catch(error => console.error('제품 목록 로딩 실패:', error));
-}
-
-function updateProductSelect() {
-    const select = document.getElementById('productSelect');
-    if (!select) return;
-    select.innerHTML = '<option value="">선택하세요</option>';
-    products.forEach(product => {
-        const option = document.createElement('option');
-        option.value = product.productId;
-        option.textContent = product.productName;
-        select.appendChild(option);
-    });
-}
 
 function showTab(tab) {
     currentTab = tab;
@@ -131,7 +108,7 @@ function renderTable(data) {
         let actionButtons = '';
         if (item.complete === 0) {
             actionButtons = `
-                <button class="btn btn-sm btn-edit" onclick="openEditModal(${item.orderId})" title="수정">
+                <button class="btn btn-sm btn-edit" onclick="openOrderModal(${item.orderId})" title="수정">
                     ✏️
                 </button>
                 <button class="btn btn-sm btn-delete" onclick="deleteOrder(${item.orderId})" title="삭제">
@@ -168,111 +145,6 @@ function renderTable(data) {
 
         tbody.appendChild(row);
     });
-}
-
-
-function openEditModal(prId) {
-    fetch(`/pro/${prId}`)  //  수정
-        .then(response => response.json())
-        .then(data => {
-            const editProductSelect = document.getElementById('editProductSelect');
-            editProductSelect.innerHTML = '<option value="">선택하세요</option>';
-            products.forEach(product => {
-                const option = document.createElement('option');
-                option.value = product.productId;
-                option.textContent = product.productName;
-                if (product.productName === data.productName) {
-                    option.selected = true;
-                }
-                editProductSelect.appendChild(option);
-            });
-
-            document.getElementById('editPrId').value = data.orderId;
-            document.getElementById('editClientName').value = data.requestBy || '';
-            document.getElementById('editQuantity').value = data.qty || '';
-            document.getElementById('editUnit').value = data.unit || '';
-            document.getElementById('editDueDate').value = data.deadline || '';
-
-            document.getElementById('editModal').style.display = 'block';
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('주문 정보를 불러오는데 실패했습니다.');
-        });
-}
-
-function closeEditModal() {
-    document.getElementById('editModal').style.display = 'none';
-}
-
-function submitEditRequest() {
-    const prId = document.getElementById('editPrId').value;
-    const productId = document.getElementById('editProductSelect').value;
-    const clientName = document.getElementById('editClientName').value;
-    const quantity = document.getElementById('editQuantity').value;
-    const unit = document.getElementById('editUnit').value;
-    const dueDate = document.getElementById('editDueDate').value;
-
-    if (!productId || !clientName || !quantity || !unit || !dueDate) {
-        alert('필수 항목을 모두 입력해주세요.');
-        return;
-    }
-
-    if (isNaN(quantity) || parseInt(quantity) <= 0) {
-        alert('수량은 1 이상의 숫자여야 합니다.');
-        return;
-    }
-
-    const dueDateObj = new Date(dueDate);
-    if (isNaN(dueDateObj.getTime())) {
-        alert('올바른 날짜 형식을 입력해주세요.');
-        return;
-    }
-
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    if (dueDateObj < today) {
-        alert('납기일은 오늘 이후여야 합니다.');
-        return;
-    }
-
-    const orderData = {
-        productId: parseInt(productId),
-        requestBy: clientName.trim(),
-        qty: parseInt(quantity),
-        unit: unit.trim(),
-        deadline: dueDate
-    };
-
-    fetch(`/pro/${prId}`, {  // 수정
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(orderData)
-    })
-        .then(response => {
-            if (!response.ok) {
-                return response.text().then(text => {
-                    console.error('서버 응답:', text);
-                    throw new Error(text || '수정 실패');
-                });
-            }
-            return response.json();
-        })
-        .then(result => {
-            closeEditModal();
-            alert('발주 요청이 수정되었습니다.');
-            loadData(currentTab);
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            if (error.message && error.message.includes('이미 생산이 시작')) {
-                alert('이미 생산이 시작된 주문은 수정할 수 없습니다.');
-            } else if (error.message && error.message.includes('ORA-01861')) {
-                alert('날짜 형식이 올바르지 않습니다. (YYYY-MM-DD 형식이어야 합니다)');
-            } else {
-                alert('발주 요청 수정에 실패했습니다.\n' + error.message);
-            }
-        });
 }
 
 function deleteOrder(prId) {
@@ -313,57 +185,6 @@ function updateTabCounts(allOrders) {
     document.getElementById('allCount').textContent = allOrders.length;
 }
 
-function openRequestModal() {
-    const today = new Date().toISOString().split('T')[0];
-    document.getElementById('dueDate').value = today;
-    document.getElementById('requestModal').style.display = 'block';
-}
-
-function closeRequestModal() {
-    document.getElementById('requestModal').style.display = 'none';
-}
-
-function submitProductionRequest() {
-    const productId = document.getElementById('productSelect').value;
-    const clientName = document.getElementById('clientName').value;
-    const quantity = document.getElementById('quantity').value;
-    const unit = document.getElementById('unit').value;
-    const dueDate = document.getElementById('dueDate').value;
-
-    if (!productId || !clientName || !quantity || !unit || !dueDate) {
-        alert('필수 항목을 모두 입력해주세요.');
-        return;
-    }
-
-    const orderData = {
-        productId: parseInt(productId),
-        requestBy: clientName,
-        qty: parseInt(quantity),
-        unit: unit,
-        deadline: dueDate
-    };
-
-    fetch('/pro', {  //  수정
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(orderData)
-    })
-        .then(response => {
-            if (!response.ok) {
-                return response.json().then(err => Promise.reject(err));
-            }
-            return response.json();
-        })
-        .then(result => {
-            closeRequestModal();
-            alert('생산 요청이 성공적으로 접수되었습니다.');
-            loadData(currentTab);
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('생산 요청 중 오류가 발생했습니다: ' + (error.message || '알 수 없는 오류'));
-        });
-}
 function toggleSelectAll() {
     const selectAll = document.getElementById('selectAll');
     const checkboxes = document.querySelectorAll('.row-checkbox');
@@ -436,16 +257,4 @@ function deleteSelectedOrders() {
             }
             loadData(currentTab);
         });
-}
-
-window.onclick = function(event) {
-    const requestModal = document.getElementById('requestModal');
-    const editModal = document.getElementById('editModal');
-
-    if (event.target === requestModal) {
-        closeRequestModal();
-    }
-    if (event.target === editModal) {
-        closeEditModal();
-    }
 }
