@@ -70,17 +70,6 @@ public class MaterialController {
             @RequestParam(name = "units") List<String> units,
             Model model) {
 
-        // 데이터 확인
-        // TODO: 삭제할것!
-        System.out.println("=== 선택된 재료 목록 ===");
-        for (int i = 0; i < materialNames.size(); i++) {
-            System.out.println(String.format("fmId: %d, 재료명: %s, 수량: %s %s",
-                    fmIds.get(i),
-                    materialNames.get(i),
-                    quantities.get(i),
-                    units.get(i)));
-        }
-
         // DTO 리스트로 변환
         List<MaterialRequestDto> materialRequests = new ArrayList<>();
         for (int i = 0; i < materialNames.size(); i++) {

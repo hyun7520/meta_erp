@@ -63,7 +63,7 @@ public class ProductionRequestService {
     }
 
     // keyword 0, 1, 2에 따라 production request 가져오기
-    public Page<ProductRequestDto> findOngoingProductRequests(String keyword, Pageable pageable) {
+    public Page<ProductRequestDto> findOngoingRequestsWithPaging(String keyword, Pageable pageable) {
         int offset = pageable.getPageNumber() * pageable.getPageSize();
         int limit = pageable.getPageSize();
         String sortBy = pageable.getSort().iterator().next().getProperty();

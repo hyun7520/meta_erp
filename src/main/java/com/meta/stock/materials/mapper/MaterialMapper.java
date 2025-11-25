@@ -19,7 +19,7 @@ public interface MaterialMapper {
 
     int getCurrentStock(String materialName);
 
-    List<MaterialRequirementDto> calculateRequiredMaterials(Map<String, Object> param);
+    List<MaterialRequirementDto> calculateRequiredMaterials(Long fpId, int qty);
 
     List<MaterialCountsBean> getDateMaterialTotals(String serialCode);
 
@@ -36,4 +36,6 @@ public interface MaterialMapper {
     void updateMaterialRequest(Long mrId, Integer qty, String note);
 
     List<MaterialDto> getRequiredMaterials(Long fpId);
+
+    void decreaseMaterialStock(Long fmId, int qty);
 }

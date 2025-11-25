@@ -8,41 +8,8 @@
 </head>
 <body>
 <div class="container">
-    <!-- 헤더 영역 -->
-    <div class="header">
-        <div class="header-left">
-            <div class="logo">
-                <img th:src="@{/style/logo.png}" alt="로고" />
-            </div>
-            <div class="header-text">
-                <h1>재료 발주 시스템</h1>
-                <div class="subtitle">Material Request System</div>
-            </div>
-        </div>
-
-        <div class="header-nav">
-            <a th:href="@{/pr}" class="nav-btn">
-                <i class="fas fa-clipboard-list"></i> 주문 관리
-            </a>
-            <a th:href="@{/material}" class="nav-btn active">
-                <i class="fas fa-boxes"></i> 재료 관리
-            </a>
-        </div>
-
-        <div class="status-banner">
-            <div class="current-time">
-                <i class="far fa-clock"></i>
-                <span id="currentTime"></span>
-            </div>
-            <div class="user-status">
-                <div class="user-avatar">관</div>
-                <div class="user-info-text">
-                    <div class="user-name">관리자</div>
-                    <div class="user-role">생산관리팀</div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <!-- 네비게이션 바 -->
+    <div th:insert="~{navbar :: navbar('재료 관리', '')}"></div>
 
     <!-- 메인 컨텐츠 -->
     <div class="content-wrapper">

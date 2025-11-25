@@ -31,4 +31,6 @@ public interface ProductionRequestMapper {
     int countOngoing();
 
     int countPending();
+
+    long getPrId(Long fpId);
 }

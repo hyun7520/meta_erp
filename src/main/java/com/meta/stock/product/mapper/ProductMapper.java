@@ -17,6 +17,8 @@ public interface ProductMapper {
 
     int getTotalListSize(Map<String, Object> param);
 
+    List<ProductStockDto> findTotalProductStock();
+
     List<ProductStockDto> findProductStockWithPaging(String keyword, String sortBy, String sortDir, int offset, int limit);
 
     long countProductStock(String keyword);
@@ -27,9 +29,11 @@ public interface ProductMapper {
 
     List<MaterialRequirementDto> getMaterialRequirements(String serialCode);
 
-    List<ProductStockDto> findTotalProductStock();
-
     List<FixedProductDto> getFixedProductWithStockQty();
 
     int getProductionLoss(Long fpId);
+
+    FixedProductDto getNameAndLifeTime(Long fpId);
+
+    void produceProduct(String productName, int loss, Long prId, Long lotsId);
 }

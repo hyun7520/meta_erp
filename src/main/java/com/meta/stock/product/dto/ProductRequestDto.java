@@ -1,8 +1,5 @@
 package com.meta.stock.product.dto;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Id;
-
 public class ProductRequestDto {
 
     private Long prId;

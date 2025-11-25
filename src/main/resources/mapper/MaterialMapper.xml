@@ -112,11 +112,12 @@
 
     <select id="calculateRequiredMaterials" resultType="com.meta.stock.materials.dto.MaterialRequirementDto">
         SELECT
-        fm.MATERIAL_NAME,
-        fm.QTY * #{qty} AS REQUIRED_QTY,
+        fm.fm_id as fmId,
+        fm.NAME AS materialName,
+        fm.QTY AS requiredQty,
         fm.UNIT
         FROM FIXED_MATERIAL fm
-        WHERE fm.FP_ID = #{productId}
+        WHERE fm.FP_ID = #{fpId}
     </select>
 
     <!-- 현재 재고 조회 (같은 이름 재료 합계) -->
@@ -208,5 +209,19 @@
         UPDATE MATERIAL_REQUEST
         SET QTY = #{qty}, NOTE = #{note}
         WHERE MR_ID = #{mrId}
+    </update>
+
+    <update id="decreaseMaterialStock">
+        UPDATE Lots l
+        SET l.qty = l.qty - #{qty}
+        WHERE l.lot_id IN (
+        SELECT m.lots_id
+        FROM materials m
+        INNER JOIN fixed_material fm ON m.MATERIAL_NAME = fm.name
+        WHERE fm.fm_id = #{fmId}
+        AND l.qty > 0
+        ORDER BY l.storage_date ASC
+        )
+        AND ROWNUM = 1
     </update>
 </mapper>

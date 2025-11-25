@@ -9,6 +9,8 @@
     <resultMap id="LotStockMap" type="com.meta.stock.lots.dto.LotStockDto">
         <result property="lotId" column="lot_id"/>
         <result property="productId" column="product_id"/>
+        <result property="fmId" column="fm_id"></result>
+        <result property="materialName" column="material_name"></result>
         <result property="productName" column="product_name"/>
         <result property="qty" column="qty"/>
         <result property="unit" column="unit"/>
@@ -36,6 +38,24 @@
         ORDER BY l.shelf_life_days ASC, l.storage_date ASC
     </select>
 
+    <select id="findLotsByFmIdByExpiry" resultMap="LotStockMap">
+        SELECT
+        l.lot_id,
+        fm.fm_id,
+        m.material_name,
+        l.qty,
+        l.unit,
+        TO_CHAR(l.storage_date, 'YYYY-MM-DD') as storage_date,
+        TO_CHAR(l.shelf_life_days, 'YYYY-MM-DD') as shelf_life_days,
+        l.note
+        FROM Lots l
+        INNER JOIN materials m ON l.lot_id = m.lots_id
+        INNER JOIN Fixed_material fm ON m.material_name = fm.name
+        WHERE fm.fm_id = #{fmId}
+        AND l.qty > 0
+        ORDER BY l.shelf_life_days ASC, l.storage_date ASC
+    </select>
+
     <!-- 로트 재고 업데이트 -->
     <update id="updateLotQty">
         UPDATE LOTS
@@ -48,4 +68,15 @@
         DELETE FROM Lots
         WHERE lot_id = #{lotId}
     </delete>
+
+    <insert id="storeProduct">
+        INSERT INTO Lots (lot_id, qty, unit, storage_date, shelf_life_days)
+        VALUES (SEQ_LOTS.NEXTVAL, #{qty}, '개', SYSDATE, SYSDATE + #{lifeTime})
+    </insert>
+
+    <select id="getLatestLot">
+        select lot_id from lots
+        where rownum = 1
+        order by lot_id desc
+    </select>
 </mapper>

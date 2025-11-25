@@ -1,5 +1,7 @@
 package com.meta.stock.materials.service;
 
+import com.meta.stock.lots.dto.LotStockDto;
+import com.meta.stock.lots.mapper.LotsMapper;
 import com.meta.stock.materials.dto.*;
 import com.meta.stock.materials.mapper.MaterialMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +10,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +20,8 @@ public class MaterialService {
 
     @Autowired
     private MaterialMapper materialMapper;
+    @Autowired
+    private LotsMapper lotsMapper;
 
     // 전체 재료 요청 조회
     public Page<MaterialRequestDto> findAllMaterialRequests(String keyword, Pageable pageable) {
@@ -28,14 +33,12 @@ public class MaterialService {
         List<MaterialRequestDto> content = materialMapper.findAllMaterialRequestsWithPaging(
                 keyword, sortBy, sortDir, offset, limit
         );
-
         long total = materialMapper.countAllMaterialRequests(keyword);
-
         return new PageImpl<>(content, pageable, total);
     }
 
     // 진행상황에 따른 요청 조회
-    public Page<MaterialRequestDto> findOngoingMaterialRequests(String keyword, Pageable pageable) {
+    public Page<MaterialRequestDto> findMaterialRequestsWithPaging(String keyword, Pageable pageable) {
         int offset = pageable.getPageNumber() * pageable.getPageSize();
         int limit = pageable.getPageSize();
         String sortBy = pageable.getSort().iterator().next().getProperty();
@@ -44,23 +47,13 @@ public class MaterialService {
         List<MaterialRequestDto> content = materialMapper.findMaterialRequestsWithPaging(
                 keyword, sortBy, sortDir, offset, limit
         );
-
         long total = materialMapper.countMaterialRequests(keyword);
-
         return new PageImpl<>(content, pageable, total);
     }
 
     // 상세 재료 정보 조회
     public MaterialRequestDto getMaterialRequestById(Long mrId) {
         return materialMapper.getMaterialRequestById(mrId);
-    }
-
-    // 현재 남은 재고의 개수를 반환한다.
-    public List<MaterialRequirementDto> calculateRequiredMaterials(long productId, int qty) {
-        Map<String, Object> param = new HashMap<>();
-        param.put("productId", productId);
-        param.put("qty", qty);
-        return materialMapper.calculateRequiredMaterials(param);
     }
 
     public int getCurrentStock(String materialName) {
@@ -101,5 +94,34 @@ public class MaterialService {
 
     public void updateMaterialRequest(Long mrId, Integer qty, String note) {
         materialMapper.updateMaterialRequest(mrId, qty, note);
+    }
+
+    public void decreaseMaterial(Long fpId, Integer qty) {
+        List<MaterialRequirementDto> mDto = materialMapper.calculateRequiredMaterials(fpId, qty);
+        for(MaterialRequirementDto dto : mDto) {
+            System.out.println(dto.getFmId());
+            System.out.println(dto.getMaterialName());
+            System.out.println(dto.getRequiredQty());
+            System.out.println("-----------------");
+            List<LotStockDto> lots = lotsMapper.findLotsByFmIdByExpiry(dto.getFmId());
+            int remainingQty = dto.getRequiredQty() * qty;
+            for (LotStockDto lot : lots) {
+                if (remainingQty <= 0) break;
+
+                int currentQty = lot.getQty();
+                if (currentQty <= 0) continue;
+
+                // 이번 로트에서 출하할 수량
+                int toShip = Math.min(currentQty, remainingQty);
+                int newQty = currentQty - toShip;
+                remainingQty -= toShip;
+
+                System.out.println("currentQty:"+currentQty);
+                System.out.println("remainingQty:"+remainingQty);
+
+                // 5. 로트 재고 업데이트
+                lotsMapper.updateLotQty(lot.getLotId(), newQty);
+            }
+        }
     }
 }

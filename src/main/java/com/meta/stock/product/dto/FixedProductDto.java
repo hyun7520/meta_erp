@@ -8,18 +8,21 @@ public class FixedProductDto {
     private Long fpId;
     private String serialCode;
     private String name;
+    private int lifeTime;
     private int currentStock;
     private List<MaterialDto> requiredMaterials;
 
     public Long getFpId() {return fpId;}
     public String getSerialCode() {return serialCode;}
     public String getName() {return name;}
+    public int getLifeTime() {return lifeTime;}
     public int getCurrentStock() {return currentStock;}
     public List<MaterialDto> getRequiredMaterials() {return requiredMaterials;}
 
     public void setFpId(Long fpId) {this.fpId = fpId;}
     public void setSerialCode(String serialCode) {this.serialCode = serialCode;}
     public void setName(String name) {this.name = name;}
+    public void setLifeTime(int lifeTime) {this.lifeTime = lifeTime;}
     public void setCurrentStock(int currentStock) {this.currentStock = currentStock;}
     public void setRequiredMaterials(List<MaterialDto> requiredMaterials) {this.requiredMaterials = requiredMaterials;}
 
