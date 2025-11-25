@@ -1,8 +1,5 @@
 package com.meta.stock.product.dto;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Id;
-
 public class ProductRequestDto {
 
     private Long prId;
@@ -22,11 +19,8 @@ public class ProductRequestDto {
     private String endDate;
     private String note;
 
-    public boolean isStockInsufficient() {
-        if(inStockQty + getCompletedQty() < getPlannedQty()) {
-            return true;
-        }
-        return false;
+    public boolean isStockSufficient() {
+        return getInStockQty() + getCompletedQty() >= getTargetQty();
     }
 
     public int getComplete() {
@@ -48,6 +42,8 @@ public class ProductRequestDto {
     public int getTargetQty() {return targetQty;}
     public Integer getPlannedQty() {return plannedQty != null ? plannedQty : 0;}
     public Integer getCompletedQty() {return completedQty != null ? completedQty : 0;}
+
+    public Integer getInStockQty() {return inStockQty;}
     public String getUnit() {return unit;}
     public String getRequestDate() {return requestDate;}
     public String getProductionStartDate() {return productionStartDate;}
@@ -64,6 +60,9 @@ public class ProductRequestDto {
     public void setTargetQty(int targetQty) {this.targetQty = targetQty;}
     public void setPlannedQty(Integer plannedQty) {this.plannedQty = plannedQty;}
     public void setCompletedQty(Integer completedQty) {this.completedQty = completedQty;}
+
+    public void setInStockQty(Integer inStockQty) {this.inStockQty = inStockQty;}
+
     public void setUnit(String unit) {this.unit = unit;}
     public void setRequestDate(String requestDate) {this.requestDate = requestDate;}
     public void setProductionStartDate(String productionStartDate) {this.productionStartDate = productionStartDate;}

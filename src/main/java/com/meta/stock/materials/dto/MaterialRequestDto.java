@@ -1,19 +1,22 @@
 package com.meta.stock.materials.dto;
 
+import java.time.LocalDate;
+import java.util.Date;
+
 public class MaterialRequestDto {
 
     private long mrId;
-    private long materialId;
+    private long fmId;
     private long requestBy;
     private String materialName;
     private int qty;
-    private String requestDate;
+    private String requestDate = LocalDate.now().toString();
     private int approved;
     private String approvedDate;
     private String note;
 
     public long getMrId() {return mrId;}
-    public long getMaterialId() {return materialId;}
+    public long getFmId() {return fmId;}
     public long getRequestBy() {return requestBy;}
     public String getMaterialName() {return materialName;}
     public int getQty() {return qty;}
@@ -23,7 +26,7 @@ public class MaterialRequestDto {
     public String getNote() {return note;}
 
     public void setMrId(long mrId) {this.mrId = mrId;}
-    public void setMaterialId(long materialId) {this.materialId = materialId;}
+    public void setFmId(long fmId) {this.fmId = fmId;}
     public void setRequestBy(long requestBy) {this.requestBy = requestBy;}
     public void setMaterialName(String materialName) {this.materialName = materialName;}
     public void setQty(int qty) {this.qty = qty;}
@@ -31,6 +34,12 @@ public class MaterialRequestDto {
     public void setApproved(int approved) {this.approved = approved;}
     public void setApprovedDate(String approvedDate) {this.approvedDate = approvedDate;}
     public void setNote(String note) {this.note = note;}
+
+    @Override
+    public String toString() {
+        return String.format("fmId: %d,재료: %s, 수량: %d, 담장자: %s, 비고: %s, 요청일자: %s",
+                fmId, materialName, qty, requestBy, note, requestDate);
+    }
 
     // Request용 DTO (생성/수정 시 사용)
     public static class Request {
