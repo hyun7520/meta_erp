@@ -21,12 +21,12 @@ const MaterialModule = (function() {
         loadData('pending');
     }
 
-    function showTab(tab) {
-        state.currentTab = tab;
+    function showTab(element) {
         state.currentPage = 1;
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        event.target.classList.add('active');
-        loadData(tab);
+        element.classList.add('active');
+        state.currentTab = element.getAttribute('name');
+        loadData(currentTab);
     }
 
     async function loadData(tabName) {

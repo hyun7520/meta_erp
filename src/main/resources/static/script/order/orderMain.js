@@ -10,12 +10,12 @@ window.onload = function() {
     loadData('pending');
 };
 
-function showTab(tab) {
-    currentTab = tab;
+function showTab(element) {
     currentPage = 1;
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    event.target.classList.add('active');
-    loadData(tab);
+    element.classList.add('active');
+    currentTab = element.getAttribute('name');
+    loadData(currentTab);
 }
 
 function loadData(type) {

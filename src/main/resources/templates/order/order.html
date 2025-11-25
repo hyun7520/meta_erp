@@ -23,16 +23,16 @@
         </div>
 
         <div class="tabs">
-            <button name="pending" class="tab active" onclick="showTab('pending')">
+            <button name="pending" class="tab active" onclick="showTab(this)">
                 대기중 <span class="tab-count" id="pendingCount">0</span>
             </button>
-            <button name="in-progress" class="tab" onclick="showTab('in-progress')">
+            <button name="in-progress" class="tab" onclick="showTab(this)">
                 생산시작 <span class="tab-count" id="inProgressCount">0</span>
             </button>
-            <button name="completed" class="tab" onclick="showTab('completed')">
+            <button name="completed" class="tab" onclick="showTab(this)">
                 생산완료 <span class="tab-count" id="completedCount">0</span>
             </button>
-            <button name="all" class="tab" onclick="showTab('all')">
+            <button name="all" class="tab" onclick="showTab(this)">
                 전체 <span class="tab-count" id="allCount">0</span>
             </button>
         </div>

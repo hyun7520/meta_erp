@@ -11,10 +11,10 @@
     <div th:insert="~{navbar :: navbar('원재료 발주 허가', '생산팀 요청 원재료 : 발주 현황')}"></div>
     <div class="content-wrapper">
         <div class="tabs">
-            <button class="tab active" onclick="MaterialModule.showTab('pending')">
+            <button name="pending" class="tab active" onclick="MaterialModule.showTab(this)">
                 미승인 발주 <span class="tab-count" id="materialPendingCount">0</span>
             </button>
-            <button class="tab" onclick="MaterialModule.showTab('all')">
+            <button name="all" class="tab" onclick="MaterialModule.showTab(this)">
                 전체 발주 <span class="tab-count" id="materialAllCount">0</span>
             </button>
         </div>
