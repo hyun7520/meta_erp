@@ -11,8 +11,10 @@ import java.util.Date;
 @AllArgsConstructor
 @Entity
 @Table(name = "Employees")
-public class Employees {
+public class EmployeeEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "eid_seq")
+    @SequenceGenerator(name = "eid_seq", sequenceName = "SEQ_EMPLOYEES", allocationSize = 1)
     @Column(name = "employee_id")
     private Integer employee_id;
 
@@ -31,12 +33,12 @@ public class Employees {
     // Department와의 N:1 관계 (department_id)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "department_id") // Employees 테이블의 FK 컬럼
-    private Department department;
+    private DepartmentEntity departmentEntity;
 
     // Role과의 N:1 관계 (role_id)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "role_id") // Employees 테이블의 FK 컬럼
-    private Role role;
+    private RoleEntity roleEntity;
 
     public Integer getEmployee_id() {
         return employee_id;
@@ -78,19 +80,19 @@ public class Employees {
         this.hire_date = hire_date;
     }
 
-    public Department getDepartment() {
-        return department;
+    public DepartmentEntity getDepartmentEntity() {
+        return departmentEntity;
     }
 
-    public void setDepartment(Department department) {
-        this.department = department;
+    public void setDepartmentEntity(DepartmentEntity departmentEntity) {
+        this.departmentEntity = departmentEntity;
     }
 
-    public Role getRole() {
-        return role;
+    public RoleEntity getRoleEntity() {
+        return roleEntity;
     }
 
-    public void setRole(Role role) {
-        this.role = role;
+    public void setRoleEntity(RoleEntity roleEntity) {
+        this.roleEntity = roleEntity;
     }
 }

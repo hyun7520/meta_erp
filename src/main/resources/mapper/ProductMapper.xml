@@ -169,7 +169,7 @@
                     ${column} like '%' || #{search} || '%'
                 </when>
                 <when test="date != null and date != ''">
-                    storage_date eq #{date}
+                    storage_date = #{date}
                 </when>
             </choose>
         </where>
@@ -196,7 +196,7 @@
                     ${column} like '%' || #{search} || '%'
                 </when>
                 <when test="date != null and date != ''">
-                    storage_date eq #{date}
+                    storage_date = #{date}
                 </when>
             </choose>
         </where>

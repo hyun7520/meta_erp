@@ -5,16 +5,15 @@ import com.meta.stock.materials.service.MaterialService;
 import com.meta.stock.order.dto.DashFlowBean;
 import com.meta.stock.order.service.DashService;
 import com.meta.stock.product.dto.ProductDemandBean;
+import com.meta.stock.product.dto.ProductLossBean;
 import com.meta.stock.product.dto.ProductsAmountListBean;
 import com.meta.stock.product.service.GraphService;
 import com.meta.stock.product.service.ProductsService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -36,7 +35,10 @@ public class DashController {
     private final int limit = 5;
 
     @GetMapping("/dash")
-    private String dashboard() {
+    private String dashboard(HttpSession session) {
+        if (session.getAttribute("employee") == null) {
+            return "redirect:/login";
+        }
         return "dashboard/dashboard";
     }
 
@@ -81,6 +83,11 @@ public class DashController {
         return ResponseEntity.ok(pageData);
     }
 
+    @GetMapping("/dash/products")
+    private ResponseEntity<Map<String, String>> getProducts() {
+        return ResponseEntity.ok(productsService.getFixedProducts());
+    }
+
     @GetMapping("/dash/flow")
     public ResponseEntity<DashFlowBean> dashFlow() {
         return ResponseEntity.ok(dashService.getDashFlowBean());
@@ -96,5 +103,12 @@ public class DashController {
     @ResponseBody
     public ResponseEntity<List<ProductDemandBean>> productDemands() {
         return ResponseEntity.ok(graphService.getList());
+    }
+
+    @GetMapping("/dash/loss")
+    @ResponseBody
+    public ResponseEntity<List<ProductLossBean>> productLoss() {
+        List<ProductLossBean> list = null;
+        return ResponseEntity.ok(list);
     }
 }

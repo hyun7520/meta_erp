@@ -10,32 +10,32 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "Departments")
-public class Department {
+@Table(name = "Roles")
+public class RoleEntity {
     @Id
-    @Column(name = "department_id")
-    private int department_id;
+    @Column(name = "role_id")
+    private int role_id;
 
-    @Column(name = "department_name")
-    private String department_name;
+    @Column(name = "role_name")
+    private String role_name;
 
     @Column(name = "description")
     private String description;
 
-    public int getDepartment_id() {
-        return department_id;
+    public int getRole_id() {
+        return role_id;
     }
 
-    public void setDepartment_id(int department_id) {
-        this.department_id = department_id;
+    public void setRole_id(int role_id) {
+        this.role_id = role_id;
     }
 
-    public String getDepartment_name() {
-        return department_name;
+    public String getRole_name() {
+        return role_name;
     }
 
-    public void setDepartment_name(String department_name) {
-        this.department_name = department_name;
+    public void setRole_name(String role_name) {
+        this.role_name = role_name;
     }
 
     public String getDescription() {

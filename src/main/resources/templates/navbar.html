@@ -5,36 +5,58 @@
     <title>Navbar</title>
 </head>
 <body>
-    <div th:fragment="navbar(mainTitle, subTitle)" class="header">
+    <div th:fragment="navbar(mainTitle, subTitle)" class="header" th:with="employee = ${session.employee}">
         <div class="header-left">
-            <div class="logo" th:onclick="|location.href='@{/}'|">
+            <div class="logo" th:onclick="|location.href='@{/dash}'|">
                 <img src="/file/logo.png" alt="회사로고">
             </div>
-            <div class="header-text" th:unless="${mainTitle eq '대시보드'}">
-                <h1 th:text="${mainTitle}" th:onclick="|location.href='@{/}'|"></h1>
+            <div class="header-text" th:unless="${mainTitle eq '대시보드' || mainTitle eq ''}">
+                <h1 th:text="${mainTitle}"></h1>
                 <p th:text="${subTitle}" class="subtitle"></p>
             </div>
-            <div class="header-nav">
-            <a href="/order.html" class="nav-btn" th:classappend="${#rootpath eq '/order' ? 'active' : ''}">
-                📋 완제품 발주 요청
-            </a>
-            <a href="/material_request.html" class="nav-btn" th:classappend="${#rootpath eq '/order' ? 'active' : ''}">
-                📦 원재료 발주 허가
-            </a>
-            <a th:href="${'/product'}" class="nav-btn" th:classappend="${#rootpath eq '/product' ? 'active' : ''}">
-                생산
-            </a>
-        </div>
+            <div class="header-nav" th:unless="${employee eq null}">
+                <a th:with="allowPage = ${employee.department == '경영' and employee.role != '사원'}"
+                   th:attr="href=${allowPage ? '/showEmployees' : null}"
+                   class="nav-btn"
+                   th:classappend="(${#rootpath == '/showEmployees'} ? ' active' : '') + (${allowPage} ? ' ' : 'prevent')"
+                >
+                    🏢 사원 관리
+                </a>
+                <a th:with="allowPage = ${employee.department == '경영' and employee.role != '사원'}"
+                   th:attr="href=${allowPage ? '/order.html' : null}"
+                   class="nav-btn"
+                   th:classappend="(${#rootpath eq '/order' ? 'active' : ''}) + (${allowPage} ? ' ' : 'prevent')">
+                    📋 완제품 발주 요청
+                </a>
+                <a th:with="allowPage = ${employee.department == '경영' and employee.role != '사원'}"
+                   th:attr="href=${allowPage ? '/material_request.html' : null}"
+                   class="nav-btn"
+                   th:classappend="(${#rootpath eq '/order' ? 'active' : ''}) + (${allowPage} ? ' ' : 'prevent')">
+                    📦 원재료 발주 허가
+                </a>
+                <a th:with="allowPage = ${employee.department == '생산' and employee.role != '사원'}"
+                   th:attr="href=${allowPage ? '/product' : null}"
+                   class="nav-btn"
+                   th:classappend="(${#rootpath eq '/product' ? 'active' : ''}) + (${allowPage} ? ' ' : 'prevent')">
+                    🏭 생산 관리
+                </a>
+            </div>
         </div>
 
         <div class="status-banner">
-            <div class="current-time" id="currentTime" th:text="${'🕐 ' + #dates.format(#dates.createNow(), 'yyyy-MM-dd HH:mm:ss')}"></div>
-            <div class="user-status">
-                <div class="user-avatar" id="userAvatar">홍</div>
+            <div class="current-time" id="currentTime"></div>
+            <div class="user-status" th:if="${employee eq null}" th:onclick="|location.href='@{/login}'|">
                 <div class="user-info-text">
-                    <div class="user-name" id="userName" th:text="${'이름'}"></div>
-                    <div class="user-role" id="userRole" th:text="${'부서  ·  지위'}"></div>
+                    <div class="user-name" th:text="${'로그인'}"></div>
                 </div>
+            </div>
+            <div class="user-status" th:unless="${employee eq null}">
+                <div class="user-avatar" id="userAvatar" th:text="${employee.name.substring(0, 1)}"></div>
+                <div class="user-info-text">
+                    <div class="user-name" id="userName" th:text="${employee.name.substring(1)}"></div>
+                    <div class="user-role" id="userRole" th:text="${employee.department + '  ·  ' + employee.role}"></div>
+                </div>
+                <button class="btn btn-reject" onclick="logout()">로그아웃</button>
             </div>
         </div>
     </div>

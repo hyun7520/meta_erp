@@ -8,26 +8,19 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
-public class employeesDto {
+public class EmployeeInsertDto {
     private int employee_id;
 
-    @NotBlank(message = "이름은 필수입력사항 입니다.")
     private String name;
 
     private String email;
 
-    @NotBlank(message = "비밀번호는 필수입력사항 입니다.")
     private String password;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @NotNull(message = "입사일은 필수입력사항 입니다.")
-    @PastOrPresent(message = "입사일은 오늘 혹은 오늘 이전이여야 합니다.")
     private Date hire_date;
 
-    @Min(value = 1, message = "부서를 선택해주세요.")
     private int department_id;
 
-    @Min(value = 1, message = "직책을 선택해주세요.")
     private int role_id;
 
     public int getEmployee_id() {

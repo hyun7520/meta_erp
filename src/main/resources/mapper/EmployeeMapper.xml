@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.meta.stock.user.employees.mapper.EmployeesMapper">
+    <resultMap id="EmployeesResultMap" type="com.meta.stock.user.employees.dto.EmployeeGetDto">
+        <id property="employeeId" column="employee_id"></id>
+        <result property="name" column="name"></result>
+        <result property="email" column="email"></result>
+        <result property="password" column="password"></result>
+        <result property="hireDate" column="hire_date"></result>
+        <result property="department" column="department_name"></result>
+        <result property="role" column="role_name"></result>
+    </resultMap>
+
+    <select id="findByEmail" resultMap="EmployeesResultMap">
+        select employee_id, name, email, password, hire_date, department_name, role_name
+        from employees e
+        left join departments d on e.department_id = d.department_id
+        left join roles r on e.role_id = r.role_id
+        where email = #{email}
+    </select>
+
+    <insert id="insertEmployee">
+        insert into Employees
+        values(#{employee_id},#{name},#{email},#{password},#{hire_date},#{department_id},#{role_id})
+    </insert>
+
+    <select id="selectEmployeeById">
+        select * from Employees
+        where employee_id=#{employee_id}
+    </select>
+
+    <select id="getLastEmployeeId">
+        select employee_id from employees order by employee_id desc fetch first row only
+    </select>
+
+    <update id="updateEmployee">
+        update Employees
+        set name=#{name}, email=#{email}, password=#{password}, hire_date=#{hire_date}, department_id=#{department_id}, role_id=#{role_id}
+        where employee_id=#{employee_id}
+    </update>
+
+    <delete id="deleteEmployee">
+        delete from Employees
+        where employee_id=#{employee_id}
+    </delete>
+
+    <select id="selectAll" resultMap="EmployeesResultMap">
+        select employee_id, name, email, password, hire_date, department_name, role_name
+        from employees e
+        left join departments d on e.department_id = d.department_id
+        left join roles r on e.role_id = r.role_id
+
+        <where>
+            <choose>
+                <when test="whatColumn=='all' and keyword != null and keyword != ''">
+                    e.name like '%' || #{keyword} || '%'
+                    or d.department_name like '%' || #{keyword} || '%'
+                    or r.role_name like '%' || #{keyword} || '%'
+                </when>
+
+                <when test="whatColumn != null and whatColumn != 'all' and keyword != null and keyword != ''">
+                    <choose>
+                        <when test="whatColumn == 'department_name'">
+                            d.department_name like '%' || #{keyword} || '%'
+                        </when>
+                        <when test="whatColumn == 'role_name'">
+                            r.role_name like '%' || #{keyword} || '%'
+                        </when>
+                        <otherwise>
+                            e.${whatColumn} like '%' || #{keyword} || '%'
+                        </otherwise>
+                    </choose>
+                </when>
+            </choose>
+        </where>
+
+        order by ${sortBy} ${sortDir}
+        offset #{offset} rows fetch next #{limit} rows only
+    </select>
+
+    <select id="countTotalEmployees" resultType="int">
+        select count(*)
+        from Employees e
+        left join Departments d on e.department_id = d.department_id
+        left join Roles r on e.role_id = r.role_id
+
+        <where>
+            <choose>
+                <when test="whatColumn=='all' and keyword != null and keyword != ''">
+                    e.name like '%' || #{keyword} || '%'
+                    or d.department_name like '%' || #{keyword} || '%'
+                    or r.role_name like '%' || #{keyword} || '%'
+                </when>
+
+                <when test="whatColumn != null and whatColumn != 'all' and keyword != null and keyword != ''">
+                    <choose>
+                        <when test="whatColumn == 'department_name'">
+                            d.department_name like '%' || #{keyword} || '%'
+                        </when>
+                        <when test="whatColumn == 'role_name'">
+                            r.role_name like '%' || #{keyword} || '%'
+                        </when>
+                        <otherwise>
+                            e.${whatColumn} like '%' || #{keyword} || '%'
+                        </otherwise>
+                    </choose>
+                </when>
+            </choose>
+        </where>
+    </select>
+</mapper>

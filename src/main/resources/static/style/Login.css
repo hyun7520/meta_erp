@@ -1,0 +1,33 @@
+.user-status {
+    text-align: right;
+}
+
+.user-status:hover {
+    cursor: pointer;
+}
+
+.fragement-box:hover {
+    transform: none;
+}
+
+.content-wrapper {
+    display: flex;
+    justify-content: center;
+}
+
+.company-logo {
+    width: 100%;
+    text-align: center;
+}
+
+.company-logo img {
+    width: 100%;
+}
+
+#login_form {
+    text-align: right;
+}
+
+#login_form .form-group {
+    text-align: left;
+}

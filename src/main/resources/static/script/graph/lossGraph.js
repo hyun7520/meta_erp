@@ -91,9 +91,15 @@ const drawMaterialLossChart = () => {
     const now = new Date();
     const drawTime = document.getElementById("material_loss_Graph_time")
     drawTime.innerText = calcDrawDate(now);
-    // fetch(`그래프 데이터용 API`, {method: 'GET'})
+    // fetch('/dash/loss', {method: 'GET'})
     //     .then(response => response.json())
-    //     .then(data => {
+    //     .then(json => {
+    //         const data = json.map(data => ({
+    //             ...data,
+    //             type: "bar",
+    //             label: { show: true },
+    //         }));
+    //
     //         drawChart(data);
     //
     //         const now = new Date();

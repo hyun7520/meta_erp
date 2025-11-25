@@ -7,6 +7,10 @@
     height: 300px;
 }
 
+.content form {
+    margin-top: 15px;
+}
+
 /* Refresh 영역 */
 .refresh-area {
     width: 95%;
@@ -35,16 +39,6 @@
 
 [id$="_time"] { color:#777; }
 
-.search-group {
-    display: flex;
-    justify-content: end;
-    align-items: baseline;
-}
-
-.search-group div {
-    margin: 0 10px;
-}
-
 .label_form_group {
     display: flex;
     align-items: baseline;
@@ -55,13 +49,9 @@
     padding-right: 10px;
 }
 
-.sort-group {
-    margin: 10px 0;
+.flex-center {
     display: flex;
-    justify-content: end;
+    flex-wrap: wrap;
+    justify-content: center;
     align-items: baseline;
-}
-
-.sort-group .form-group {
-    margin-right: 10px;
 }

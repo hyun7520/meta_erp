@@ -22,7 +22,11 @@ const labels = {
 }
 };
 
-window.addEventListener("load", refreshTimeline);
+window.addEventListener("load", () => {
+    updateTime();
+    setInterval(updateTime, 1000);
+    refreshTimeline();
+});
 
 function updateFlowLine() {
     const line = document.querySelector(".line");
@@ -62,7 +66,7 @@ function renderTimeline(items) {
 
         const text = document.createElement("div");
         text.className = "center-text";
-        text.innerHTML = `${label.name} <span class='count'>${count}개</span>`;
+        text.innerHTML = `${label.name} <span class='count'>${count}건</span>`;
         box.appendChild(text);
 
         container.appendChild(box);
@@ -75,14 +79,10 @@ function refreshTimeline() {
     fetch(FLOW_API, {method: 'GET'})
         .then(response => response.json())
         .then(json => {
-            const resolvedJson = [];
+            const data = [];
             for (let key in json) {
-                resolvedJson.push({key: key, value: json[key]})
+                data.push({label: labels[key], count: json[key], case: key});
             }
-
-            const data = resolvedJson.map(({key, value}) => {
-                return {label: labels[key], count: value, case: key};
-            });
 
             renderTimeline(data);
 

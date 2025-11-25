@@ -1,244 +1,55 @@
     <!DOCTYPE html>
-    <html lang="en" xmlns:th="http://thymeleaf.org">
-<!--    <style>-->
-
-<!--        body {-->
-<!--            font-family: 'Malgun Gothic', '맑은 고딕', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;-->
-<!--            background-color: #f4f7f6; /* 밝고 부드러운 배경색 */-->
-<!--            color: #333;-->
-<!--            line-height: 1.6;-->
-<!--            margin: 0;-->
-<!--            padding: 30px;-->
-<!--        }-->
-
-<!--        .container {-->
-<!--            max-width: 1000px; /* 컨테이너 폭 조정 */-->
-<!--            margin: 0 auto;-->
-<!--            padding: 25px;-->
-<!--            background-color: #fff;-->
-<!--            border-radius: 10px; /* 더 부드러운 모서리 */-->
-<!--            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1); /* 그림자 강조 */-->
-<!--        }-->
-
-<!--        h1 {-->
-<!--            color: #17a2b8; /* 청록색 계열로 변경 */-->
-<!--            text-align: center;-->
-<!--            margin-bottom: 30px;-->
-<!--            padding-bottom: 15px;-->
-<!--            border-bottom: 3px solid #17a2b8; /* 강조된 밑줄 */-->
-<!--            font-size: 28px;-->
-<!--        }-->
-
-<!--        /* -&#45;&#45; 검색 폼 스타일 -&#45;&#45; */-->
-<!--        form[th\\:action*='showEmployees'] {-->
-<!--            display: flex;-->
-<!--            gap: 10px;-->
-<!--            justify-content: flex-end; /* 검색 폼을 오른쪽으로 정렬 */-->
-<!--            align-items: center;-->
-<!--            margin-bottom: 25px;-->
-<!--            padding: 15px;-->
-<!--            background-color: #e9f7f9; /* 폼 배경색 */-->
-<!--            border-radius: 6px;-->
-<!--            border: 1px solid #d4eaf1;-->
-<!--        }-->
-
-<!--        select, input[type="text"] {-->
-<!--            padding: 8px 12px;-->
-<!--            border-radius: 4px;-->
-<!--            border: 1px solid #ced4da;-->
-<!--            font-size: 14px;-->
-<!--            outline: none; /* 포커스 시 기본 테두리 제거 */-->
-<!--        }-->
-
-<!--        input[type="submit"] {-->
-<!--            padding: 8px 20px;-->
-<!--            background-color: #007bff; /* 버튼 색상: 파란색 */-->
-<!--            color: white;-->
-<!--            cursor: pointer;-->
-<!--            font-weight: bold;-->
-<!--            border: none;-->
-<!--            border-radius: 4px;-->
-<!--            transition: background-color 0.3s ease;-->
-<!--        }-->
-
-<!--        input[type="submit"]:hover {-->
-<!--            background-color: #0056b3;-->
-<!--        }-->
-
-<!--        /* -&#45;&#45; 표 (테이블) 스타일 -&#45;&#45; */-->
-<!--        .container > form > table {-->
-<!--            width: 100%;-->
-<!--            border-collapse: collapse;-->
-<!--            margin-top: 20px;-->
-<!--            border: 1px solid #dee2e6;-->
-<!--        }-->
-
-<!--        table th, table td {-->
-<!--            padding: 12px 15px;-->
-<!--            text-align: center; /* 텍스트 중앙 정렬 */-->
-<!--            border: 1px solid #dee2e6; /* 모든 셀에 옅은 경계선 */-->
-<!--            font-size: 14px;-->
-<!--        }-->
-
-<!--        table th {-->
-<!--            background-color: #f8f9fa; /* 헤더 배경색 */-->
-<!--            color: #495057; /* 짙은 회색 */-->
-<!--            font-weight: 600;-->
-<!--            text-transform: uppercase;-->
-<!--        }-->
-
-<!--        table tr:nth-child(even) {-->
-<!--            background-color: #fcfdff; /* 짝수 행을 아주 약간 다르게 */-->
-<!--        }-->
-
-<!--        table tr:hover {-->
-<!--            background-color: #e9f0f6; /* 마우스 오버 시 색상 변경 */-->
-<!--            transition: background-color 0.3s ease;-->
-<!--        }-->
-
-<!--        /* 수정/삭제 링크 스타일 */-->
-<!--        table td a {-->
-<!--            color: #28a745; /* 수정: 녹색 */-->
-<!--            text-decoration: none;-->
-<!--            font-weight: 500;-->
-<!--            padding: 4px 8px;-->
-<!--            border: 1px solid #28a745;-->
-<!--            border-radius: 3px;-->
-<!--            display: inline-block;-->
-<!--        }-->
-
-<!--        table td:last-child a {-->
-<!--            color: #dc3545; /* 삭제: 빨간색 */-->
-<!--            border-color: #dc3545;-->
-<!--        }-->
-
-<!--        table td:nth-last-child(2) a:hover {-->
-<!--            background-color: #28a745;-->
-<!--            color: white;-->
-<!--            text-decoration: none;-->
-<!--        }-->
-
-<!--        table td:last-child a:hover {-->
-<!--            background-color: #dc3545;-->
-<!--            color: white;-->
-<!--            text-decoration: none;-->
-<!--        }-->
-
-<!--        /* -&#45;&#45; 페이지네이션 스타일 -&#45;&#45; */-->
-<!--        div:last-child {-->
-<!--            text-align: center;-->
-<!--            margin-top: 35px;-->
-<!--            padding: 10px;-->
-<!--        }-->
-
-<!--        div:last-child span a {-->
-<!--            text-decoration: none;-->
-<!--            color: #6c757d;-->
-<!--            padding: 8px 12px;-->
-<!--            margin: 0 4px;-->
-<!--            border: 1px solid #ced4da;-->
-<!--            border-radius: 4px;-->
-<!--            transition: all 0.3s ease;-->
-<!--        }-->
-
-<!--        div:last-child span a:hover {-->
-<!--            background-color: #6c757d;-->
-<!--            color: white;-->
-<!--        }-->
-
-<!--        span[style] { /* 현재 페이지 번호 */-->
-<!--            font-weight: bold;-->
-<!--            color: white !important;-->
-<!--            background-color: #007bff; /* 강조색: 파란색 */-->
-<!--            padding: 8px 12px;-->
-<!--            margin: 0 4px;-->
-<!--            border-radius: 4px;-->
-<!--            border: 1px solid #007bff;-->
-<!--        }-->
-<!--    </style>-->
+    <html lang="en" xmlns:th="http://www.thymeleaf.org">
     <head>
         <meta charset="UTF-8">
-        <title>Title</title>
-        <link rel="stylesheet" th:href="@{/style/styles.css}">
+        <title>사원 관리</title>
+        <link rel="stylesheet" type="text/css" th:href="@{/style/BaseStyle.css}" />
+        <script type="text/javascript" th:src="@{/script/baseJS.js}"></script>
     </head>
     <body>
     <div class="container">
-        <h1>회원 리스트 페이지</h1>
-
-        <form th:action="@{/showEmployees}" method="get" >
-            <select name="whatColumn">
-                <option value="all">전체검색</option>
-                <option value="name">이름</option>
-                <option value="department_name">부서</option>
-                <option value="role_name">직책</option>
-            </select>
-            <input type="text" name="keyword">
-            <input type="submit" value="검색">
-        </form>
-
-        <form>
-            <table border="1">
+        <div th:insert="~{navbar :: navbar('사원목록', '경영팀 관리 : 사원 관리')}"></div>
+        <div class="content-wrapper">
+            <div class="flex-right">
+                <button type="button" class="btn btn-approve" onclick="openEmployeeModal(0)">➕ 사원 추가</button>
+            </div>
+            <form id="employee_search">
+                <div class="search-group">
+                    <div class="form-group">
+                        <select name="whatColumn">
+                            <option value="all">전체검색</option>
+                            <option value="name">이름</option>
+                            <option value="department_name">부서</option>
+                            <option value="role_name">직책</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" name="keyword">
+                    </div>
+                    <button type="button" class="btn btn-approve" onclick="onSearchEmployees()">검색</button>
+                    <button type="button" class="btn btn-cancel" onclick="resetSearchEmployees()">초기화</button>
+                </div>
+            </form>
+            <table>
+                <thead>
                 <tr>
-                    <th>ID</th>
+                    <th name="employee_id" class="sortable" onclick="sortEmployees(this)">ID</th>
                     <th>이름</th>
-                    <th>이메일</th>
-                    <th>비번</th>
-                    <th>입사일</th>
+                    <th name="email" class="sortable" onclick="sortEmployees(this)">이메일</th>
+                    <th name="hire_date" class="sortable" onclick="sortEmployees(this)">입사일</th>
                     <th>부서</th>
                     <th>직책</th>
                     <th>수정</th>
                     <th>삭제</th>
                 </tr>
-
-                <th:block th:each="eDto : ${elist}">
-                    <tr>
-                        <td th:text="${eDto.employee_id}"></td>
-                        <td th:text="${eDto.name}"></td>
-                        <td th:text="${eDto.email}"></td>
-                        <td th:text="${eDto.password}"></td>
-                        <td th:text="${#dates.format(eDto.hire_date, 'yyyy-MM-dd')}"></td>
-                        <td th:text="${departmentMap.get(eDto.department_id)}"></td>
-                        <td th:text="${roleMap.get(eDto.role_id)}"></td>
-
-                        <td>
-                            <a th:href="@{/updateEmployee(employee_id=${eDto.employee_id}, page=${page}, whatColumn=${whatColumn}, keyword=${keyword})}">
-                                수정
-                            </a>
-                        </td>
-
-                        <td>
-                            <a th:href="@{/deleteEmployee(employee_id=${eDto.employee_id}, page=${page}, whatColumn=${whatColumn}, keyword=${keyword})}">
-                                삭제
-                            </a>
-                        </td>
-                    </tr>
-                </th:block>
-            </table>
-        </form>
+                </thead>
+                <tbody id="employees_tbody"></table>
+            <div class="pagination" id="pagination"></div>
+        </div>
+        <div th:insert="~{employees/employeeModal :: employeeModal}"></div>
+        <div th:insert="~{employees/employeeDeleteModal :: employeeDeleteModal}"></div>
+        <script type="text/javascript" th:src="@{/script/employee/employeeList.js}"></script>
+        <script type="text/javascript" th:src="@{/script/employee/employeeModal.js}"></script>
     </div>
-
-    <div>
-        <span th:if="${page > 1}">
-            <a th:href="@{/showEmployees(page=${page-1}, whatColumn=${param.whatColumn}, keyword=${param.keyword})}">이전</a>
-        </span>
-
-        <span th:each="i : ${#numbers.sequence(1,totalPage)}">
-            <a th:if="${i != page}"
-               th:href="@{showEmployees(page=${i}, whatColumn=${param.whatColumn}, keyword=${param.keyword})}"
-               th:text="${i}">
-            </a>
-
-            <span th:if="${i==page}"
-                  th:text="${i}"
-                  style="font-weight:bold; color:red">
-            </span>
-        </span>
-
-        <!--지금 페이지가 전체페이지보다 작은 경우 다음-->
-        <span th:if="${page < totalPage}">
-            <a th:href="@{/showEmployees(page=${page+1}, whatColumn=${param.whatColumn}, keyword=${param.keyword})}">다음</a>
-        </span>
-    </div>
-
     </body>
     </html>
