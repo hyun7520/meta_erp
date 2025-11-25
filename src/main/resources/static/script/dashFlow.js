@@ -79,14 +79,10 @@ function refreshTimeline() {
     fetch(FLOW_API, {method: 'GET'})
         .then(response => response.json())
         .then(json => {
-            const resolvedJson = [];
+            const data = [];
             for (let key in json) {
-                resolvedJson.push({key: key, value: json[key]})
+                data.push({label: labels[key], count: json[key], case: key});
             }
-
-            const data = resolvedJson.map(({key, value}) => {
-                return {label: labels[key], count: value, case: key};
-            });
 
             renderTimeline(data);
 

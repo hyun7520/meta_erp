@@ -14,14 +14,14 @@ window.addEventListener("keypress", (event) => {
 const onLoginSubmit = () => {
     const loginForm = document.getElementById("login_form");
 
-    const email = loginForm.querySelector("#employee_login_email").value;
-    const password = loginForm.querySelector("#employee_login_pw").value;
+    const email = loginForm.querySelector("#employee_login_email").value.trim();
+    const password = loginForm.querySelector("#employee_login_pw").value.trim();
 
-    if (email.trim() && password.trim()) {
+    if (email && password) {
         login({email: email, password: password});
     } else {
         alert("이메일과 비밀번호를 입력하세요.");
-        if (!email.trim()) {
+        if (!email) {
             loginForm.querySelector("#employee_login_email").focus();
         } else {
             loginForm.querySelector("#employee_login_pw").focus();
@@ -53,7 +53,7 @@ const login = (data) => {
                     location.replace("/dash");
                 }
             } else {
-                resetInput();
+                resetInput(status);
             }
         });
 }

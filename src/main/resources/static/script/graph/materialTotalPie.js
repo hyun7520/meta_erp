@@ -35,6 +35,32 @@ const drawPie = (data) => {
     pieChart.setOption(option);
 }
 
+const drawPieTitle = (data) => {
+    const titleBox = document.getElementById("material_total_Pie_title");
+    const formGroup = document.createElement("div");
+    formGroup.className = "form-group";
+
+    const selectBox = document.createElement("select");
+    selectBox.addEventListener("change", (event) => {
+        const optionElements = event.currentTarget.options;
+        const selectedIndex = optionElements.selectedIndex;
+        productSerial = optionElements[selectedIndex].value;
+        drawMaterialPieChart();
+    });
+    selectBox.innerHTML = `<option value="">전체</option>`
+    Object.entries(data).forEach(([name, serialCode]) => {
+        isSelected = productSerial === serialCode ? "selected" : "";
+        selectBox.innerHTML += `<option value="${serialCode}" ${isSelected}>${name}</option>`
+    });
+    formGroup.appendChild(selectBox);
+    titleBox.appendChild(formGroup);
+
+    const title = document.createElement("h3");
+    title.innerHTML = "원자재 현 보유량";
+    title.style.marginLeft = "10px";
+    titleBox.appendChild(title);
+}
+
 const drawMaterialPieChart = () => {
     const chartDom = document.getElementById('material_total_Pie');
     pieChart = echarts.init(chartDom);
@@ -54,29 +80,5 @@ const drawMaterialPieChart = () => {
 const renderPieTitle = () => {
     fetch("/dash/products", {method: "GET"})
         .then(response => response.json())
-        .then(data => {
-            const titleBox = document.getElementById("material_total_Pie_title");
-            const formGroup = document.createElement("div");
-            formGroup.className = "form-group";
-
-            const selectBox = document.createElement("select");
-            selectBox.addEventListener("change", (event) => {
-                const optionElements = event.currentTarget.options;
-                const selectedIndex = optionElements.selectedIndex;
-                productSerial = optionElements[selectedIndex].value
-                drawMaterialPieChart();
-            });
-            selectBox.innerHTML = `<option value="">전체</option>`
-            Object.entries(data).forEach(([name, serialCode]) => {
-                isSelected = productSerial === serialCode ? "selected" : "";
-                selectBox.innerHTML += `<option value="${serialCode}" ${isSelected}>${name}</option>`
-            });
-            formGroup.appendChild(selectBox);
-            titleBox.appendChild(formGroup);
-
-            const title = document.createElement("h3");
-            title.innerHTML = "원자재 현 보유량";
-            title.style.marginLeft = "10px";
-            titleBox.appendChild(title);
-        });
+        .then(drawPieTitle);
 }

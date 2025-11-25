@@ -46,17 +46,20 @@ const renderEmployeeTable = (list) => {
     list.forEach(element => {
         const row = document.createElement('tr');
 
-        const dates = calcDrawDate(new Date(element.hireDate)).split(" ")[0];
-        row.innerHTML = `
-            <td>${element.employeeId}</td>
-            <td>${element.name}</td>
-            <td>${element.email}</td>
-            <td>${dates}</td>
-            <td>${element.department}</td>
-            <td>${element.role}</td>
-            <td><button type="button" class="btn btn-cancel" onclick="onClickEdit(${element.employeeId})">수정</button></td>
-            <td><button type="button" class="btn btn-reject" onclick="onClickDelete(${element.employeeId})">삭제</button></td>
-        `;
+        for (let key in element) {
+            const td = document.createElement("td");
+            if (key === "password") continue;
+            if (key === 'hireDate') {
+                td.innerHTML = calcDrawDate(new Date(element[key])).split(" ")[0];
+            } else {
+                td.innerHTML = element[key];
+            }
+            row.appendChild(td);
+        }
+
+        row.innerHTML += `<td><button type="button" class="btn btn-cancel" onclick="onClickEdit(${element.employeeId})">수정</button></td>`;
+        row.innerHTML += `<td><button type="button" class="btn btn-reject" onclick="onClickDelete(${element.employeeId})">삭제</button></td>`;
+
         tbody.appendChild(row);
     });
 }
@@ -66,9 +69,11 @@ const movePage = (pageNum) => {
     renderEmployeeList(params);
 }
 
-const renderEmployeeList = ({page, whatColumn, keyword, sortBy, sortDir} = params) => {
-    const apiWithParms = GET_EMPLOYEES_API + `?page=${page}&sortBy=${sortBy}&sortDir=${sortDir}&whatColumn=${whatColumn}&keyword=${keyword}`;
-    fetch(apiWithParms, {method: "GET"})
+const renderEmployeeList = (parameters = params) => {
+    const {page, whatColumn, keyword, sortBy, sortDir} = parameters;
+    const parseParam = `page=${page}&sortBy=${sortBy}&sortDir=${sortDir}&whatColumn=${whatColumn}&keyword=${keyword}`;
+
+    fetch(GET_EMPLOYEES_API + '?' + parseParam, {method: "GET"})
         .then(response => response.json())
         .then(({list, totalPage, ...data}) => {
             params = {...data};
@@ -95,18 +100,14 @@ const onSearchEmployees = () => {
 const sortEmployees = (element) => {
     const key = element.getAttribute("name");
     const sortDir = element.className.includes("desc") ? "asc" : "desc";
-    const thTags = document.getElementsByTagName("th");
-    for (let el of thTags) {
-        if (el.getAttribute("name") === key) {
-            el.className = "sortable " + sortDir;
-        } else if (el.className.includes("sortable")) {
-            el.className = "sortable";
-        }
+
+    const sortableClasses = document.getElementsByClassName("sortable");
+    for (let el of sortableClasses) {
+        el.className = "sortable " + (el.getAttribute("name") === key ? sortDir : "");
     }
 
     params.sortBy = key;
     params.sortDir = sortDir;
-    console.log(params)
     renderEmployeeList(params);
 }
 
@@ -114,11 +115,10 @@ const resetSearchEmployees = () => {
     const form = document.getElementById("employee_search");
     form.querySelector("select[name='whatColumn']").selectedIndex = 0;
     form.querySelector("input[name='keyword']").value = "";
-    const thTags = document.getElementsByTagName("th");
-    for (let el of thTags) {
-        if (el.className.includes("sortable")) {
-            el.className = "sortable";
-        }
+
+    const sortableClasses = document.getElementsByClassName("sortable");
+    for (let el of sortableClasses) {
+        el.className = "sortable";
     }
 
     params = {

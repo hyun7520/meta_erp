@@ -35,26 +35,23 @@ const closeEmployeeModal = () => {
 const insertBaseValue = (data) => {
     const form = document.getElementById('employee_insert_form');
     const [prefix, domain] = data.email.split('@');
+    data.hire_date = calcDrawDate(new Date(data.hire_date)).split(" ")[0]
 
-    form.querySelector("input[id='employee_name']").value = data.name;
-    form.querySelector("input[id='employee_password']").value = data.password;
-    form.querySelector("input[id='email_prefix']").value = prefix;
-    form.querySelector("input[id='employee_hire_date']").value = calcDrawDate(new Date(data.hire_date)).split(" ")[0];
+    form.querySelectorAll("input").forEach(el => {
+        const id = el.id;
+        const key = id.substring(id.indexOf("_") + 1);
+        el.value = id.startsWith("email") ? prefix : data[key];
+    });
 
-    const domainSelect = document.getElementById('email_domain');
-    const domainOptions = Array.from(domainSelect.options);
-    const domainIdx = domainOptions.findIndex(option => option.value === domain);
-    if (domainIdx >= 0) domainSelect.selectedIndex = domainIdx;
-
-    const departmentSelect = document.getElementById('employee_department');
-    const departmentOptions = Array.from(departmentSelect.options);
-    const departmentIdx = departmentOptions.findIndex(option => option.value === String(data.department_id));
-    if (departmentIdx >= 0) departmentSelect.selectedIndex = departmentIdx;
-
-    const roleSelect = document.getElementById('employee_role');
-    const roleOptions = Array.from(roleSelect.options);
-    const roleIdx = roleOptions.findIndex(option => option.value === String(data.role_id));
-    if (roleIdx >= 0) roleSelect.selectedIndex = roleIdx;
+    form.querySelectorAll("select").forEach(el => {
+        const key = el.id.substring(el.id.indexOf("_") + 1);
+        const selectedValue = el.id.startsWith("email") ? domain : data[key + "_id"].toString();
+        Array.from(el.options).forEach(opt => {
+            if (opt.value === selectedValue) {
+                el.selectedIndex = opt.index;
+            }
+        });
+    });
 }
 
 const renderUpdateEmployeeModal = (employeeId) => {
@@ -66,25 +63,23 @@ const renderUpdateEmployeeModal = (employeeId) => {
 const renderInsertEmployeeModal = () => {
     const form = document.getElementById('employee_insert_form');
 
-    form.querySelector("input[id='employee_name']").value = "";
-    form.querySelector("input[id='employee_password']").value = "";
-    form.querySelector("input[id='email_prefix']").value = "";
-    form.querySelector("input[id='employee_hire_date']").value = calcDrawDate(new Date()).split(" ")[0];
+    // 각 input type들 초기화 작업
+    form.querySelectorAll("input").forEach(el => {
+        el.value = el.type  === "data" ? calcDrawDate(new Date()).split(" ")[0] : "";
+    });
 
-    document.getElementById('email_domain').selectedIndex = 0;
-    document.getElementById('employee_department').selectedIndex = 0;
-    document.getElementById('employee_role').selectedIndex = 0;
+    form.querySelectorAll("select").forEach(el => el.selectedIndex = 0);
 }
 
 const submitEmployeeInsert = () => {
-    const postAPI = updateEmployeeId > 0 ? UPDATE_EMPLOYEE : INSERT_EMPLOYEE;
-    console.log(postAPI);
-    const isAvail = checkDataIn();
-    if (isAvail === false) {
+    const isEdit = updateEmployeeId > 0;
+    const postAPI = isEdit ? UPDATE_EMPLOYEE : INSERT_EMPLOYEE;
+
+    if (checkDataIn() === false) {
         return false;
     }
     const data = inputData();
-    if (updateEmployeeId > 0) {
+    if (isEdit) {
         data["employee_id"] = updateEmployeeId;
     }
 
@@ -100,11 +95,11 @@ const submitEmployeeInsert = () => {
     })
     .then(() => {
        closeEmployeeModal();
-       alert(`사원 정보가 ${updateEmployeeId > 0 ? '수정' : '등록'} 되었습니다.`);
+       alert(`사원 정보가 ${isEdit ? '수정' : '등록'} 되었습니다.`);
        renderEmployeeList();
     }).catch((error) => {
         console.log(error);
-        alert(`사원 정보 ${updateEmployeeId > 0 ? '수정' : '등록'}에 실패하였습니다.`);
+        alert(`사원 정보 ${isEdit ? '수정' : '등록'}에 실패하였습니다.`);
     });
 }
 
@@ -154,20 +149,24 @@ const inputData = () => {
     const form = document.getElementById('employee_insert_form');
     const body = {};
 
-    body["name"] = form.querySelector("input[id='employee_name']").value;
-    body["password"] = form.querySelector("input[id='employee_password']").value;
+    form.querySelectorAll("input").forEach(el => {
+        const id = el.id;
+        if (id.startsWith("email")) {
+            body["email"] = el.value + "@";
+        } else {
+            const key = id.substring(id.indexOf("_") + 1);
+            body[key] = el.value;
+        }
+    });
 
-    const prefix = form.querySelector("input[id='email_prefix']").value
-    const domain = form.querySelector("select[id='email_domain']").selectedOptions.item(0).value;
-    body["email"] = prefix + "@" + domain;
-
-    body["hire_date"] = form.querySelector("input[id='employee_hire_date']").value;
-
-    const departmentSelect = form.querySelector("select[id='employee_department']");
-    const roleSelect = form.querySelector("select[id='employee_role']");
-
-    body["department_id"] = departmentSelect.selectedOptions.item(0).value;
-    body["role_id"] = roleSelect.selectedOptions.item(0).value;
+    form.querySelectorAll("select").forEach(el => {
+        if (el.id.startsWith("email")) {
+            body["email"] += el.selectedOptions.item(0).value;
+        } else {
+            const key = el.id.substring(el.id.indexOf("_") + 1) + "_id";
+            body[key] = el.selectedOptions.item(0).value;
+        }
+    });
 
     return body;
 }

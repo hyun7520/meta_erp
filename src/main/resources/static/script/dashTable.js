@@ -26,7 +26,7 @@ const renderTable = (list) => {
         const isToday =
             (today.getFullYear() === lifeEndDay.getFullYear())
             && (today.getMonth() === lifeEndDay.getMonth())
-            &&  (today.getDate() - 3 === lifeEndDay.getDate());
+            &&  (today.getDate() === lifeEndDay.getDate());
 
         let statusBadge = '';
         if (item.qty === 0) {
@@ -55,18 +55,10 @@ const movePage = (pageNum) => {
     renderDashTable(params);
 }
 
-const parseParams = ({page, column, search, date, sort, order}) => {
-    page = page || 1;
-    column = column || '';
-    search = search || '';
-    date = date || '';
-    sort = sort || 'product_id';
-    order = order || 'desc';
-    return `page=${page}&column=${column}&search=${search}&start_date=${date}&sort=${sort}&order=${order}`
-}
-
-const renderDashTable = (param) => {
-    const getLink = GET_TABLE_API + "?" + parseParams(param);
+const renderDashTable = (parameters) => {
+    const {page, column, search, date, sort, order} = parameters;
+    const parseParams = `page=${page}&column=${column}&search=${search}&start_date=${date}&sort=${sort}&order=${order}`;
+    const getLink = GET_TABLE_API + "?" + parseParams;
     fetch(getLink, {method: 'GET'})
         .then(response => response.json())
         .then(({list, page, totalPage, ...data}) => {
@@ -95,13 +87,10 @@ const dashSearch = () => {
 const dashSort = (element) => {
     const sortKey = element.getAttribute("name");
     const sortDir = element.className.includes("desc") ? "asc" : "desc";
-    const thTags = document.getElementsByTagName("th");
-    for (let el of thTags) {
-        if (el.getAttribute("name") === sortKey) {
-            el.className = "sortable " + sortDir;
-        } else if (el.className.includes("sortable")) {
-            el.className = "sortable";
-        }
+
+    const sortableClasses = document.getElementsByClassName("sortable");
+    for (let el of sortableClasses) {
+        el.className = "sortable " + (el.getAttribute("name") === sortKey ? sortDir : "");
     }
 
     params.sort = sortKey;
@@ -110,11 +99,9 @@ const dashSort = (element) => {
 }
 
 const resetDash = () => {
-    const thTags = document.getElementsByTagName("th");
-    for (let el of thTags) {
-        if (el.className.includes("sortable")) {
-            el.className = "sortable";
-        }
+    const sortableClasses = document.getElementsByClassName("sortable");
+    for (let el of sortableClasses) {
+        el.className = "sortable";
     }
 
     params = {
