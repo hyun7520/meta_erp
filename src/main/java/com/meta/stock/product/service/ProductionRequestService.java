@@ -22,6 +22,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -395,7 +396,7 @@ public class ProductionRequestService {
                 .endDate(entity.getEndDate())
                 .build();
     }
-    // 단일 생산 요청 조회
+
     @Transactional(readOnly = true)
     public ProductionRequestDTO.Response getProductionRequestById(long prId) {
         ProductionRequestEntity entity = productionRequestRepository.findById(prId)
@@ -403,7 +404,7 @@ public class ProductionRequestService {
         return convertToResponse(entity);
     }
 
-    // 생산 요청 수정
+    // 생산 요청 수정 (Repository 쿼리 메서드 사용)
     @Transactional
     public ProductionRequestDTO.Response updateProductionRequest(long prId, ProductionRequestDTO.Request request) {
         ProductionRequestEntity entity = productionRequestRepository.findById(prId)
@@ -416,9 +417,9 @@ public class ProductionRequestService {
 
         // Serial Code 업데이트
         if (request.getProductId() != null) {
-            ProductEntity product = productRepository.findById(request.getProductId())
+            String serialCode = productRepository.findProductNameById(request.getProductId())
                     .orElseThrow(() -> new IllegalArgumentException("제품을 찾을 수 없습니다. ID: " + request.getProductId()));
-            entity.setSerialCode(product.getProductName());
+            entity.setSerialCode(serialCode);
         } else if (request.getSerialCode() != null && !request.getSerialCode().isEmpty()) {
             entity.setSerialCode(request.getSerialCode());
         }

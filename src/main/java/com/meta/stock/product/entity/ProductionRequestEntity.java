@@ -34,7 +34,7 @@ public class ProductionRequestEntity {
     @Column(name = "UNIT")
     private String unit;
 
-    // ⭐ DateStringConverter 적용
+    //  DateStringConverter 적용
     @Column(name = "REQUEST_DATE")
     @Convert(converter = DateStringConverter.class)
     private String requestDate;

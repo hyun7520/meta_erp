@@ -7,7 +7,7 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-@Converter(autoApply = false)  // ⭐ false로 유지 (명시적으로 사용)
+@Converter(autoApply = false)  // false로 유지 (명시적으로 사용)
 public class DateStringConverter implements AttributeConverter<String, Date> {
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");

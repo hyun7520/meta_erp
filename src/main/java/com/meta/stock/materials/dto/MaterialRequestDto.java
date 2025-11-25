@@ -45,6 +45,7 @@ public class MaterialRequestDto {
     public static class Request {
         private long materialId;      // 원재료 ID
         private long requestBy;        // 요청자 직원 ID
+        private long fmId;
         private int qty;               // 수량
         private String unit;           // 단위
         private String note;           // 비고
@@ -54,6 +55,7 @@ public class MaterialRequestDto {
         public Request(long materialId, long requestBy, int qty, String unit, String note) {
             this.materialId = materialId;
             this.requestBy = requestBy;
+            this.fmId = fmId;
             this.qty = qty;
             this.unit = unit;
             this.note = note;
@@ -73,6 +75,14 @@ public class MaterialRequestDto {
 
         public void setRequestBy(long requestBy) {
             this.requestBy = requestBy;
+        }
+
+        public long getFmId() {
+            return fmId;
+        }
+
+        public void setFmId(long fmId) {
+            this.fmId = fmId;
         }
 
         public int getQty() {
@@ -145,7 +155,7 @@ public class MaterialRequestDto {
     // Response용 DTO
     public static class Response {
         private long mrId;
-        private long materialId;
+        private long materialId; //fm_Id
         private String materialName;
         private long requestBy;
         private String requesterName;

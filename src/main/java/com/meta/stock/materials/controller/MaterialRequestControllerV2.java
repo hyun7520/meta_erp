@@ -1,37 +1,35 @@
 package com.meta.stock.materials.controller;
 
 import com.meta.stock.materials.dto.MaterialRequestDto;
-import com.meta.stock.materials.service.MaterialRequestService;
+import com.meta.stock.materials.service.MaterialRequestServiceV2;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/pro/material-requests")
-public class MaterialRequestController {
+@RequestMapping("/pro/v2/material-requests")  // v2 경로
+public class MaterialRequestControllerV2 {
 
-    private final MaterialRequestService materialRequestService;
+    private final MaterialRequestServiceV2 materialRequestService;
 
-    public MaterialRequestController(MaterialRequestService materialRequestService) {
+    public MaterialRequestControllerV2(@Qualifier("materialRequestServiceV2") MaterialRequestServiceV2 materialRequestService) {
         this.materialRequestService = materialRequestService;
     }
 
-    // 전체 발주 목록 조회
     @GetMapping
     public ResponseEntity<List<MaterialRequestDto.Response>> getAllMaterialRequests() {
         List<MaterialRequestDto.Response> responses = materialRequestService.getAllMaterialRequests();
         return ResponseEntity.ok(responses);
     }
 
-    // 미승인 발주 목록 조회
     @GetMapping("/pending")
     public ResponseEntity<List<MaterialRequestDto.Response>> getPendingMaterialRequests() {
         List<MaterialRequestDto.Response> responses = materialRequestService.getPendingMaterialRequests();
         return ResponseEntity.ok(responses);
     }
 
-    // 발주 요청 생성
     @PostMapping
     public ResponseEntity<MaterialRequestDto.Response> createMaterialRequest(
             @RequestBody MaterialRequestDto.Request request) {
@@ -39,32 +37,28 @@ public class MaterialRequestController {
         return ResponseEntity.ok(response);
     }
 
-    // 발주 승인 처리
     @PutMapping("/approve")
     public ResponseEntity<MaterialRequestDto.Response> approveMaterialRequest(
             @RequestBody MaterialRequestDto.Approval approval) {
-        // approved 필드가 1(승인)인 DTO를 서비스로 전달
         MaterialRequestDto.Approval approveRequest = MaterialRequestDto.Approval.builder()
                 .mrId(approval.getMrId())
                 .managementEmployee(approval.getManagementEmployee())
                 .productionEmployee(approval.getProductionEmployee())
-                .approved(1) // 승인
+                .approved(1)
                 .note(approval.getNote())
                 .build();
         MaterialRequestDto.Response response = materialRequestService.approveMaterialRequest(approveRequest);
         return ResponseEntity.ok(response);
     }
 
-    // 발주 반려 처리
     @PutMapping("/reject")
     public ResponseEntity<MaterialRequestDto.Response> rejectMaterialRequest(
             @RequestBody MaterialRequestDto.Approval approval) {
-        // approved 필드가 -1(반려)인 DTO를 서비스로 전달
         MaterialRequestDto.Approval rejectRequest = MaterialRequestDto.Approval.builder()
                 .mrId(approval.getMrId())
                 .managementEmployee(approval.getManagementEmployee())
                 .productionEmployee(approval.getProductionEmployee())
-                .approved(-1) // 반려
+                .approved(-1)
                 .note(approval.getNote())
                 .build();
         MaterialRequestDto.Response response = materialRequestService.rejectMaterialRequest(rejectRequest);

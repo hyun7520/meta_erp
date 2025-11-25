@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 // 제품과 연관된 기능 수행 컨트롤러
 @Controller
@@ -112,10 +111,10 @@ public class ProductController {
 
     @GetMapping("/product/form")
     public String getProductionForm(Model model) {
-        
+
         // 제품 이름과 제품 재고 수량 조회
         List<FixedProductDto> fpDto = productService.getFixedProductWithStockQty();
-        
+
         // 제품별 재료 조회
         for(FixedProductDto dto: fpDto) {
             List<MaterialDto> requiredMaterials = productService.getRequiredMaterials(dto.getFpId());
@@ -141,7 +140,7 @@ public class ProductController {
             // 최소 0개, 최대 qty-1개까지 손실 (수량이 1개면 손실 0 보장)
             int loss = (int) Math.round(qty * lossRate);
             loss = Math.max(0, Math.min(loss, qty - 1));
-            
+
             // 모델로 loss율을 가져온다면 적용할 곳
             // int loss = productService.getProductionLoss(fpId);
 
@@ -158,6 +157,13 @@ public class ProductController {
     @GetMapping
     public ResponseEntity<List<ProductDTO.Response>> getAllProducts() {
         List<ProductDTO.Response> responses = productService.getAllProducts();
+        return ResponseEntity.ok(responses);
+    }
+
+    //  제품 목록 조회 API - order.html에서 사용
+    @GetMapping("/products")
+    public ResponseEntity<List<ProductListDTO>> getProductsList() {
+        List<ProductListDTO> responses = productService.getProductsForOrder();
         return ResponseEntity.ok(responses);
     }
 }

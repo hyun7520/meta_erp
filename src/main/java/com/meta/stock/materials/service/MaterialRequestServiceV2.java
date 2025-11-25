@@ -2,9 +2,9 @@ package com.meta.stock.materials.service;
 
 import com.meta.stock.materials.dto.MaterialRequestDto;
 import com.meta.stock.materials.entity.MaterialRequestEntity;
-import com.meta.stock.materials.entity.MaterialEntity;
+import com.meta.stock.materials.entity.FixedMaterialEntity;
 import com.meta.stock.materials.repository.MaterialRequestRepository;
-import com.meta.stock.materials.repository.MaterialRepository;
+import com.meta.stock.materials.repository.FixedMaterialRepository;
 import com.meta.stock.user.employees.entity.Employees;
 import com.meta.stock.user.employees.repository.employeesEntityRepositiry;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,24 +16,25 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service
-public class MaterialRequestService {
+@Service("materialRequestServiceV2")  // 빈 이름 지정
+public class MaterialRequestServiceV2 {
 
     @Autowired
     private final MaterialRequestRepository materialRequestRepository;
     @Autowired
-    private final MaterialRepository materialRepository;  // 추가
+    private final FixedMaterialRepository fixedMaterialRepository;
     @Autowired
     private final employeesEntityRepositiry employeeRepository;
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private static final DateTimeFormatter DATETIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    public MaterialRequestService(MaterialRequestRepository materialRequestRepository,
-                                  MaterialRepository materialRepository,  // 추가
-                                  employeesEntityRepositiry employeeRepository) {
+    public MaterialRequestServiceV2(
+            MaterialRequestRepository materialRequestRepository,
+            FixedMaterialRepository fixedMaterialRepository,
+            employeesEntityRepositiry employeeRepository) {
         this.materialRequestRepository = materialRequestRepository;
-        this.materialRepository = materialRepository;  // 추가
+        this.fixedMaterialRepository = fixedMaterialRepository;
         this.employeeRepository = employeeRepository;
     }
 
@@ -61,7 +62,13 @@ public class MaterialRequestService {
         entity.setQty(request.getQty());
         entity.setUnit(request.getUnit());
         entity.setApproved(0);
-        entity.setNote(request.getNote());
+
+        // NOTE에 fm_id 저장 (형식: "fm_id:실제비고")
+        String noteWithFmId = request.getFmId() + ":";
+        if (request.getNote() != null && !request.getNote().isEmpty()) {
+            noteWithFmId += request.getNote();
+        }
+        entity.setNote(noteWithFmId);
 
         MaterialRequestEntity saved = materialRequestRepository.save(entity);
         return convertToResponse(saved);
@@ -87,16 +94,26 @@ public class MaterialRequestService {
         entity.setApprovedDate(LocalDateTime.now().format(DATE_FORMATTER));
 
         if (approval.getNote() != null && !approval.getNote().isEmpty()) {
-            entity.setNote(approval.getNote());
+            // 기존 NOTE에서 fm_id 부분 유지
+            String existingNote = entity.getNote();
+            String fmIdPart = "";
+            if (existingNote != null && existingNote.contains(":")) {
+                fmIdPart = existingNote.split(":", 2)[0] + ":";
+            }
+            entity.setNote(fmIdPart + approval.getNote());
         } else if (status == -1) {
-            entity.setNote("반려됨");
+            String existingNote = entity.getNote();
+            String fmIdPart = "";
+            if (existingNote != null && existingNote.contains(":")) {
+                fmIdPart = existingNote.split(":", 2)[0] + ":";
+            }
+            entity.setNote(fmIdPart + "반려됨");
         }
 
         MaterialRequestEntity saved = materialRequestRepository.save(entity);
         return convertToResponse(saved);
     }
 
-    // 이 메서드만 수정
     private MaterialRequestDto.Response convertToResponse(MaterialRequestEntity entity) {
         Employees requester = employeeRepository.findById((int) entity.getRequestBy()).orElse(null);
         Employees managementEmp = entity.getManagementEmployee() > 0
@@ -110,22 +127,34 @@ public class MaterialRequestService {
         String managementName = managementEmp != null ? managementEmp.getName() : "-";
         String productionName = productionEmp != null ? productionEmp.getName() : "-";
 
-        // 원재료 정보 가져오기 (추가된 부분)
-        List<MaterialEntity> materials = materialRepository.findByMrId(entity.getMrId());
-
+        // NOTE에서 fm_id 추출
+        long fmId = 0;
         String materialName = "-";
-        long materialId = 0;
+        String actualNote = "";
 
-        if (!materials.isEmpty()) {
-            MaterialEntity material = materials.get(0);
-            materialName = material.getMaterialName() != null ? material.getMaterialName() : "-";
-            materialId = material.getMaterialsId();
+        if (entity.getNote() != null && entity.getNote().contains(":")) {
+            String[] parts = entity.getNote().split(":", 2);
+            try {
+                fmId = Long.parseLong(parts[0]);
+                actualNote = parts.length > 1 ? parts[1] : "";
+
+                // fm_id로 Fixed_material 조회
+                FixedMaterialEntity fixedMaterial = fixedMaterialRepository.findById(fmId).orElse(null);
+                if (fixedMaterial != null) {
+                    materialName = fixedMaterial.getName();
+                }
+            } catch (NumberFormatException e) {
+                // fm_id가 숫자가 아니면 전체를 비고로 처리
+                actualNote = entity.getNote();
+            }
+        } else {
+            actualNote = entity.getNote();
         }
 
         return MaterialRequestDto.Response.builder()
                 .mrId(entity.getMrId())
-                .materialId(materialId)
-                .materialName(materialName)  // 실제 원재료명이 들어감
+                .materialId(fmId)
+                .materialName(materialName)
                 .requestBy(entity.getRequestBy())
                 .requesterName(requesterName)
                 .requestDate(entity.getRequestDate())
@@ -135,7 +164,7 @@ public class MaterialRequestService {
                 .approvedDate(entity.getApprovedDate())
                 .managementEmployeeName(managementName)
                 .productionEmployeeName(productionName)
-                .note(entity.getNote())
+                .note(actualNote)
                 .build();
     }
 }

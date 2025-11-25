@@ -6,6 +6,7 @@ import com.meta.stock.materials.dto.MaterialRequirementDto;
 import com.meta.stock.materials.mapper.MaterialMapper;
 import com.meta.stock.product.dto.FixedProductDto;
 import com.meta.stock.product.dto.ProductDTO;
+import com.meta.stock.product.dto.ProductListDTO;
 import com.meta.stock.product.dto.ProductStockDto;
 import com.meta.stock.product.entity.ProductEntity;
 import com.meta.stock.product.mapper.ProductionRequestMapper;
@@ -19,7 +20,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-
 import java.util.stream.Collectors;
 
 @Service
@@ -77,6 +77,12 @@ public class ProductService {
         }
 
         return requirements;
+    }
+
+    //  주문 페이지용 제품 목록 조회
+    @Transactional(readOnly = true)
+    public List<ProductListDTO> getProductsForOrder() {
+        return productRepository.findAllProductsForOrder();
     }
 
     public List<MaterialDto> getRequiredMaterials(Long fpId) {

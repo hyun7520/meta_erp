@@ -15,4 +15,7 @@ public interface MaterialRepository extends JpaRepository<MaterialEntity, Long> 
 
     // 전체 원재료 목록 조회 (ID 순)
     List<MaterialEntity> findAllByOrderByMaterialsIdAsc();
+
+    // MR_ID로 원재료 조회 (추가)
+    List<MaterialEntity> findByMrId(Long mrId);
 }
