@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>완제품 발주 요청</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/style/BaseStyle.css}" />
+    <script type="text/javascript" th:src="@{/script/baseJS.js}"></script>
+</head>
+<body>
+<div class="container">
+    <div th:insert="~{navbar :: navbar('완제품 발주 요청', '고객사 주문 : 완제품 발주 관리')}"></div>
+
+    <div class="content-wrapper">
+        <div class="action-bar">
+            <h2>📋 발주 요청 목록</h2>
+            <div style="display: flex; gap: 12px;">
+                <button class="btn-delete-selected" id="btnDeleteSelected" onclick="deleteSelectedOrders()">
+                    🗑️ 선택 삭제
+                </button>
+            <button class="btn-new-order" onclick="openRequestModal()">
+                ➕ 새 발주 요청
+            </button>
+        </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('pending')">
+                대기중 <span class="tab-count" id="pendingCount">0</span>
+            </button>
+            <button class="tab" onclick="showTab('in-progress')">
+                생산시작 <span class="tab-count" id="inProgressCount">0</span>
+            </button>
+            <button class="tab" onclick="showTab('completed')">
+                생산완료 <span class="tab-count" id="completedCount">0</span>
+            </button>
+            <button class="tab" onclick="showTab('all')">
+                전체 <span class="tab-count" id="allCount">0</span>
+            </button>
+        </div>
+
+        <div id="loading" class="loading">
+            데이터를 불러오는 중입니다
+        </div>
+
+        <div id="content" style="display: none;">
+            <table>
+                <thead>
+                <tr>
+                    <th>번호</th>
+                    <th>완제품명</th>
+                    <th>고객사</th>
+                    <th>수량</th>
+                    <th>요청일</th>
+                    <th>납기일</th>
+                    <th>상태</th>
+                    <th>작업</th>
+                </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+            <div class="pagination" id="pagination"></div>
+        </div>
+
+        <div id="empty" class="empty" style="display: none;">
+            발주 요청이 없습니다
+        </div>
+    </div>
+</div>
+
+<div id="requestModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>➕ 새 발주 요청</h3>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="productSelect">완제품 <span class="required">*</span></label>
+                <select id="productSelect" required>
+                    <option value="">선택하세요</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="clientName">고객사 <span class="required">*</span></label>
+                <input type="text" id="clientName" placeholder="고객사명을 입력하세요" required>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="quantity">수량 <span class="required">*</span></label>
+                    <input type="number" id="quantity" placeholder="0" min="1" required>
+                </div>
+                <div class="form-group">
+                    <label for="unit">단위 <span class="required">*</span></label>
+                    <input type="text" id="unit" placeholder="예: BOX, EA, KG" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="dueDate">납기일 <span class="required">*</span></label>
+                <input type="date" id="dueDate" required>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-modal btn-cancel" onclick="closeRequestModal()">취소</button>
+            <button class="btn-modal btn-submit" onclick="submitProductionRequest()">요청</button>
+        </div>
+    </div>
+</div>
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>📝 발주 요청 수정</h3>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="editPrId">
+
+            <div class="form-group">
+                <label for="editProductSelect">완제품 <span class="required">*</span></label>
+                <select id="editProductSelect" required>
+                    <option value="">선택하세요</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="editClientName">고객사 <span class="required">*</span></label>
+                <input type="text" id="editClientName" placeholder="고객사명을 입력하세요" required>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="editQuantity">수량 <span class="required">*</span></label>
+                    <input type="number" id="editQuantity" placeholder="0" min="1" required>
+                </div>
+                <div class="form-group">
+                    <label for="editUnit">단위 <span class="required">*</span></label>
+                    <input type="text" id="editUnit" placeholder="예: BOX, EA, KG" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="editDueDate">납기일 <span class="required">*</span></label>
+                <input type="date" id="editDueDate" required>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-modal btn-cancel" onclick="closeEditModal()">취소</button>
+            <button class="btn-modal btn-submit" onclick="submitEditRequest()">수정</button>
+        </div>
+    </div>
+    <script type="text/javascript" th:src="@{/script/order/orderMain.js}"></script>
+</div>
+</body>
+</html>
