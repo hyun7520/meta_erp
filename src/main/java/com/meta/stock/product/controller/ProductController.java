@@ -1,10 +1,9 @@
 package com.meta.stock.product.controller;
 
+import com.meta.stock.materials.dto.MaterialDto;
 import com.meta.stock.materials.dto.MaterialRequestDto;
 import com.meta.stock.materials.service.MaterialService;
-import com.meta.stock.product.dto.ProductDTO;
-import com.meta.stock.product.dto.ProductRequestDto;
-import com.meta.stock.product.dto.ProductStockDto;
+import com.meta.stock.product.dto.*;
 import com.meta.stock.product.service.ProductionRequestService;
 import com.meta.stock.product.service.PredictService;
 import com.meta.stock.product.service.ProductService;
@@ -17,10 +16,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 // 제품과 연관된 기능 수행 컨트롤러
 @Controller
@@ -38,17 +39,12 @@ public class ProductController {
     private final int limit = 3;
 
     // 생산 페이지 로드
-    @GetMapping("product")
+    @GetMapping("/product")
     public String getAllProducts(
-            @RequestParam(defaultValue = "0") int stockPage,
-            @RequestParam(defaultValue = "5") int stockSize,
-            @RequestParam(required = false) String stockKeyword,
-            @RequestParam(defaultValue = "storageDate") String stockSortBy,
-            @RequestParam(defaultValue = "DESC") String stockSortDir,
 
             // 생산 요청 파라미터
             @RequestParam(defaultValue = "0") int prPage,
-            @RequestParam(defaultValue = "5") int prSize,
+            @RequestParam(defaultValue = "10") int prSize,
             @RequestParam(required = false) String prKeyword,
             @RequestParam(defaultValue = "requestDate") String prSortBy,
             @RequestParam(defaultValue = "ASC") String prSortDir,
@@ -62,17 +58,13 @@ public class ProductController {
 
             Model model) {
 
-        // 완제품 재고 페이징/검색/정렬
-        Pageable stockPageable = PageRequest.of(stockPage, stockSize, Sort.by(Sort.Direction.fromString(stockSortDir), stockSortBy));
-        Page<ProductStockDto> totalProductStock = productService.findTotalProductStock(stockKeyword, stockPageable);
-        model.addAttribute("totalProductStock", totalProductStock);
-        model.addAttribute("stockKeyword", stockKeyword);
-        model.addAttribute("stockSortBy", stockSortBy);
-        model.addAttribute("stockSortDir", stockSortDir);
+        // 모든 완제품 재고 현황 조회
+        List<ProductStockDto> allProducts = productService.findTotalProductStock();
+        model.addAttribute("allProducts", allProducts);
 
         // 진행 중인 생산 요청 페이징/검색/정렬
         Pageable prPageable = PageRequest.of(prPage, prSize, Sort.by(Sort.Direction.fromString(prSortDir), prSortBy));
-        Page<ProductRequestDto> productRequests = productionRequestService.findOngoingProductRequests(prKeyword, prPageable);
+        Page<ProductRequestDto> productRequests = productionRequestService.findOngoingRequestsWithPaging(prKeyword, prPageable);
         model.addAttribute("productRequests", productRequests);
         model.addAttribute("prKeyword", prKeyword);
         model.addAttribute("prSortBy", prSortBy);
@@ -80,7 +72,7 @@ public class ProductController {
 
         // 미승인 재료 발주 요청 페이징/검색/정렬
         Pageable mrPageable = PageRequest.of(mrPage, mrSize, Sort.by(Sort.Direction.fromString(mrSortDir), mrSortBy));
-        Page<MaterialRequestDto> materialRequests = materialService.findOngoingMaterialRequests(mrKeyword, mrPageable);
+        Page<MaterialRequestDto> materialRequests = materialService.findMaterialRequestsWithPaging(mrKeyword, mrPageable);
         model.addAttribute("materialRequests", materialRequests);
         model.addAttribute("mrKeyword", mrKeyword);
         model.addAttribute("mrSortBy", mrSortBy);
@@ -91,6 +83,76 @@ public class ProductController {
         // model.addAttribute("prediction", prediction);
 
         return "productionMain";
+    }
+
+    // 완제품 재고 전체 조회 페이지
+    @GetMapping("/product/stock")
+    public String getProductStockList(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(defaultValue = "storageDate") String sortBy,
+            @RequestParam(defaultValue = "DESC") String sortDir,
+            Model model) {
+
+        Pageable pageable = PageRequest.of(page, size,
+                Sort.by(Sort.Direction.fromString(sortDir), sortBy));
+
+        // 로트별 상세 재고 조회
+        Page<ProductStockDto> productStock =
+                productService.findProductStockWithPaging(keyword, pageable);
+
+        model.addAttribute("productStock", productStock);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("sortBy", sortBy);
+        model.addAttribute("sortDir", sortDir);
+
+        return "productionStocks";
+    }
+
+    @GetMapping("/product/form")
+    public String getProductionForm(Model model) {
+        
+        // 제품 이름과 제품 재고 수량 조회
+        List<FixedProductDto> fpDto = productService.getFixedProductWithStockQty();
+        
+        // 제품별 재료 조회
+        for(FixedProductDto dto: fpDto) {
+            List<MaterialDto> requiredMaterials = productService.getRequiredMaterials(dto.getFpId());
+            dto.setRequiredMaterials(requiredMaterials);
+        }
+        model.addAttribute("fpDto", fpDto);
+
+        return "productionForm";
+    }
+
+    @PostMapping("/product")
+    public String beginProduction(Model model,
+                                  @RequestParam List<Long> fpIds,
+                                  @RequestParam List<Integer> quantities) {
+
+        for (int i = 0; i < fpIds.size(); i++) {
+            Long fpId = fpIds.get(i);
+            Integer qty = quantities.get(i);
+
+            // 랜덤 제품 로스값 삽입
+            double lossRate = Math.random() * 0.15;  // 0 ~ 15%
+
+            // 최소 0개, 최대 qty-1개까지 손실 (수량이 1개면 손실 0 보장)
+            int loss = (int) Math.round(qty * lossRate);
+            loss = Math.max(0, Math.min(loss, qty - 1));
+            
+            // 모델로 loss율을 가져온다면 적용할 곳
+            // int loss = productService.getProductionLoss(fpId);
+
+            // 수량이 0보다 큰 것만 생산
+            if (qty != null && qty > 0) {
+                productService.produceProduct(fpId, qty - loss);
+                materialService.decreaseMaterial(fpId, qty);
+            }
+        }
+
+        return "redirect:/product";
     }
 
     @GetMapping

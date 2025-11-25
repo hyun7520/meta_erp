@@ -1,6 +1,7 @@
 package com.meta.stock.product.mapper;
 
 import com.meta.stock.materials.dto.MaterialRequirementDto;
+import com.meta.stock.product.dto.FixedProductDto;
 import com.meta.stock.product.dto.ProductStockDto;
 import com.meta.stock.product.dto.ProductDemandBean;
 import com.meta.stock.product.dto.ProductsAmountListBean;
@@ -16,6 +17,8 @@ public interface ProductMapper {
 
     int getTotalListSize(Map<String, Object> param);
 
+    List<ProductStockDto> findTotalProductStock();
+
     List<ProductStockDto> findProductStockWithPaging(String keyword, String sortBy, String sortDir, int offset, int limit);
 
     long countProductStock(String keyword);
@@ -26,5 +29,11 @@ public interface ProductMapper {
 
     List<MaterialRequirementDto> getMaterialRequirements(String serialCode);
 
-    void decreaseProductStock(String serialCode, int qty);
+    List<FixedProductDto> getFixedProductWithStockQty();
+
+    int getProductionLoss(Long fpId);
+
+    FixedProductDto getNameAndLifeTime(Long fpId);
+
+    void produceProduct(String productName, int loss, Long prId, Long lotsId);
 }

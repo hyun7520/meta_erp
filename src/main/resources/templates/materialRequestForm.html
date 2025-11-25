@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>재료 발주 요청</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/style/product/BaseStyle.css}" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+<div class="container">
+    <!-- 네비게이션 바 -->
+    <div th:insert="~{navbar :: navbar('재료 관리', '')}"></div>
+
+    <!-- 메인 컨텐츠 -->
+    <div class="content-wrapper">
+        <!-- 액션바 -->
+        <div class="action-bar">
+            <h2><i class="fas fa-shopping-cart"></i> 재료 발주 요청</h2>
+            <div>
+                <a href="javascript:history.back()" class="btn btn-cancel">
+                    <i class="fas fa-arrow-left"></i> 이전으로
+                </a>
+            </div>
+        </div>
+
+        <!-- 발주 폼 -->
+        <form th:action="@{/material/submit}" method="post">
+            <!-- 선택된 재료 목록 -->
+            <div class="fragement-box">
+                <h3 style="margin-bottom: 16px; color: #374151; font-size: 16px; font-weight: 600;">
+                    <i class="fas fa-list-check"></i> 발주할 재료 목록
+                </h3>
+                <table>
+                    <thead>
+                    <tr>
+                        <th>재료명</th>
+                        <th>발주수량</th>
+                        <th>비고</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="req, stat : ${materialRequests}">
+                        <!-- 숨겨진 필드로 재료 정보 전달 -->
+                        <input type="hidden"
+                               th:name="'materialRequests[' + ${stat.index} + '].fmId'"
+                               th:value="${req.fmId}" />
+                        <input type="hidden"
+                               th:name="'materialRequests[' + ${stat.index} + '].materialName'"
+                               th:value="${req.materialName}" />
+                        <input type="hidden"
+                               th:name="'materialRequests[' + ${stat.index} + '].requestBy'"
+                               th:value="${req.requestBy}" />
+                        <td>
+                            <strong th:text="${req.materialName}">햄</strong>
+                        </td>
+                        <td>
+                            <input type="text"
+                                   th:name="'materialRequests[' + ${stat.index} + '].qty'"
+                                   placeholder="수량 입력하세요"
+                                   style="width: 100%; padding: 8px 12px; border: 2px solid #E5E7EB; border-radius: 6px; font-size: 14px;"
+                                   th:value="${req.qty}"
+                                   required />
+                        </td>
+                        <td>
+                            <input type="text"
+                                   th:name="'materialRequests[' + ${stat.index} + '].note'"
+                                   placeholder="특이사항 입력"
+                                   style="width: 100%; padding: 8px 12px; border: 2px solid #E5E7EB; border-radius: 6px; font-size: 14px;" />
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 발주 상세 정보 -->
+            <div class="fragement-box">
+                <h3 style="margin-bottom: 20px; color: #374151; font-size: 16px; font-weight: 600;">
+                    <i class="fas fa-file-lines"></i> 발주 상세 정보
+                </h3>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>
+                            <i class="far fa-calendar"></i> 요청일
+                            <span class="required">*</span>
+                        </label>
+                        <input type="date" name="requestDate" th:value="${materialRequests[0].requestDate}" required />
+                        <label>
+                            <i class="fa-solid fa-person"></i> 관리자
+                            <span class="required">*</span>
+                        </label>
+                        <input type="text" th:value="${requestByName}" readonly />
+                    </div>
+                </div>
+            </div>
+
+            <!-- 제출 버튼 -->
+            <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px;">
+                <button type="button" onclick="history.back()" class="btn btn-cancel">
+                    <i class="fas fa-times"></i> 취소
+                </button>
+                <button type="submit" class="btn btn-confirm">
+                    <i class="fas fa-paper-plane"></i> 발주 요청 제출
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // 현재 시간 표시
+    function updateTime() {
+        const now = new Date();
+        const timeString = now.toLocaleString('ko-KR', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+        });
+        document.getElementById('currentTime').textContent = timeString;
+    }
+
+    updateTime();
+    setInterval(updateTime, 1000);
+
+    // 폼 제출 전 확인
+    document.querySelector('form').addEventListener('submit', function(e) {
+        const materialCount = document.querySelectorAll('tbody tr').length;
+
+        if (!confirm(`총 ${materialCount}개의 재료를 발주 요청하시겠습니까?`)) {
+            e.preventDefault();
+        }
+    });
+
+    // 납기일이 요청일보다 이전이면 경고
+    const requestDateInput = document.querySelector('input[name="requestDate"]');
+    const desiredDateInput = document.querySelector('input[name="desiredDate"]');
+
+    desiredDateInput.addEventListener('change', function() {
+        if (requestDateInput.value && desiredDateInput.value) {
+            if (new Date(desiredDateInput.value) < new Date(requestDateInput.value)) {
+                alert('납기 희망일은 요청일 이후여야 합니다.');
+                desiredDateInput.value = '';
+            }
+        }
+    });
+</script>
+</body>
+</html>

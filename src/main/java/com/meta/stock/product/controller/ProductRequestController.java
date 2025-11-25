@@ -15,7 +15,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 public class ProductRequestController {
@@ -26,7 +28,6 @@ public class ProductRequestController {
     private ProductService productService;
 
     // 주문 조회
-    // 검색 기능 추가할 것
     @GetMapping("/pr")
     public String getAllOrders(
             @RequestParam(defaultValue = "0") int page,
@@ -42,6 +43,9 @@ public class ProductRequestController {
         Page<ProductRequestDto> productRequests =
                 productionRequestService.findAllProductRequests(keyword, pageable);
 
+        Map<String, Integer> statusStats = productionRequestService.getStatusStatistics();
+
+        model.addAttribute("statusStats", statusStats);
         model.addAttribute("productRequests", productRequests);
         model.addAttribute("sortBy", sortBy);
         model.addAttribute("sortDir", sortDir);
@@ -50,18 +54,12 @@ public class ProductRequestController {
         return "productionRequests";
     }
 
-    // 주문 클릭 시, 제품 상세 페이지로 이동
     @GetMapping("/pr/{id}")
-    public String getProductionRequestDetail(@PathVariable Long id, Model model) {
-        // 1. 생산 요청 기본 정보 조회
+    public String getProductRequestDetail(@PathVariable Long id, Model model) {
         ProductRequestDto productRequest = productionRequestService.findProductRequestById(id);
-        model.addAttribute("productRequest", productRequest);
 
-        // 2. 현재 완제품 재고 조회
+        // 재고 및 요구사항 계산
         int currentProductStock = productService.getCurrentProductStock(productRequest.getSerialCode());
-        model.addAttribute("currentProductStock", currentProductStock);
-
-        // 3. 상태에 따른 추가 정보 조회
         if (productRequest.getProductionStartDate() == null) {
             // 미수주 상태: 수주 시 필요한 원자재 계산
             List<MaterialRequirementDto> requirements =
@@ -74,25 +72,22 @@ public class ProductRequestController {
             if (remainingQty > 0) {
                 List<MaterialRequirementDto> remainingRequirements =
                         productService.calculateMaterialRequirements(productRequest.getSerialCode(), remainingQty);
-                model.addAttribute("remainingRequirements", remainingRequirements);
+                model.addAttribute("requirements", remainingRequirements);
             }
         }
 
-        return "productionRequestsDetail";
+        model.addAttribute("productRequest", productRequest);
+        model.addAttribute("currentProductStock", currentProductStock);
+
+        return "productionRequestsDetail :: content";
     }
 
-    // 생산 확인
+
+    // 주문수주
     @PostMapping("/pr/accept/{prId}")
-    public String acceptOrder(@PathVariable long prId) {
+    public String beginProduction(@PathVariable long prId) {
         productionRequestService.acceptProductionRequest(prId);
         return "redirect:/pr";
-    }
-
-    // 주문 수주
-    @PostMapping("/pr/accept/{id}")
-    public String acceptOrder(@PathVariable Long id) {
-        productionRequestService.acceptOrder(id);
-        return "redirect:/pr/" + id;
     }
 
     // 제품 출하

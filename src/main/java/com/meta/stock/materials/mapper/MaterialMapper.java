@@ -1,9 +1,6 @@
 package com.meta.stock.materials.mapper;
 
-import com.meta.stock.materials.dto.MaterialDto;
-import com.meta.stock.materials.dto.MaterialRequestDto;
-import com.meta.stock.materials.dto.MaterialRequirementDto;
-import com.meta.stock.materials.dto.MaterialCountsBean;
+import com.meta.stock.materials.dto.*;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -16,15 +13,29 @@ public interface MaterialMapper {
 
     long countMaterialRequests(String keyword);
 
-    List<MaterialRequestDto> findAllMaterialRequests();
+    List<MaterialRequestDto> findAllMaterialRequestsWithPaging(String keyword, String sortBy, String sortDir, int offset, int limit);
+
+    long countAllMaterialRequests(String keyword);
 
     int getCurrentStock(String materialName);
 
-    List<MaterialRequirementDto> calculateRequiredMaterials(Map<String, Object> param);
-
-    List<MaterialDto> getAllMaterials();
-
-    List<MaterialRequestDto> getAllMaterialRequests();
+    List<MaterialRequirementDto> calculateRequiredMaterials(Long fpId, int qty);
 
     List<MaterialCountsBean> getDateMaterialTotals(String serialCode);
+
+    int countByApproved(int i);
+
+    List<MaterialStockDto> getCurrentMaterialStocks();
+
+    String getRequestByName(Long id);
+
+    void save(MaterialRequestDto req);
+
+    MaterialRequestDto getMaterialRequestById(Long mrId);
+
+    void updateMaterialRequest(Long mrId, Integer qty, String note);
+
+    List<MaterialDto> getRequiredMaterials(Long fpId);
+
+    void decreaseMaterialStock(Long fmId, int qty);
 }
