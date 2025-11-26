@@ -144,14 +144,14 @@ const sortPR = (element) => {
     loadProductRequestList(prParam);
 }
 
-const renderPRList = (list) => {
+const renderPRList = (pageData) => {
     const main = document.getElementById("product_request_list");
     const title = main.querySelector("h2");
-    title.querySelector("span").innerText = list?.length || 0;
+    title.querySelector("span").innerText = pageData.totalElements;
 
     const tbody = main.querySelector("tbody");
     tbody.innerHTML = "";
-    if (list.length === 0) {
+    if (pageData.totalElements === 0) {
         tbody.innerHTML = `
             <tr>
                 <td colspan="8" style="text-align: center; color: #9CA3AF; padding: 40px;">
@@ -160,7 +160,7 @@ const renderPRList = (list) => {
             </tr>
         `;
     } else {
-        list.forEach(data => {
+        pageData.content.forEach(data => {
             const tr = document.createElement("tr");
 
             let completeBadge = '';
@@ -207,7 +207,7 @@ const loadProductRequestList = ({page, keyword, sortBy, sortDir} = prParam) => {
             prParam.sortBy = json.sortBy;
             prParam.sortDir = json.sortDir;
 
-            renderPRList(json.pRequests.content);
+            renderPRList(json.pRequests);
             renderPagination(prParam.page, json.pRequests.totalPages, movePrPage);
         })
         .catch(error => {

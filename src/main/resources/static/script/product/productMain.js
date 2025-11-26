@@ -157,14 +157,14 @@ const resetOngoingSort = () => {
     loadOngoingProductList(productsParam);
 }
 
-const renderOngoingList = (list) => {
+const renderOngoingList = (pageData) => {
     const main = document.getElementById("product_ongoing_list");
     const title = main.querySelector("h2");
-    title.querySelector("span").innerText = list?.length || 0;
+    title.querySelector("span").innerText = pageData.totalElements;
 
     const tbody = main.querySelector("tbody");
     tbody.innerHTML = "";
-    if (list.length === 0) {
+    if (pageData.totalElements === 0) {
         tbody.innerHTML = `
             <tr>
                 <td colspan="7" style="text-align: center; color: #9CA3AF; padding: 40px;">
@@ -173,7 +173,7 @@ const renderOngoingList = (list) => {
             </tr>
         `;
     } else {
-        list.forEach(data => {
+        pageData.content.forEach(data => {
             const tr = document.createElement("tr");
             const stockBadge = `<span class="status-badge status-${data.isStockSufficient ? 'approved' : 'pending'}">${data.isStockSufficient ? '충분' : '부족'}</span>`;
 
@@ -212,7 +212,7 @@ const loadOngoingProductList = ({page, keyword, sortBy, sortDir} = productsParam
             productsParam.sortBy = json.prSortBy;
             productsParam.sortDir = json.prSortDir;
 
-            renderOngoingList(json.products.content);
+            renderOngoingList(json.products);
             renderPagination(productsParam.page, json.products.totalPages, moveOngoingPage, "pagination_ongoing");
         })
         .catch(error => {
@@ -298,14 +298,14 @@ const readySort = (element) => {
     loadRequestReadyMaterials(materialsParam);
 }
 
-const renderReadyTable = (list) => {
+const renderReadyTable = (pageData) => {
     const main = document.getElementById("product_material_ready");
     const title = main.querySelector("h2");
-    title.querySelector("span").innerText = list?.length || 0;
+    title.querySelector("span").innerText = pageData.totalElements;
 
     const tbody = main.querySelector("tbody");
     tbody.innerHTML = "";
-    if (list.length === 0) {
+    if (pageData.totalElements === 0) {
         tbody.innerHTML = `
             <tr>
                 <td colspan="6" style="text-align: center; color: #9CA3AF; padding: 20px;">
@@ -314,7 +314,7 @@ const renderReadyTable = (list) => {
             </tr>
         `;
     } else {
-        list.forEach(data => {
+        pageData.content.forEach(data => {
             const tr = document.createElement("tr");
 
             let approveBadge = '';
@@ -354,7 +354,7 @@ const loadRequestReadyMaterials = ({page, keyword, sortBy, sortDir} = materialsP
             materialsParam.sortBy = json.mrSortBy;
             materialsParam.sortDir = json.mrSortDir;
 
-            renderReadyTable(json.materials.content);
+            renderReadyTable(json.materials);
             renderPagination(materialsParam.page, json.materials.totalPages, moveReadyPage, "pagination_ready");
         })
         .catch(error => {

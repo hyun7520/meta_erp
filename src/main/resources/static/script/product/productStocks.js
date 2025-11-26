@@ -32,14 +32,14 @@ const sortPStock = (element) => {
     loadProductStockList(pStockParam);
 }
 
-const renderPStockList = (list) => {
+const renderPStockList = (pageData) => {
     const main = document.getElementById("product_stock_list");
     const title = main.querySelector("h2");
-    title.querySelector("span").innerText = list?.length || 0;
+    title.querySelector("span").innerText = pageData.totalElements;
 
     const tbody = main.querySelector("tbody");
     tbody.innerHTML = "";
-    if (list.length === 0) {
+    if (pageData.totalElements === 0) {
         tbody.innerHTML = `
             <tr>
                 <td colspan="8" style="text-align: center; color: #9CA3AF; padding: 40px;">
@@ -48,7 +48,7 @@ const renderPStockList = (list) => {
             </tr>
         `;
     } else {
-        list.forEach(data => {
+        pageData.content.forEach(data => {
             const tr = document.createElement("tr");
 
             let leftBadge = '';
@@ -98,7 +98,7 @@ const loadProductStockList = ({page, keyword, sortBy, sortDir} = pStockParam) =>
             pStockParam.sortBy = json.sortBy;
             pStockParam.sortDir = json.sortDir;
 
-            renderPStockList(json.stocks.content);
+            renderPStockList(json.stocks);
             renderPagination(pStockParam.page, json.stocks.totalPages, movePStockPage);
         })
         .catch(error => {

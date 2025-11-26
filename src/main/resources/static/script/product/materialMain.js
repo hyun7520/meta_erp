@@ -34,16 +34,16 @@ const sortMr = (element) => {
     loadMaterialRequestList(materialParam);
 }
 
-const renderMaterialRequestList = (list) => {
+const renderMaterialRequestList = (pageData) => {
     const main = document.getElementById("material_request_list");
     const title = main.querySelector("h2");
-    title.querySelector("span").innerText = list?.length || 0;
+    title.querySelector("span").innerText = pageData.totalElements;
     main.querySelector("input[name='keyword']").value = materialParam.keyword;
 
     const tbody = main.querySelector("tbody");
     tbody.innerHTML = "";
 
-    if (list.length === 0) {
+    if (pageData.totalElements.length === 0) {
         tbody.innerHTML = `
             <tr>
                 <td colspan="6" style="text-align: center; color: #9CA3AF; padding: 40px;">
@@ -52,7 +52,7 @@ const renderMaterialRequestList = (list) => {
             </tr>
         `;
     } else {
-        list.forEach(data => {
+        pageData.content.forEach(data => {
             const tr = document.createElement("tr");
             let trClass = "status-2";
             let approveBadge = "";
@@ -108,7 +108,7 @@ const loadMaterialRequestList = ({page, keyword, sortBy, sortDir} = materialPara
             materialParam.sortBy = json.sortBy;
             materialParam.sortDir = json.sortDir;
 
-            renderMaterialRequestList(json.materials.content);
+            renderMaterialRequestList(json.materials);
             renderPagination(materialParam.page, json.materials.totalPages, moveMRPage);
         })
         .catch(error => {
