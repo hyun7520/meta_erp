@@ -33,23 +33,15 @@ function convertToSeries(list) {
 
     for (const name in groups) {
         const items = groups[name];
-
         items.sort((a, b) => (a.requestDate > b.requestDate ? 1 : -1));
 
-        const aligned = new Array(xLabels.length).fill(0);
-
-        items.forEach(v => {
-            const idx = xIndex[v.requestDate];
-            if (idx !== undefined) aligned[idx] = v.demand;
-        });
-
         const futureData = echarts_data[name] || [];
-        const finalData = aligned.concat(futureData);
+        const finalData = items.map(v => v.demand).concat(futureData);
 
         series.push({
             name,
             type: "line",
-            tooltip: { valueFormatter: v => v + "건" },
+            smooth: true,
             data: finalData,
             markArea: {
                 silent: true,
@@ -75,42 +67,48 @@ const drawLine = (data) => {
     const {series, xLabels} = convertToSeries(data);
 
     const option = {
-        animation: true,
-        animationDuration: 1200,
         title: {
             text: "최근 5년간 제품 수요량 그래프",
-            left: "center",
-            top: 10,
+            left: 'center',
+            top: '2%'
         },
         tooltip: {
-            trigger: "axis",
-            confine: true,
+            trigger: 'axis',
+            formatter: function (params) {
+                var result = params[0].name + '<br/>';
+                params.forEach(function (item) {
+                    result += '<span style="display:inline-block;margin-right:5px;border-radius:10px;width:10px;height:10px;background-color:' + item.color + ';"></span>'
+                        + item.seriesName + ': ' + item.value.toLocaleString() + ' 건' + '<br/>';
+                });
+                return result;
+            }
         },
         legend: {
-            top: 50,
             data: Object.keys(echarts_data),
+            bottom: '0%'
+        },
+        grid: {
+            left: '3%',
+            right: '4%',
+            bottom: '10%',
+            containLabel: true
         },
         xAxis: {
-            type: "category",
-            data: xLabels,
-            axisLabel: { rotate: 45 },
+            type: 'category',
+            boundaryGap: false,
+            data: xLabels
         },
         yAxis: {
-            type: "value",
-            name: "수요량 (건)",
-            axisLabel: { formatter: val => val.toLocaleString() + "건" }
+            type: 'value',
+            name: '판매량 (건)',
+            min: 900,
+            axisLabel: {
+                formatter: function(value) {
+                    return value.toLocaleString();
+                }
+            },
         },
-        dataZoom: [
-            { type: "slider", xAxisIndex: 0, bottom: 35, height: 18 },
-            { type: "inside", xAxisIndex: 0 }
-        ],
-        grid: {
-            top: 100,
-            left: 50,
-            right: 60,
-            bottom: 90,
-        },
-        series
+        series: series
     };
 
     lineChart.setOption(option);

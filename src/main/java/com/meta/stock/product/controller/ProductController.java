@@ -193,11 +193,11 @@ public class ProductController {
         return "redirect:/product";
     }
 
-    @GetMapping
-    public ResponseEntity<List<ProductDTO.Response>> getAllProducts() {
-        List<ProductDTO.Response> responses = productService.getAllProducts();
-        return ResponseEntity.ok(responses);
-    }
+//    @GetMapping
+//    public ResponseEntity<List<ProductDTO.Response>> getAllProducts() {
+//        List<ProductDTO.Response> responses = productService.getAllProducts();
+//        return ResponseEntity.ok(responses);
+//    }
 
     //  제품 목록 조회 API - order.html에서 사용
     @GetMapping("/products")

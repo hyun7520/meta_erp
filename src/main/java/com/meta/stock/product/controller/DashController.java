@@ -34,7 +34,7 @@ public class DashController {
 
     private final int limit = 5;
 
-    @GetMapping("/dash")
+    @GetMapping(value = {"/dash", "/"})
     private String dashboard(HttpSession session) {
         if (session.getAttribute("employee") == null) {
             return "redirect:/login";
