@@ -46,27 +46,8 @@ public class ProductController {
 
     // 완제품 재고 전체 조회 페이지
     @GetMapping("/product/stock")
-    public String getProductStockList(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) String keyword,
-            @RequestParam(defaultValue = "storageDate") String sortBy,
-            @RequestParam(defaultValue = "DESC") String sortDir,
-            Model model) {
-
-        Pageable pageable = PageRequest.of(page, size,
-                Sort.by(Sort.Direction.fromString(sortDir), sortBy));
-
-        // 로트별 상세 재고 조회
-        Page<ProductStockDto> productStock =
-                productService.findProductStockWithPaging(keyword, pageable);
-
-        model.addAttribute("productStock", productStock);
-        model.addAttribute("keyword", keyword);
-        model.addAttribute("sortBy", sortBy);
-        model.addAttribute("sortDir", sortDir);
-
-        return "productionStocks";
+    public String getProductStockList() {
+        return "product/productionStocks";
     }
 
     @GetMapping("/product/form")
@@ -130,6 +111,30 @@ public class ProductController {
         result.put("mrKeyword", mrKeyword);
         result.put("mrSortBy", mrSortBy);
         result.put("mrSortDir", mrSortDir);
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/product/stock/list")
+    public ResponseEntity<Map<String, Object>> getProductStockList(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(defaultValue = "storageDate") String sortBy,
+            @RequestParam(defaultValue = "DESC") String sortDir
+    ) {
+
+        Pageable pageable = PageRequest.of(page, size,
+                Sort.by(Sort.Direction.fromString(sortDir), sortBy));
+
+        // 로트별 상세 재고 조회
+        Page<ProductStockDto> productStock =
+                productService.findProductStockWithPaging(keyword, pageable);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("stocks", productStock);
+        result.put("keyword", keyword);
+        result.put("sortBy", sortBy);
+        result.put("sortDir", sortDir);
         return ResponseEntity.ok(result);
     }
 

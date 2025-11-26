@@ -203,9 +203,9 @@ const loadProductRequestList = ({page, keyword, sortBy, sortDir} = prParam) => {
         .then(response => response.json())
         .then(json => {
             prParam.page = json.pRequests.number + 1;
-            prParam.keyword = json.prKeyword || "";
-            prParam.sortBy = json.prSortBy;
-            prParam.sortDir = json.prSortDir;
+            prParam.keyword = json.keyword || "";
+            prParam.sortBy = json.sortBy;
+            prParam.sortDir = json.sortDir;
 
             renderPRList(json.pRequests.content);
             renderPagination(prParam.page, json.pRequests.totalPages, movePrPage);

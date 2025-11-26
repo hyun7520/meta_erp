@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>완제품 재고 전체 조회</title>
+  <link rel="stylesheet" type="text/css" th:href="@{/style/BaseStyle.css}" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script type="text/javascript" th:src="@{/script/baseJS.js}"></script>
+  <style>
+        .content-wrapper {
+            padding: 20px;
+        }
+
+        .fragement-box {
+            margin: 20px 0;
+            padding: 20px;
+        }
+
+        table {
+            font-size: 13px;
+        }
+
+        th {
+            padding: 12px 15px;
+            font-size: 12px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        th:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        td {
+            padding: 12px 15px;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+  <!-- 네비게이션 바 -->
+  <div th:insert="~{navbar :: navbar('완제품 재고 관리', '')}"></div>
+
+  <div class="content-wrapper">
+    <div class="fragement-box" id="product_stock_list">
+      <div class="action-bar">
+          <h2>
+              <i class="fas fa-box"></i> 완제품 재고 전체 목록
+              <span class="tab-count"></span>
+          </h2>
+          <button type="button" class="btn btn-cancel" th:onclick="|location.href='@{/product/form}'|">
+              <i class="fa-solid fa-boxes-stacked"></i> 제품 생산
+          </button>
+          <button type="button" class="btn btn-cancel" th:onclick="|location.href='@{/product}'|">
+              <i class="fas fa-arrow-left"></i> 대시보드로
+          </button>
+      </div>
+
+      <!-- 검색 및 정렬 폼 -->
+      <form>
+        <div class="form-row">
+          <div class="form-group">
+            <input type="text" name="keyword" placeholder="제품명 검색">
+          </div>
+          <div class="form-group">
+            <button type="button" class="btn btn-confirm" onclick="searchPStockk()">검색</button>
+          </div>
+        </div>
+      </form>
+
+      <!-- 재고 테이블 -->
+      <table>
+        <thead>
+        <tr>
+          <th name="productName" class="sortable" onclick="sortPStock(this)">제품명</th>
+          <th>로트번호</th>
+          <th name="qty" class="sortable" onclick="sortPStock(this)">재고수량</th>
+          <th>단위</th>
+          <th name="storageDate" class="sortable" onclick="sortPStock(this)">입고일</th>
+          <th name="shelfLifeDays" class="sortable" onclick="sortPStock(this)">출하기한</th>
+          <th>남은일</th>
+          <th>상태</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+      <!-- 페이지네이션 -->
+      <div class="pagination" id="pagination"></div>
+    </div>
+  </div>
+    <script type="text/javascript" th:src="@{/script/product/productStocks.js}"></script>
+</div>
+</body>
+</html>

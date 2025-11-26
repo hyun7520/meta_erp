@@ -33,7 +33,7 @@ public class ProductRequestController {
         Map<String, Integer> statusStats = productionRequestService.getStatusStatistics();
 
         model.addAttribute("statusStats", statusStats);
-        return "productionRequests";
+        return "product/productionRequests";
     }
 
     @GetMapping("/pr/{id}")
