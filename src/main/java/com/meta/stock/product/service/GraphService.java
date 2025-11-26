@@ -22,8 +22,32 @@ public class GraphService {
     @Autowired
     private ProductMapper productMapper;
 
+    private String DEFAULT_ROOT = "src/main/resources/static/file/";
+
     public List<ProductDemandBean> getList() {
-        return productMapper.getDashProductDemand();
+        List<ProductDemandBean> list = new ArrayList<>();
+        File file = new File(DEFAULT_ROOT + "가상의 제품 수요량.csv");
+        BufferedReader br;
+
+        try {
+            br = new BufferedReader(new FileReader(file));
+            String line = br.readLine();
+            String[] products = line.split(",");
+            while ((line = br.readLine()) != null) {
+                String[] arr = line.split(",");
+                String date = arr[0].replace("\uFEFF", "").trim();
+
+                for (int idx = 1; idx < arr.length; idx++) {
+                    list.add(new ProductDemandBean(products[idx], date, Float.parseFloat(arr[idx])));
+                }
+            }
+            br.close(); // 한번 끊기
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        list.sort(Comparator.comparing(ProductDemandBean::getRequestDate));
+        return list;
     }
 
     public List<ProductLossBean> getLossPerHumidity() {
