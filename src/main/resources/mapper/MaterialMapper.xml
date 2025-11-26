@@ -132,7 +132,7 @@
     <select id="getDateMaterialTotals" resultMap="parseMaterialCounts">
         select material_name, sum(qty) as total
         from materials m
-        left join lots l on m.lots_id = l.lot_id and to_date(shelf_life_days, 'YY/MM/DD') >= sysdate
+        left join lots l on m.lots_id = l.lot_id and l.shelf_life_days >= sysdate
         <where>
             <choose>
                 <when test="serialCode != null and serialCode != ''">

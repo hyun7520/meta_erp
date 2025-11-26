@@ -73,7 +73,7 @@
         p.product_name,
         SUM(l.qty) AS total_qty
         FROM products p
-        JOIN lots l ON p.lots_id = l.lot_id
+        JOIN lots l ON p.lots_id = l.lot_id WHERE l.shelf_life_days >= SYSDATE
         GROUP BY p.product_name
         ) st
         ON fp.name = st.product_name
@@ -129,7 +129,7 @@
         FROM Products p
         INNER JOIN Lots l ON p.lots_id = l.lot_id
         INNER JOIN Fixed_Product fp ON p.product_name = fp.name
-        WHERE fp.serial_code = #{serialCode}
+        WHERE l.shelf_life_days >= SYSDATE AND fp.serial_code = #{serialCode}
     </select>
 
     <!-- BOM 정보 조회 (필요 원자재) -->

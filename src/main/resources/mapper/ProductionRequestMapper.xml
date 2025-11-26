@@ -78,7 +78,7 @@
             GROUP BY p.product_name
             ) STOCK
         ON fp.name = stock.product_name
-        WHERE pr.end_date IS NULL
+        WHERE pr.end_date IS NULL AND pr.production_start_date IS NOT NULL
         <if test="keyword != null and keyword != ''">
             AND fp.name LIKE '%' || #{keyword} || '%'
         </if>

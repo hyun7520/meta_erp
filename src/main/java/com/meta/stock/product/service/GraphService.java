@@ -31,7 +31,7 @@ public class GraphService {
        List<ProductLossBean> list = new ArrayList<>();
 
         YearMonth end = YearMonth.now();                 // 현재 년/월
-        YearMonth start = end.minusYears(5);             // 현재로부터 5년 전
+        YearMonth start = end.minusYears(1);             // 현재로부터 5년 전
 
         YearMonth current = start;
 
