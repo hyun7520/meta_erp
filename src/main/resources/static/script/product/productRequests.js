@@ -167,11 +167,11 @@ const renderPRList = (pageData) => {
 
             let completeBadge = '';
             if (data.complete === 0) {
-                completeBadge = `<span class="status-badge status-pending">미수주</span>`;
+                completeBadge = `<span class="status-badge status-rejected">미수주</span>`;
             } else if (data.complete === 1) {
-                completeBadge = `<span class="status-badge status-approved">수주완료</span>`;
+                completeBadge = `<span class="status-badge status-pending">수주완료</span>`;
             } else if (data.complete === 2) {
-                completeBadge = `<span class="status-badge status-rejected">완료</span>`;
+                completeBadge = `<span class="status-badge status-approved">완료</span>`;
             }
 
             tr.innerHTML = `

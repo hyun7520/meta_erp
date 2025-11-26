@@ -78,7 +78,7 @@ public class ProductRequestController {
     @GetMapping("/pr/list")
     public ResponseEntity<Map<String, Object>> getProductRequestList(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "6") int size,
+            @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String keyword,
             @RequestParam(defaultValue = "prId") String sortBy,
             @RequestParam(defaultValue = "ASC") String sortDir

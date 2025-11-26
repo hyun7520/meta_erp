@@ -10,7 +10,7 @@ public class MaterialRequirementDto {
     private int remainingQty = 0;
 
     public boolean isSufficient() {
-        return currentStock > requiredQty;
+        return currentStock >= requiredQty;
     }
 
     public Long getFmId() {return fmId;}
