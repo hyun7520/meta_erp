@@ -203,7 +203,7 @@ const moveOngoingPage = (pageNum) => {
 }
 
 const loadOngoingProductList = ({page, keyword, sortBy, sortDir} = productsParam) => {
-    const parseParams = `page=${page - 1}&prKeyword=${keyword}&prSortBy=${sortBy || 'requestDate'}&prSortDir=${sortDir || 'ASC'}`;
+    const parseParams = `prPage=${page - 1}&prKeyword=${keyword}&prSortBy=${sortBy || 'requestDate'}&prSortDir=${sortDir || 'ASC'}`;
     fetch("/product/ongoing?" + parseParams, {method: "GET"})
         .then(response => response.json())
         .then(json => {
@@ -345,7 +345,7 @@ const moveReadyPage = (pageNum) => {
 }
 
 const loadRequestReadyMaterials = ({page, keyword, sortBy, sortDir} = materialsParam) => {
-    const parseParams = `page=${page - 1}&mrKeyword=${keyword}&mrSortBy=${sortBy || 'requestDate'}&mrSortDir=${sortDir || 'DESC'}`;
+    const parseParams = `mrPage=${page - 1}&mrKeyword=${keyword}&mrSortBy=${sortBy || 'requestDate'}&mrSortDir=${sortDir || 'DESC'}`;
     fetch("/product/readyMaterials?" + parseParams, {method: "GET"})
         .then(response => response.json())
         .then(json => {
