@@ -180,7 +180,7 @@ const renderOngoingList = (list) => {
             tr.innerHTML = `
                 <td>${data.prId || 1}</td>
                 <td>
-                    <a th:onclick="|showDetailModal(${data.prId})|"
+                    <a onclick="showDetailModal(${data.prId})"
                     style="color: #2A9D8F; text-decoration: none; font-weight: 600; cursor: pointer;">
                     <span>${data.productName || ""}</span>
                 </a>

@@ -36,7 +36,7 @@ public class MaterialController {
         Map<String, Integer> requestStats = materialService.getRequestStatistics();
 
         model.addAttribute("requestStats", requestStats);
-        return "material";
+        return "product/material";
     }
 
     // 선택한 제품에 대한 재료 요청서 작성 페이지로 이동
