@@ -5,6 +5,8 @@ import com.meta.stock.product.dto.ProductRequestDto;
 import com.meta.stock.product.dto.ProductionRequestDTO;
 import com.meta.stock.product.service.ProductionRequestService;
 import com.meta.stock.product.service.ProductService;
+import com.meta.stock.user.employees.dto.EmployeeGetDto;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -29,7 +31,16 @@ public class ProductRequestController {
 
     // 주문 조회
     @GetMapping("/pr")
-    public String getAllOrders(Model model) {
+    public String getAllOrders(Model model, HttpSession session) {
+        if (session.getAttribute("employee") == null) {
+            return "redirect:/login";
+        } else {
+            EmployeeGetDto employee = (EmployeeGetDto) session.getAttribute("employee");
+            if (employee.getDepartment().equals("경영") || employee.getRole().equals("사원")) {
+                return "redirect:/dash";
+            }
+        }
+
         Map<String, Integer> statusStats = productionRequestService.getStatusStatistics();
 
         model.addAttribute("statusStats", statusStats);

@@ -28,6 +28,8 @@ document.addEventListener('keydown', function(event) {
 });
 
 document.addEventListener('DOMContentLoaded', function() {
+    updateTime();
+    setInterval(updateTime, 1000);
     loadProductRequestList();
 
     // 모달 외부 클릭 시 닫기

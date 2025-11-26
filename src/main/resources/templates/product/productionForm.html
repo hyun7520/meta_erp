@@ -534,6 +534,8 @@
 
     // 페이지 로드 시 초기화
     document.addEventListener('DOMContentLoaded', function() {
+        updateTime();
+        setInterval(updateTime, 1000);
         updateTotal();
 
         // 모든 제품의 재료 필요량 초기화 (0개 기준)

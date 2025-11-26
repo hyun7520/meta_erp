@@ -6,6 +6,8 @@ const pStockParam = {
 }
 
 window.addEventListener("DOMContentLoaded", () => {
+    updateTime();
+    setInterval(updateTime, 1000);
     loadProductStockList();
 });
 

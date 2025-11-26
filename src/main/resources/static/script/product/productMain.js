@@ -29,6 +29,8 @@ document.addEventListener('keydown', function(event) {
 
 // 해당 productionModal이 load 했을때 호출한 메서드
 document.addEventListener('DOMContentLoaded', function() {
+    updateTime();
+    setInterval(updateTime, 1000);
     loadOngoingProductList();
     loadProgressBar();
     loadRequestReadyMaterials();

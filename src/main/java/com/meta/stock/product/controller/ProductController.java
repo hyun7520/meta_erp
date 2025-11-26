@@ -7,6 +7,8 @@ import com.meta.stock.product.dto.*;
 import com.meta.stock.product.service.ProductionRequestService;
 import com.meta.stock.product.service.PredictService;
 import com.meta.stock.product.service.ProductService;
+import com.meta.stock.user.employees.dto.EmployeeGetDto;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -40,18 +42,42 @@ public class ProductController {
 
     // 생산 페이지 로드
     @GetMapping("/product")
-    public String getProductsDash() {
+    public String getProductsDash(HttpSession session) {
+        if (session.getAttribute("employee") == null) {
+            return "redirect:/login";
+        } else {
+            EmployeeGetDto employee = (EmployeeGetDto) session.getAttribute("employee");
+            if (employee.getDepartment().equals("경영") || employee.getRole().equals("사원")) {
+                return "redirect:/dash";
+            }
+        }
         return "product/productionMain";
     }
 
     // 완제품 재고 전체 조회 페이지
     @GetMapping("/product/stock")
-    public String getProductStockList() {
+    public String getProductStockList(HttpSession session) {
+        if (session.getAttribute("employee") == null) {
+            return "redirect:/login";
+        } else {
+            EmployeeGetDto employee = (EmployeeGetDto) session.getAttribute("employee");
+            if (employee.getDepartment().equals("경영") || employee.getRole().equals("사원")) {
+                return "redirect:/dash";
+            }
+        }
         return "product/productionStocks";
     }
 
     @GetMapping("/product/form")
-    public String getProductionForm(Model model) {
+    public String getProductionForm(Model model, HttpSession session) {
+        if (session.getAttribute("employee") == null) {
+            return "redirect:/login";
+        } else {
+            EmployeeGetDto employee = (EmployeeGetDto) session.getAttribute("employee");
+            if (employee.getDepartment().equals("경영") || employee.getRole().equals("사원")) {
+                return "redirect:/dash";
+            }
+        }
 
         // 제품 이름과 제품 재고 수량 조회
         List<FixedProductDto> fpDto = productService.getFixedProductWithStockQty();

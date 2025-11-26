@@ -111,6 +111,10 @@
 </div>
 
 <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        updateTime();
+        setInterval(updateTime, 1000);
+    });
     // 폼 제출 전 확인
     document.querySelector('form').addEventListener('submit', function(e) {
         if (!confirm('발주 요청을 수정하시겠습니까?')) {

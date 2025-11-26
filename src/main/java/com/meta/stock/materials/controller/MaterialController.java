@@ -3,6 +3,8 @@ package com.meta.stock.materials.controller;
 import com.meta.stock.materials.dto.*;
 import com.meta.stock.materials.service.MaterialRequestService;
 import com.meta.stock.materials.service.MaterialService;
+import com.meta.stock.user.employees.dto.EmployeeGetDto;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -31,7 +33,15 @@ public class MaterialController {
 
     // 전체 재료 요청 조회
     @GetMapping("material")
-    public String getAllMaterials(Model model) {
+    public String getAllMaterials(Model model, HttpSession session) {
+        if (session.getAttribute("employee") == null) {
+            return "redirect:/login";
+        } else {
+            EmployeeGetDto employee = (EmployeeGetDto) session.getAttribute("employee");
+            if (employee.getDepartment().equals("경영") || employee.getRole().equals("사원")) {
+                return "redirect:/dash";
+            }
+        }
         // 발주 요청 통계
         Map<String, Integer> requestStats = materialService.getRequestStatistics();
 
@@ -47,7 +57,15 @@ public class MaterialController {
             @RequestParam(name = "materialNames") List<String> materialNames,
             @RequestParam(name = "quantities") List<String> quantities,
             @RequestParam(name = "units") List<String> units,
-            Model model) {
+            Model model, HttpSession session) {
+        if (session.getAttribute("employee") == null) {
+            return "redirect:/login";
+        } else {
+            EmployeeGetDto employee = (EmployeeGetDto) session.getAttribute("employee");
+            if (employee.getDepartment().equals("경영") || employee.getRole().equals("사원")) {
+                return "redirect:/dash";
+            }
+        }
 
         // DTO 리스트로 변환
         List<MaterialRequestDto> materialRequests = new ArrayList<>();
@@ -93,7 +111,15 @@ public class MaterialController {
     @GetMapping("material/update/{mrId}")
     public String getMaterialRequestUpdateForm(
             @PathVariable(name = "mrId") Long mrId,
-            Model model) {
+            Model model, HttpSession session) {
+        if (session.getAttribute("employee") == null) {
+            return "redirect:/login";
+        } else {
+            EmployeeGetDto employee = (EmployeeGetDto) session.getAttribute("employee");
+            if (employee.getDepartment().equals("경영") || employee.getRole().equals("사원")) {
+                return "redirect:/dash";
+            }
+        }
 
         // 데이터 확인
         MaterialRequestDto materialRequestDto = materialService.getMaterialRequestById(mrId);

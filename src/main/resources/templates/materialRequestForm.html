@@ -109,6 +109,11 @@
 </div>
 
 <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        updateTime();
+        setInterval(updateTime, 1000);
+    });
+
     // 폼 제출 전 확인
     document.querySelector('form').addEventListener('submit', function(e) {
         const materialCount = document.querySelectorAll('tbody tr').length;
