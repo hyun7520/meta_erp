@@ -122,7 +122,7 @@ public class MaterialController {
         model.addAttribute("materialRequest", materialRequestDto);
         model.addAttribute("requestBy", materialService.getRequestByName(materialRequestDto.getRequestBy()));
 
-        return "materialRequestUpdateForm";
+        return "product/materialRequestUpdateForm";
     }
 
     @PostMapping("material/update-req/{mrId}")

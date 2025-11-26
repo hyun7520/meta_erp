@@ -82,7 +82,7 @@ public class ProductController {
         }
         model.addAttribute("fpDto", fpDto);
 
-        return "productionForm";
+        return "product/productionForm";
     }
 
     @GetMapping("/product/ongoing")

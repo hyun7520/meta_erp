@@ -79,7 +79,7 @@ public class ProductRequestController {
         model.addAttribute("productRequest", productRequest);
         model.addAttribute("currentProductStock", currentProductStock);
 
-        return "productionRequestsDetail :: content";
+        return "product/productionRequestsDetail :: content";
     }
 
 
