@@ -2,9 +2,9 @@ package com.meta.stock.product.dto;
 
 public class ProductRequestDto {
 
-    private Long prId;
-    private Long managementEmployee;
-    private Long productionEmployee;
+    private long prId;
+    private long managementEmployee;
+    private long productionEmployee;
     private String serialCode;
     private String productName;  // Fixed_Product의 name
     private String toCompany;

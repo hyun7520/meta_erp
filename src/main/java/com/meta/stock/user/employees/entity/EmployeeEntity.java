@@ -16,7 +16,7 @@ public class EmployeeEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "eid_seq")
     @SequenceGenerator(name = "eid_seq", sequenceName = "SEQ_EMPLOYEES", allocationSize = 1)
     @Column(name = "employee_id")
-    private Integer employee_id;
+    private long employee_id;
 
     @Column(name = "name")
     private String name;
@@ -40,11 +40,11 @@ public class EmployeeEntity {
     @JoinColumn(name = "role_id") // Employees 테이블의 FK 컬럼
     private RoleEntity roleEntity;
 
-    public Integer getEmployee_id() {
+    public long getEmployee_id() {
         return employee_id;
     }
 
-    public void setEmployee_id(Integer employee_id) {
+    public void setEmployee_id(long employee_id) {
         this.employee_id = employee_id;
     }
 

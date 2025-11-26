@@ -19,8 +19,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 // 제품과 연관된 기능 수행 컨트롤러
 @Controller
@@ -39,49 +40,8 @@ public class ProductController {
 
     // 생산 페이지 로드
     @GetMapping("/product")
-    public String getAllProducts(
-
-            // 생산 요청 파라미터
-            @RequestParam(defaultValue = "0") int prPage,
-            @RequestParam(defaultValue = "10") int prSize,
-            @RequestParam(required = false) String prKeyword,
-            @RequestParam(defaultValue = "requestDate") String prSortBy,
-            @RequestParam(defaultValue = "ASC") String prSortDir,
-
-            // 재료 발주 파라미터
-            @RequestParam(defaultValue = "0") int mrPage,
-            @RequestParam(defaultValue = "5") int mrSize,
-            @RequestParam(required = false) String mrKeyword,
-            @RequestParam(defaultValue = "requestDate") String mrSortBy,
-            @RequestParam(defaultValue = "ASC") String mrSortDir,
-
-            Model model) {
-
-        // 모든 완제품 재고 현황 조회
-        List<ProductStockDto> allProducts = productService.findTotalProductStock();
-        model.addAttribute("allProducts", allProducts);
-
-        // 진행 중인 생산 요청 페이징/검색/정렬
-        Pageable prPageable = PageRequest.of(prPage, prSize, Sort.by(Sort.Direction.fromString(prSortDir), prSortBy));
-        Page<ProductRequestDto> productRequests = productionRequestService.findOngoingRequestsWithPaging(prKeyword, prPageable);
-        model.addAttribute("productRequests", productRequests);
-        model.addAttribute("prKeyword", prKeyword);
-        model.addAttribute("prSortBy", prSortBy);
-        model.addAttribute("prSortDir", prSortDir);
-
-        // 미승인 재료 발주 요청 페이징/검색/정렬
-        Pageable mrPageable = PageRequest.of(mrPage, mrSize, Sort.by(Sort.Direction.fromString(mrSortDir), mrSortBy));
-        Page<MaterialRequestDto> materialRequests = materialService.findMaterialRequestsWithPaging(mrKeyword, mrPageable);
-        model.addAttribute("materialRequests", materialRequests);
-        model.addAttribute("mrKeyword", mrKeyword);
-        model.addAttribute("mrSortBy", mrSortBy);
-        model.addAttribute("mrSortDir", mrSortDir);
-
-        // 페이지 로드 시 예측 모델 호출 부족한 재고가 있는지 확인
-        // List<PredictionDto> prediction = predictService.doPrediction();
-        // model.addAttribute("prediction", prediction);
-
-        return "productionMain";
+    public String getProductsDash() {
+        return "product/productionMain";
     }
 
     // 완제품 재고 전체 조회 페이지
@@ -123,6 +83,54 @@ public class ProductController {
         model.addAttribute("fpDto", fpDto);
 
         return "productionForm";
+    }
+
+    @GetMapping("/product/ongoing")
+    public ResponseEntity<Map<String, Object>> getProductsOngoing(
+            @RequestParam(defaultValue = "0") int prPage,
+            @RequestParam(defaultValue = "10") int prSize,
+            @RequestParam(required = false) String prKeyword,
+            @RequestParam(defaultValue = "requestDate") String prSortBy,
+            @RequestParam(defaultValue = "ASC") String prSortDir
+    ) {
+        // 진행 중인 생산 요청 페이징/검색/정렬
+        Pageable prPageable = PageRequest.of(prPage, prSize, Sort.by(Sort.Direction.fromString(prSortDir), prSortBy));
+        Page<ProductRequestDto> productRequests = productionRequestService.findOngoingRequestsWithPaging(prKeyword, prPageable);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("products", productRequests);
+        result.put("prKeyword", prKeyword);
+        result.put("prSortBy", prSortBy);
+        result.put("prSortDir", prSortDir);
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/product/progress")
+    public ResponseEntity<List<ProductStockDto>> getProductsProgress() {
+        // 모든 완제품 재고 현황 조회
+        List<ProductStockDto> allProducts = productService.findTotalProductStock();
+        return ResponseEntity.ok(allProducts);
+    }
+
+    @GetMapping("/product/readyMaterials")
+    public ResponseEntity<Map<String, Object>> getProductsReadyMaterials(
+            // 재료 발주 파라미터
+            @RequestParam(defaultValue = "0") int mrPage,
+            @RequestParam(defaultValue = "5") int mrSize,
+            @RequestParam(required = false) String mrKeyword,
+            @RequestParam(defaultValue = "requestDate") String mrSortBy,
+            @RequestParam(defaultValue = "ASC") String mrSortDir
+    ) {
+        // 미승인 재료 발주 요청 페이징/검색/정렬
+        Pageable mrPageable = PageRequest.of(mrPage, mrSize, Sort.by(Sort.Direction.fromString(mrSortDir), mrSortBy));
+        Page<MaterialRequestDto> materialRequests = materialService.findMaterialRequestsWithPaging(mrKeyword, mrPageable);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("materials", materialRequests);
+        result.put("mrKeyword", mrKeyword);
+        result.put("mrSortBy", mrSortBy);
+        result.put("mrSortDir", mrSortDir);
+        return ResponseEntity.ok(result);
     }
 
     @PostMapping("/product")
