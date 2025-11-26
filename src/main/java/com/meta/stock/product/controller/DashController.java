@@ -108,7 +108,7 @@ public class DashController {
     @GetMapping("/dash/loss")
     @ResponseBody
     public ResponseEntity<List<ProductLossBean>> productLoss() {
-        List<ProductLossBean> list = null;
+        List<ProductLossBean> list = graphService.getLossPerHumidity();
         return ResponseEntity.ok(list);
     }
 }
