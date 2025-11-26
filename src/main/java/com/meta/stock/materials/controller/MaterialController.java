@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,34 +31,11 @@ public class MaterialController {
 
     // 전체 재료 요청 조회
     @GetMapping("material")
-    public String getAllMaterials(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) String keyword,
-            @RequestParam(defaultValue = "requestDate") String sortBy,
-            @RequestParam(defaultValue = "DESC") String sortDir,
-            Model model) {
-
-        Pageable pageable = PageRequest.of(page, size,
-                Sort.by(Sort.Direction.fromString(sortDir), sortBy));
-
-        // 발주 요청 목록
-        Page<MaterialRequestDto> materialRequests =
-                materialService.findAllMaterialRequests(keyword, pageable);
-
+    public String getAllMaterials(Model model) {
         // 발주 요청 통계
         Map<String, Integer> requestStats = materialService.getRequestStatistics();
 
-        // 현재 재료 재고
-        List<MaterialStockDto> materialStocks = materialService.getCurrentMaterialStocks();
-
-        model.addAttribute("materialRequests", materialRequests);
         model.addAttribute("requestStats", requestStats);
-        model.addAttribute("materialStocks", materialStocks);
-        model.addAttribute("sortBy", sortBy);
-        model.addAttribute("sortDir", sortDir);
-        model.addAttribute("keyword", keyword);
-
         return "material";
     }
 
@@ -135,5 +114,35 @@ public class MaterialController {
         materialService.updateMaterialRequest(mrId, qty, note);
 
         return "redirect:/material";
+    }
+
+    @GetMapping("/material/list")
+    public ResponseEntity<Map<String, Object>> getMaterialRequestList(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(defaultValue = "requestDate") String sortBy,
+            @RequestParam(defaultValue = "DESC") String sortDir
+    ) {
+        Pageable pageable = PageRequest.of(page, size,
+                Sort.by(Sort.Direction.fromString(sortDir), sortBy));
+
+        // 발주 요청 목록
+        Page<MaterialRequestDto> materialRequests =
+                materialService.findAllMaterialRequests(keyword, pageable);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("materials", materialRequests);
+        result.put("sortBy", sortBy);
+        result.put("sortDir", sortDir);
+        result.put("keyword", keyword);
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/material/progress")
+    public ResponseEntity<List<MaterialStockDto>> getMaterialProgress() {
+        // 현재 재료 재고
+        List<MaterialStockDto> materialStocks = materialService.getCurrentMaterialStocks();
+        return ResponseEntity.ok(materialStocks);
     }
 }

@@ -217,7 +217,7 @@ const loadOngoingProductList = ({page, keyword, sortBy, sortDir} = productsParam
         })
         .catch(error => {
             console.log("오류 발생 : " + error);
-            renderOngoingList();
+            renderOngoingList([]);
         });
 }
 
@@ -359,6 +359,6 @@ const loadRequestReadyMaterials = ({page, keyword, sortBy, sortDir} = materialsP
         })
         .catch(error => {
             console.log("오류 발생 : " + error);
-            renderReadyTable();
+            renderReadyTable([]);
         });
 }

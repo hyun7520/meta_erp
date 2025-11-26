@@ -212,6 +212,6 @@ const loadProductRequestList = ({page, keyword, sortBy, sortDir} = prParam) => {
         })
         .catch(error => {
             console.log("오류 발생 : " + error);
-            renderPRList();
+            renderPRList([]);
         });
 }

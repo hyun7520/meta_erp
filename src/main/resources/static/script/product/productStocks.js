@@ -103,6 +103,6 @@ const loadProductStockList = ({page, keyword, sortBy, sortDir} = pStockParam) =>
         })
         .catch(error => {
             console.log("오류 발생 : " + error);
-            renderPStockList();
+            renderPStockList([]);
         });
 }
