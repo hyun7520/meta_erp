@@ -29,28 +29,10 @@ public class ProductRequestController {
 
     // 주문 조회
     @GetMapping("/pr")
-    public String getAllOrders(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "6") int size,
-            @RequestParam(required = false) String keyword,
-            @RequestParam(defaultValue = "prId") String sortBy,
-            @RequestParam(defaultValue = "ASC") String sortDir,
-            Model model) {
-
-        Pageable pageable = PageRequest.of(page, size,
-                Sort.by(Sort.Direction.fromString(sortDir), sortBy));
-
-        Page<ProductRequestDto> productRequests =
-                productionRequestService.findAllProductRequests(keyword, pageable);
-
+    public String getAllOrders(Model model) {
         Map<String, Integer> statusStats = productionRequestService.getStatusStatistics();
 
         model.addAttribute("statusStats", statusStats);
-        model.addAttribute("productRequests", productRequests);
-        model.addAttribute("sortBy", sortBy);
-        model.addAttribute("sortDir", sortDir);
-        model.addAttribute("keyword", keyword);
-
         return "productionRequests";
     }
 
@@ -82,6 +64,28 @@ public class ProductRequestController {
         return "product/productionRequestsDetail :: content";
     }
 
+    @GetMapping("/pr/list")
+    public ResponseEntity<Map<String, Object>> getProductRequestList(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "6") int size,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(defaultValue = "prId") String sortBy,
+            @RequestParam(defaultValue = "ASC") String sortDir
+    ) {
+
+        Pageable pageable = PageRequest.of(page, size,
+                Sort.by(Sort.Direction.fromString(sortDir), sortBy));
+
+        Page<ProductRequestDto> productRequests =
+                productionRequestService.findAllProductRequests(keyword, pageable);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("pRequests", productRequests);
+        result.put("sortBy", sortBy);
+        result.put("sortDir", sortDir);
+        result.put("keyword", keyword);
+        return ResponseEntity.ok(result);
+    }
 
     // 주문수주
     @PostMapping("/pr/accept/{prId}")

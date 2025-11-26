@@ -43,7 +43,7 @@ public class ProductRequestDto {
     public Integer getPlannedQty() {return plannedQty != null ? plannedQty : 0;}
     public Integer getCompletedQty() {return completedQty != null ? completedQty : 0;}
 
-    public Integer getInStockQty() {return inStockQty;}
+    public Integer getInStockQty() {return inStockQty != null ? inStockQty : 0;}
     public String getUnit() {return unit;}
     public String getRequestDate() {return requestDate;}
     public String getProductionStartDate() {return productionStartDate;}

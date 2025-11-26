@@ -24,9 +24,9 @@
                             진행 중인 주문
                             <span class="tab-count"></span>
                         </h2>
-                        <a th:href="@{/pr}" class="btn btn-approve">
+                        <button type="button" class="btn btn-approve" th:onclick="|location.href='@{/pr}'|">
                             <i class="fas fa-list"></i> 전체 조회
-                        </a>
+                        </button>
                     </div>
 
                     <!-- 검색 및 정렬 폼 -->
@@ -36,8 +36,8 @@
                                 <input type="text" name="prKeyword" placeholder="제품명 검색">
                             </div>
                             <div class="form-group">
-                                <button type="submit" class="btn btn-confirm">검색</button>
-                                <button type="submit" class="btn btn-cancel" onclick="resetOngoingSort()">정렬 초기화</button>
+                                <button type="button" class="btn btn-confirm" onclick="searchOngoingList()">검색</button>
+                                <button type="button" class="btn btn-cancel" onclick="resetOngoingSort()">정렬 초기화</button>
                             </div>
                         </div>
                     </form>

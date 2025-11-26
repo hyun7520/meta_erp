@@ -162,16 +162,16 @@
         <div class="row">
             <!-- 좌측: 주문 목록 테이블 (65%) -->
             <div class="left-section">
-                <div class="fragement-box">
+                <div class="fragement-box" id="product_request_list">
                     <div class="action-bar">
                         <h2>
                             <i class="fas fa-clipboard-list"></i>
                             전체 주문 목록
-                            <span class="tab-count" th:text="${productRequests.totalElements}">0</span>
+                            <span class="tab-count">0</span>
                         </h2>
-                        <a th:href="@{/product}" class="btn btn-cancel">
+                        <button type="button" class="btn btn-cancel" th:onclick="|location.href='@{/product}'|">
                             <i class="fas fa-arrow-left"></i> 대시보드로
-                        </a>
+                        </button>
                     </div>
 
                     <!-- 검색 및 정렬 폼 -->
@@ -181,22 +181,7 @@
                                 <input type="text" name="keyword" placeholder="제품명 또는 거래처 검색" th:value="${keyword}">
                             </div>
                             <div class="form-group">
-                                <select name="sortBy">
-                                    <option value="prId" th:selected="${sortBy == 'prId'}">주문ID</option>
-                                    <option value="requestDate" th:selected="${sortBy == 'requestDate'}">요청일</option>
-                                    <option value="deadline" th:selected="${sortBy == 'deadline'}">납기</option>
-                                    <option value="productName" th:selected="${sortBy == 'productName'}">제품명</option>
-                                    <option value="toCompany" th:selected="${sortBy == 'toCompany'}">거래처</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <select name="sortDir">
-                                    <option value="ASC" th:selected="${sortDir == 'ASC'}">오름차순</option>
-                                    <option value="DESC" th:selected="${sortDir == 'DESC'}">내림차순</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <button type="submit" class="btn btn-confirm">검색</button>
+                                <button type="button" class="btn btn-confirm" onclick="searchPR()">검색</button>
                             </div>
                         </div>
                     </form>
@@ -206,93 +191,34 @@
                         <table>
                             <thead>
                             <tr>
-                                <th class="sortable"
-                                    th:classappend="${sortBy == 'prId'} ? (${sortDir == 'ASC'} ? 'asc' : 'desc')"
-                                    th:onclick="|location.href='@{/pr(sortBy='prId', sortDir=${sortBy == 'prId' and sortDir == 'ASC' ? 'DESC' : 'ASC'}, keyword=${keyword})}'|">
+                                <th name="prId" class="sortable" onclick="sortPR(this)">
                                     주문ID
                                 </th>
                                 <th>경영담당자</th>
-                                <th class="sortable"
-                                    th:classappend="${sortBy == 'productName'} ? (${sortDir == 'ASC'} ? 'asc' : 'desc')"
-                                    th:onclick="|location.href='@{/pr(sortBy='productName', sortDir=${sortBy == 'productName' and sortDir == 'ASC' ? 'DESC' : 'ASC'}, keyword=${keyword})}'|">
+                                <th name="productName"  class="sortable" onclick="sortPR(this)">
                                     제품명
                                 </th>
-                                <th class="sortable"
-                                    th:classappend="${sortBy == 'toCompany'} ? (${sortDir == 'ASC'} ? 'asc' : 'desc')"
-                                    th:onclick="|location.href='@{/pr(sortBy='toCompany', sortDir=${sortBy == 'toCompany' and sortDir == 'ASC' ? 'DESC' : 'ASC'}, keyword=${keyword})}'|">
+                                <th name="toCompany"  class="sortable" onclick="sortPR(this)">
                                     거래처
                                 </th>
-                                <th class="sortable"
-                                    th:classappend="${sortBy == 'targetQty'} ? (${sortDir == 'ASC'} ? 'asc' : 'desc')"
-                                    th:onclick="|location.href='@{/pr(sortBy='targetQty', sortDir=${sortBy == 'targetQty' and sortDir == 'ASC' ? 'DESC' : 'ASC'}, keyword=${keyword})}'|">
+                                <th name="targetQty"  class="sortable" onclick="sortPR(this)">
                                     수량
                                 </th>
-                                <th class="sortable"
-                                    th:classappend="${sortBy == 'deadline'} ? (${sortDir == 'ASC'} ? 'asc' : 'desc')"
-                                    th:onclick="|location.href='@{/pr(sortBy='deadline', sortDir=${sortBy == 'deadline' and sortDir == 'ASC' ? 'DESC' : 'ASC'}, keyword=${keyword})}'|">
+                                <th name="deadline"  class="sortable" onclick="sortPR(this)">
                                     납기
                                 </th>
-                                <th class="sortable"
-                                    th:classappend="${sortBy == 'complete'} ? (${sortDir == 'ASC'} ? 'asc' : 'desc')"
-                                    th:onclick="|location.href='@{/pr(sortBy='complete', sortDir=${sortBy == 'complete' and sortDir == 'ASC' ? 'DESC' : 'ASC'}, keyword=${keyword})}'|">
+                                <th name="complete"  class="sortable" onclick="sortPR(this)">
                                     상태
                                 </th>
-                                <th>액션</th>
+                                <th>-</th>
                             </tr>
                             </thead>
-                            <tbody>
-                            <tr th:each="pr : ${productRequests.content}">
-                                <td th:text="${pr.prId}">1</td>
-                                <td th:text="${pr.managementEmployee}">김경영</td>
-                                <td th:text="${pr.productName}">부대찌개</td>
-                                <td th:text="${pr.toCompany}">거래처A</td>
-                                <td><span class="qty-unit" th:text="${pr.targetQty}">500</span></td>
-                                <td th:text="${pr.deadline}">2025-12-01</td>
-                                <td>
-                                        <span th:switch="${pr.complete}">
-                                            <span th:case="0" class="status-badge status-pending">미수주</span>
-                                            <span th:case="1" class="status-badge status-approved">수주완료</span>
-                                            <span th:case="2" class="status-badge status-rejected">완료</span>
-                                        </span>
-                                </td>
-                                <td>
-                                    <button type="button" class="btn btn-approve" style="padding: 6px 12px;"
-                                            th:onclick="|showDetailModal(${pr.prId})|">
-                                        <i class="fas fa-eye"></i> 상세
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr th:if="${productRequests.isEmpty()}">
-                                <td colspan="8" style="text-align: center; color: #9CA3AF; padding: 40px;">
-                                    주문이 없습니다.
-                                </td>
-                            </tr>
-                            </tbody>
+                            <tbody></tbody>
                         </table>
                     </div>
 
                     <!-- 페이지네이션 -->
-                    <div class="pagination" th:if="${productRequests.totalPages > 1}">
-                        <button class="pagination-btn"
-                                th:disabled="${productRequests.first}"
-                                th:onclick="|location.href='@{/pr(page=${productRequests.number - 1}, sortBy=${sortBy}, sortDir=${sortDir}, keyword=${keyword})}'|">
-                            ◀
-                        </button>
-
-                        <button class="pagination-btn"
-                                th:each="i : ${#numbers.sequence(0, productRequests.totalPages - 1)}"
-                                th:classappend="${i == productRequests.number} ? 'active'"
-                                th:onclick="|location.href='@{/pr(page=${i}, sortBy=${sortBy}, sortDir=${sortDir}, keyword=${keyword})}'|"
-                                th:text="${i + 1}">
-                            1
-                        </button>
-
-                        <button class="pagination-btn"
-                                th:disabled="${productRequests.last}"
-                                th:onclick="|location.href='@{/pr(page=${productRequests.number + 1}, sortBy=${sortBy}, sortDir=${sortDir}, keyword=${keyword})}'|">
-                            ▶
-                        </button>
-                    </div>
+                    <div class="pagination" id="pagination"></div>
                 </div>
             </div>
 
@@ -350,119 +276,6 @@
     </div>
 </div>
 <!-- JavaScript 함수들 -->
-<script>
-    function showDetailModal(prId) {
-        // 모달 표시
-        document.getElementById('detailModal').style.display = 'block';
-        document.body.style.overflow = 'hidden';
-
-        // AJAX로 기존 HTML fragment 로드
-        fetch('/pr/' + prId)
-            .then(response => response.text())
-            .then(html => {
-                document.getElementById('modalContent').innerHTML = html;
-            })
-            .catch(error => {
-                document.getElementById('modalContent').innerHTML =
-                    '<div style="text-align: center; padding: 40px; color: #EF4444;">오류가 발생했습니다.</div>';
-            });
-    }
-
-    function closeModal() {
-        document.getElementById('detailModal').style.display = 'none';
-        document.body.style.overflow = 'auto';
-    }
-
-    // ESC 키로 모달 닫기
-    document.addEventListener('keydown', function(event) {
-        if (event.key === 'Escape') {
-            closeModal();
-        }
-    });
-
-    // 모달 외부 클릭 시 닫기
-    document.addEventListener('DOMContentLoaded', function() {
-        const modal = document.getElementById('detailModal');
-        if (modal) {
-            modal.addEventListener('click', function(event) {
-                if (event.target === this) {
-                    closeModal();
-                }
-            });
-        }
-    });
-
-    function toggleSelectAll(checkbox) {
-        const checkboxes = document.querySelectorAll('.material-checkbox');
-        checkboxes.forEach(cb => {
-            cb.checked = checkbox.checked;
-        });
-    }
-
-    function requestMaterials() {
-        const checkboxes = document.querySelectorAll('.material-checkbox:checked');
-
-        if (checkboxes.length === 0) {
-            alert('발주할 재료를 선택해주세요.');
-            return;
-        }
-
-        const materials = [];
-        checkboxes.forEach(cb => {
-            materials.push({
-                fmid: cb.dataset.fmid,
-                name: cb.value,
-                qty: cb.dataset.qty,
-                unit: cb.dataset.unit
-            });
-        });
-
-        const params = new URLSearchParams();
-        materials.forEach((material) => {
-            params.append('fmIds', material.fmid);
-            params.append('materialNames', material.name);
-            params.append('quantities', material.qty);
-            params.append('units', material.unit);
-        });
-
-        window.location.href = '/material/request?' + params.toString();
-    }
-
-    function acceptOrder(prId) {
-        if (confirm('이 주문을 수주하시겠습니까?')) {
-            fetch('/pr/accept/' + prId, { method: 'POST' })
-                .then(response => {
-                    if (response.ok) {
-                        alert('주문이 수주되었습니다.');
-                        closeModal();
-                        location.reload();
-                    } else {
-                        alert('오류가 발생했습니다.');
-                    }
-                })
-                .catch(error => {
-                    alert('오류가 발생했습니다.');
-                });
-        }
-    }
-
-    function shipOrder(prId) {
-        if (confirm('제품을 출하하시겠습니까?')) {
-            fetch('/pr/ship/' + prId, { method: 'POST' })
-                .then(response => {
-                    if (response.ok) {
-                        alert('제품이 출하되었습니다.');
-                        closeModal();
-                        location.reload();
-                    } else {
-                        alert('오류가 발생했습니다.');
-                    }
-                })
-                .catch(error => {
-                    alert('오류가 발생했습니다.');
-                });
-        }
-    }
-</script>
+<script type="text/javascript" th:src="@{/script/product/productRequests.js}"></script>
 </body>
 </html>

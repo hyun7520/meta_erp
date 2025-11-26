@@ -129,7 +129,7 @@ const searchOngoingList = () => {
     const keyword = main.querySelector("input[name='prKeyword']").value;
 
     productsParam.search = keyword;
-    loadOngoingProductList();
+    loadOngoingProductList(productsParam);
 }
 
 const sortOngoingList = (element) => {
@@ -144,7 +144,7 @@ const sortOngoingList = (element) => {
 
     productsParam.sortBy = sortKey;
     productsParam.sortDir = sortDir;
-    loadOngoingProductList();
+    loadOngoingProductList(productsParam);
 }
 
 const resetOngoingSort = () => {
@@ -154,7 +154,7 @@ const resetOngoingSort = () => {
 
     productsParam.sortBy = 'requestDate';
     productsParam.sortDir = 'ASC';
-    loadOngoingProductList();
+    loadOngoingProductList(productsParam);
 }
 
 const renderOngoingList = (list) => {
@@ -197,9 +197,13 @@ const renderOngoingList = (list) => {
     }
 }
 
-const loadOngoingProductList = () => {
-    const {page, keyword, sortBy, sortDir} = productsParam;
-    const parseParams = `page=${page}&prKeyword=${keyword}&prSortBy=${sortBy}&prSortDir=${sortDir}`;
+const moveOngoingPage = (pageNum) => {
+    productsParam.page = pageNum;
+    loadOngoingProductList(productsParam);
+}
+
+const loadOngoingProductList = ({page, keyword, sortBy, sortDir} = productsParam) => {
+    const parseParams = `page=${page - 1}&prKeyword=${keyword}&prSortBy=${sortBy || 'requestDate'}&prSortDir=${sortDir || 'ASC'}`;
     fetch("/product/ongoing?" + parseParams, {method: "GET"})
         .then(response => response.json())
         .then(json => {
@@ -209,7 +213,7 @@ const loadOngoingProductList = () => {
             productsParam.sortDir = json.prSortDir;
 
             renderOngoingList(json.products.content);
-            renderPagination(productsParam.page, json.products.totalPages, moveReadyPage, "pagination_ongoing");
+            renderPagination(productsParam.page, json.products.totalPages, moveOngoingPage, "pagination_ongoing");
         })
         .catch(error => {
             console.log("오류 발생 : " + error);
@@ -276,7 +280,7 @@ const searchReadyTable = () => {
     const keyword = main.querySelector("input[name='mrKeyword']").value;
 
     materialsParam.search = keyword;
-    loadRequestReadyMaterials();
+    loadRequestReadyMaterials(materialsParam);
 }
 
 const readySort = (element) => {
@@ -291,7 +295,7 @@ const readySort = (element) => {
 
     materialsParam.sortBy = sortKey;
     materialsParam.sortDir = sortDir;
-    loadRequestReadyMaterials();
+    loadRequestReadyMaterials(materialsParam);
 }
 
 const renderReadyTable = (list) => {
@@ -337,12 +341,11 @@ const renderReadyTable = (list) => {
 
 const moveReadyPage = (pageNum) => {
     materialsParam.page = pageNum;
-    loadRequestReadyMaterials();
+    loadRequestReadyMaterials(materialsParam);
 }
 
-const loadRequestReadyMaterials = () => {
-    const {page, keyword, sortBy, sortDir} = materialsParam;
-    const parseParams = `page=${page}&mrKeyword=${keyword}&mrSortBy=${sortBy}&mrSortDir=${sortDir}`;
+const loadRequestReadyMaterials = ({page, keyword, sortBy, sortDir} = materialsParam) => {
+    const parseParams = `page=${page - 1}&mrKeyword=${keyword}&mrSortBy=${sortBy || 'requestDate'}&mrSortDir=${sortDir || 'DESC'}`;
     fetch("/product/readyMaterials?" + parseParams, {method: "GET"})
         .then(response => response.json())
         .then(json => {
