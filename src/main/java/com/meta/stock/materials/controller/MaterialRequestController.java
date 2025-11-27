@@ -18,11 +18,11 @@ public class MaterialRequestController {
     }
 
     // 전체 발주 목록 조회
-//    @GetMapping
-//    public ResponseEntity<List<MaterialRequestDto.Response>> getAllMaterialRequests() {
-//        List<MaterialRequestDto.Response> responses = materialRequestService.getAllMaterialRequests();
-//        return ResponseEntity.ok(responses);
-//    }
+    @GetMapping
+    public ResponseEntity<List<MaterialRequestDto.Response>> getAllMaterialRequests() {
+        List<MaterialRequestDto.Response> responses = materialRequestService.getAllMaterialRequests();
+        return ResponseEntity.ok(responses);
+    }
 
     // 미승인 발주 목록 조회
     @GetMapping("/pending")

@@ -18,11 +18,11 @@ public class MaterialRequestControllerV2 {
         this.materialRequestService = materialRequestService;
     }
 
-//    @GetMapping
-//    public ResponseEntity<List<MaterialRequestDto.Response>> getAllMaterialRequests() {
-//        List<MaterialRequestDto.Response> responses = materialRequestService.getAllMaterialRequests();
-//        return ResponseEntity.ok(responses);
-//    }
+    @GetMapping
+    public ResponseEntity<List<MaterialRequestDto.Response>> getAllMaterialRequests() {
+        List<MaterialRequestDto.Response> responses = materialRequestService.getAllMaterialRequests();
+        return ResponseEntity.ok(responses);
+    }
 
     @GetMapping("/pending")
     public ResponseEntity<List<MaterialRequestDto.Response>> getPendingMaterialRequests() {
