@@ -104,7 +104,7 @@
         SELECT COUNT(*)
         FROM Production_Request pr
         LEFT JOIN Fixed_Product fp ON pr.serial_code = fp.serial_code
-        WHERE pr.end_date IS NULL
+        WHERE pr.end_date IS NULL AND pr.production_start_date IS NOT NULL
         <if test="keyword != null and keyword != ''">
             AND fp.name LIKE '%' || #{keyword} || '%'
         </if>

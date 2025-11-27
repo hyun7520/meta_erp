@@ -1,6 +1,6 @@
 package com.meta.stock.materials.entity;
 
-import com.meta.stock.config.StringToDateConverter;
+import com.meta.stock.config.DateStringConverter;
 import jakarta.persistence.*;
 
 // 재료 요청서 
@@ -24,7 +24,7 @@ public class MaterialRequestEntity {
     private Long productionEmployee; // 생산 담당자 Employee ID
 
     @Column(name = "REQUEST_DATE")
-    @Convert(converter = StringToDateConverter.class)
+    @Convert(converter = DateStringConverter.class)
     private String requestDate;
 
     @Column(name = "QTY")
@@ -37,7 +37,7 @@ public class MaterialRequestEntity {
     private int approved; // 0: 미승인, 1: 승인, -1: 반려
 
     @Column(name = "APPROVED_DATE")
-    @Convert(converter = StringToDateConverter.class)
+    @Convert(converter = DateStringConverter.class)
     private String approvedDate;
 
     @Column(name = "NOTE", length = 255)
