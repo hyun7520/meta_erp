@@ -30,6 +30,7 @@ public class PythonParser {
     public void init() {
         pythonService.runLossPython(); // 로스율 저장
         readCsv();
+        pythonService.runDemandsPython(); // 수요량 저장
     }
 
     public Map<String, Map<String, List<String>>> getLossContents() {
