@@ -49,6 +49,7 @@
         SUM(l.QTY) AS QTY
         FROM PRODUCTS p
         JOIN LOTS l ON p.LOTS_ID = l.LOT_ID
+        WHERE l.SHELF_LIFE_DAYS >= SYSDATE
         GROUP BY p.PRODUCT_NAME
     </select>
 
@@ -94,6 +95,7 @@
         FROM Products p
         INNER JOIN Lots l ON p.lots_id = l.lot_id
         WHERE 1=1
+        AND l.shelf_life_days - SYSDATE >= -7
         <if test="keyword != null and keyword != ''">
             AND p.product_name LIKE '%' || #{keyword} || '%'
         </if>
@@ -102,7 +104,7 @@
             <when test="sortBy == 'productName'">p.product_name</when>
             <when test="sortBy == 'storageDate'">l.storage_date</when>
             <when test="sortBy == 'qty'">l.qty</when>
-            <otherwise>l.storage_date</otherwise>
+            <otherwise>l.shelf_life_days</otherwise>
         </choose>
         <choose>
             <when test="sortDir == 'DESC'">DESC</when>
@@ -118,6 +120,7 @@
         FROM Products p
         INNER JOIN Lots l ON p.lots_id = l.lot_id
         WHERE 1=1
+        AND l.shelf_life_days - SYSDATE >= -7
         <if test="keyword != null and keyword != ''">
             AND p.product_name LIKE '%' || #{keyword} || '%'
         </if>
