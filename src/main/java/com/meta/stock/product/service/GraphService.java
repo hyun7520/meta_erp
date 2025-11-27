@@ -12,13 +12,18 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 @Service
@@ -30,6 +35,20 @@ public class GraphService {
     private PythonParser parser;
 
     private String DEFAULT_ROOT = "src/main/resources/static/file/";
+
+    public Map<String, String> getNotification() {
+        LocalDate today = LocalDate.now();
+        String date = DateTimeFormatter.ofPattern("yyyyMM").format(today);
+        String day = today.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.KOREAN);
+
+        List<String> weather = parser.getProductLossPerYearMonth(date).get("감자"); // 기본 데이터 get
+        Map<String, String> result = new HashMap<>();
+        result.put("date", DateTimeFormatter.ofPattern("yyyy-MM-dd ").format(today) + day);
+        result.put("humidity", weather.get(1));
+        result.put("status", weather.get(2));
+
+        return result;
+    }
 
     public List<ProductDemandBean> getList() {
         List<ProductDemandBean> list = new ArrayList<>();

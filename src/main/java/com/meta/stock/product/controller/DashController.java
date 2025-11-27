@@ -88,6 +88,11 @@ public class DashController {
         return ResponseEntity.ok(productsService.getFixedProducts());
     }
 
+    @GetMapping("/noti")
+    public ResponseEntity<Map<String, String>> getNotification() {
+        return ResponseEntity.ok(graphService.getNotification());
+    }
+
     @GetMapping("/dash/flow")
     public ResponseEntity<DashFlowBean> dashFlow() {
         return ResponseEntity.ok(dashService.getDashFlowBean());
