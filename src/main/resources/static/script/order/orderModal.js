@@ -43,9 +43,9 @@ const updateProductSelect = (productName = "") => {
     select.innerHTML = '<option value="">선택하세요</option>';
     products.forEach(product => {
         const option = document.createElement('option');
-        option.value = product.productId;
+        option.value = product.serialCode;
         option.textContent = product.productName;
-        if (product.productName === productName) {
+        if (product.serialCode === productName) {
             option.selected = true;
         }
         select.appendChild(option);
@@ -106,14 +106,14 @@ const checkOrderValidate = () => {
 }
 
 const insertData = () => {
-    const productId = document.getElementById('order_product_select').value;
+    const serialCode = document.getElementById('order_product_select').value;
     const clientName = document.getElementById('order_client_name').value;
     const quantity = document.getElementById('order_qty').value;
     const unit = document.getElementById('order_unit').value;
     const dueDate = document.getElementById('order_due_date').value;
 
     return {
-        productId: parseInt(productId),
+        serialCode: serialCode,
         requestBy: clientName.trim(),
         qty: parseInt(quantity),
         unit: unit.trim(),

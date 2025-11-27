@@ -197,6 +197,10 @@
         (SEQ_MATERIAL_REQUEST.NEXTVAL, #{fmId}, ${requestBy}, SYSDATE, #{qty}, 'g', 0, null, #{note})
     </insert>
 
+    <insert id="materialSave" parameterType="com.meta.stock.materials.entity.MaterialEntity">
+        insert into materials values (SEQ_MATERIALS.NEXTVAL, #{materialName}, #{materialLoss}, #{lotsId}, #{mrId})
+    </insert>
+
     <select id="getMaterialRequestById" resultMap="MaterialRequestMap">
         select mr.*, fp.name as MATERIAL_NAME
         from Material_Request mr

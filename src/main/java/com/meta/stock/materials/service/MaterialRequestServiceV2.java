@@ -1,8 +1,12 @@
 package com.meta.stock.materials.service;
 
+import com.meta.stock.lots.entity.LotsEntity;
+import com.meta.stock.lots.mapper.LotsMapper;
 import com.meta.stock.materials.dto.MaterialRequestDto;
+import com.meta.stock.materials.entity.MaterialEntity;
 import com.meta.stock.materials.entity.MaterialRequestEntity;
 import com.meta.stock.materials.entity.FixedMaterialEntity;
+import com.meta.stock.materials.mapper.MaterialMapper;
 import com.meta.stock.materials.repository.MaterialRequestRepository;
 import com.meta.stock.materials.repository.FixedMaterialRepository;
 import com.meta.stock.user.employees.entity.EmployeeEntity;
@@ -25,6 +29,10 @@ public class MaterialRequestServiceV2 {
     private final FixedMaterialRepository fixedMaterialRepository;
     @Autowired
     private final EmployeeRepository employeeRepository;
+    @Autowired
+    private final LotsMapper lotsMapper;
+    @Autowired
+    private final MaterialMapper materialMapper;
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private static final DateTimeFormatter DATETIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -32,10 +40,13 @@ public class MaterialRequestServiceV2 {
     public MaterialRequestServiceV2(
             MaterialRequestRepository materialRequestRepository,
             FixedMaterialRepository fixedMaterialRepository,
-            EmployeeRepository employeeRepository) {
+            EmployeeRepository employeeRepository,
+            LotsMapper lotsMapper, MaterialMapper materialMapper) {
         this.materialRequestRepository = materialRequestRepository;
         this.fixedMaterialRepository = fixedMaterialRepository;
         this.employeeRepository = employeeRepository;
+        this.lotsMapper = lotsMapper;
+        this.materialMapper = materialMapper;
     }
 
     @Transactional(readOnly = true)
@@ -93,7 +104,7 @@ public class MaterialRequestServiceV2 {
         entity.setProductionEmployee(approval.getProductionEmployee());
         entity.setApprovedDate(LocalDateTime.now().format(DATE_FORMATTER));
 
-        if (approval.getNote() != null && !approval.getNote().isEmpty()) {
+        if (status == 1) {
             // 기존 NOTE에서 fm_id 부분 유지
             String existingNote = entity.getNote();
             String fmIdPart = "";
@@ -101,6 +112,7 @@ public class MaterialRequestServiceV2 {
                 fmIdPart = existingNote.split(":", 2)[0] + ":";
             }
             entity.setNote(fmIdPart + approval.getNote());
+            saveMaterial(entity);
         } else if (status == -1) {
             String existingNote = entity.getNote();
             String fmIdPart = "";
@@ -115,12 +127,14 @@ public class MaterialRequestServiceV2 {
     }
 
     private MaterialRequestDto.Response convertToResponse(MaterialRequestEntity entity) {
-        EmployeeEntity requester = employeeRepository.findById((int) entity.getRequestBy().intValue()).orElse(null);
-        EmployeeEntity managementEmp = entity.getManagementEmployee() > 0
-                ? employeeRepository.findById((int) entity.getManagementEmployee().intValue()).orElse(null)
+        EmployeeEntity requester = entity.getRequestBy() != null
+                ? employeeRepository.findById(entity.getRequestBy().intValue()).orElse(null)
                 : null;
-        EmployeeEntity productionEmp = entity.getProductionEmployee() > 0
-                ? employeeRepository.findById((int) entity.getProductionEmployee().intValue()).orElse(null)
+        EmployeeEntity managementEmp = entity.getManagementEmployee() != null && entity.getManagementEmployee() > 0
+                ? employeeRepository.findById(entity.getManagementEmployee().intValue()).orElse(null)
+                : null;
+        EmployeeEntity productionEmp = entity.getProductionEmployee() != null && entity.getProductionEmployee() > 0
+                ? employeeRepository.findById(entity.getProductionEmployee().intValue()).orElse(null)
                 : null;
 
         String requesterName = requester != null ? requester.getName() : String.valueOf(entity.getRequestBy());
@@ -128,26 +142,25 @@ public class MaterialRequestServiceV2 {
         String productionName = productionEmp != null ? productionEmp.getName() : "-";
 
         // NOTE에서 fm_id 추출
-        long fmId = 0;
+        long fmId = entity.getFmId();
         String materialName = "-";
         String actualNote = "";
 
-        if (entity.getNote() != null && entity.getNote().contains(":")) {
-            String[] parts = entity.getNote().split(":", 2);
-            try {
-                fmId = Long.parseLong(parts[0]);
+        try {
+            if (entity.getNote() != null && entity.getNote().contains(":")) {
+                String[] parts = entity.getNote().split(":", 2);
                 actualNote = parts.length > 1 ? parts[1] : "";
-
-                // fm_id로 Fixed_material 조회
-                FixedMaterialEntity fixedMaterial = fixedMaterialRepository.findById(fmId).orElse(null);
-                if (fixedMaterial != null) {
-                    materialName = fixedMaterial.getName();
-                }
-            } catch (NumberFormatException e) {
-                // fm_id가 숫자가 아니면 전체를 비고로 처리
+            } else {
                 actualNote = entity.getNote();
             }
-        } else {
+
+            // fm_id로 Fixed_material 조회
+            FixedMaterialEntity fixedMaterial = fixedMaterialRepository.findById(fmId).orElse(null);
+            if (fixedMaterial != null) {
+                materialName = fixedMaterial.getName();
+            }
+        } catch (NumberFormatException e) {
+            // fm_id가 숫자가 아니면 전체를 비고로 처리
             actualNote = entity.getNote();
         }
 
@@ -166,5 +179,18 @@ public class MaterialRequestServiceV2 {
                 .productionEmployeeName(productionName)
                 .note(actualNote)
                 .build();
+    }
+
+    private void saveMaterial(MaterialRequestEntity request) {
+        FixedMaterialEntity fixedMaterial = fixedMaterialRepository.findById(request.getFmId()).orElseThrow();
+        lotsMapper.storeProduct(request.getQty(), fixedMaterial.getLifeTime());
+        Long lotsId = lotsMapper.getLatestLot();
+
+        MaterialEntity material = new MaterialEntity();
+        material.setLotsId(lotsId);
+        material.setMaterialName(fixedMaterial.getName());
+        material.setMaterialLoss(fixedMaterial.getLifeTime()); // 원자재 로스율(가져와 insert)
+        material.setMrId(request.getMrId());
+        materialMapper.materialSave(material);
     }
 }

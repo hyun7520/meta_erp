@@ -13,7 +13,7 @@ public class OrderController {
             return "redirect:/login";
         } else {
             EmployeeGetDto employee = (EmployeeGetDto) session.getAttribute("employee");
-            if (employee.getDepartment().equals("생산") || employee.getRole().equals("사원")) {
+            if (employee.getDepartment().contains("생산") || employee.getRole().equals("사원")) {
                 return "redirect:/dash";
             }
         }
@@ -26,7 +26,7 @@ public class OrderController {
             return "redirect:/login";
         } else {
             EmployeeGetDto employee = (EmployeeGetDto) session.getAttribute("employee");
-            if (employee.getDepartment().equals("생산") || employee.getRole().equals("사원")) {
+            if (employee.getDepartment().contains("생산") || employee.getRole().equals("사원")) {
                 return "redirect:/dash";
             }
         }

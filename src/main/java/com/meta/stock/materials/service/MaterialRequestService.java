@@ -98,11 +98,13 @@ public class MaterialRequestService {
 
     // 이 메서드만 수정
     private MaterialRequestDto.Response convertToResponse(MaterialRequestEntity entity) {
-        EmployeeEntity requester = employeeRepository.findById(entity.getRequestBy().intValue()).orElse(null);
-        EmployeeEntity managementEmp = entity.getManagementEmployee() > 0
+        EmployeeEntity requester = entity.getRequestBy() != null
+                ? employeeRepository.findById(entity.getRequestBy().intValue()).orElse(null)
+                : null;
+        EmployeeEntity managementEmp = entity.getManagementEmployee() != null && entity.getManagementEmployee() > 0
                 ? employeeRepository.findById(entity.getManagementEmployee().intValue()).orElse(null)
                 : null;
-        EmployeeEntity productionEmp = entity.getProductionEmployee() > 0
+        EmployeeEntity productionEmp = entity.getProductionEmployee() != null && entity.getProductionEmployee() > 0
                 ? employeeRepository.findById(entity.getProductionEmployee().intValue()).orElse(null)
                 : null;
 

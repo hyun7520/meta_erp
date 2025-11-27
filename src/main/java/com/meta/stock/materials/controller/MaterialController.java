@@ -38,7 +38,7 @@ public class MaterialController {
             return "redirect:/login";
         } else {
             EmployeeGetDto employee = (EmployeeGetDto) session.getAttribute("employee");
-            if (employee.getDepartment().equals("경영") || employee.getRole().equals("사원")) {
+            if (employee.getDepartment().contains("경영") || employee.getRole().equals("사원")) {
                 return "redirect:/dash";
             }
         }
@@ -53,18 +53,23 @@ public class MaterialController {
     // AI 추천에 승낙한 경우도 여기서 처리
     @GetMapping("/material/request")
     public String requestMaterials(
-            @RequestParam(name = "fmIds") List<Long> fmIds,
-            @RequestParam(name = "materialNames") List<String> materialNames,
-            @RequestParam(name = "quantities") List<String> quantities,
-            @RequestParam(name = "units") List<String> units,
+            @RequestParam(name = "fmIds", required = false) List<Long> fmIds,
+            @RequestParam(name = "materialNames", required = false) List<String> materialNames,
+            @RequestParam(name = "quantities", required = false) List<String> quantities,
+            @RequestParam(name = "units", required = false) List<String> units,
             Model model, HttpSession session) {
         if (session.getAttribute("employee") == null) {
             return "redirect:/login";
         } else {
             EmployeeGetDto employee = (EmployeeGetDto) session.getAttribute("employee");
-            if (employee.getDepartment().equals("경영") || employee.getRole().equals("사원")) {
+            if (employee.getDepartment().contains("경영") || employee.getRole().equals("사원")) {
                 return "redirect:/dash";
             }
+        }
+
+        // 필수 파라미터가 없는 상태로 재료 요청 화면으로 넘어가는 경우(URL 강제 입력) 메인 대시보드로 이동
+        if (fmIds == null || materialNames == null || quantities == null) {
+            return "redirect:/dash";
         }
 
         // DTO 리스트로 변환
@@ -73,7 +78,8 @@ public class MaterialController {
             MaterialRequestDto dto = new MaterialRequestDto();
             dto.setFmId(fmIds.get(i));
             dto.setMaterialName(materialNames.get(i));
-            dto.setQty(Integer.parseInt(quantities.get(i)));
+            int qty = Math.max(Integer.parseInt(quantities.get(i)), 0);
+            dto.setQty(qty);
             dto.setRequestBy(1);
             materialRequests.add(dto);
         }
@@ -116,7 +122,7 @@ public class MaterialController {
             return "redirect:/login";
         } else {
             EmployeeGetDto employee = (EmployeeGetDto) session.getAttribute("employee");
-            if (employee.getDepartment().equals("경영") || employee.getRole().equals("사원")) {
+            if (employee.getDepartment().contains("경영") || employee.getRole().equals("사원")) {
                 return "redirect:/dash";
             }
         }

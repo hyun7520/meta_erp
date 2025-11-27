@@ -36,7 +36,7 @@ public class ProductRequestController {
             return "redirect:/login";
         } else {
             EmployeeGetDto employee = (EmployeeGetDto) session.getAttribute("employee");
-            if (employee.getDepartment().equals("경영") || employee.getRole().equals("사원")) {
+            if (employee.getDepartment().contains("경영") || employee.getRole().equals("사원")) {
                 return "redirect:/dash";
             }
         }
@@ -186,7 +186,7 @@ public class ProductRequestController {
         return ResponseEntity.noContent().build();
     }
     // 12. 생산 요청 수정 (PUT)
-    @PutMapping("/pro/{prId}")
+    @PostMapping("/pro/{prId}")
     public ResponseEntity<ProductionRequestDTO.Response> updateProductionRequest(
             @PathVariable long prId,
             @RequestBody ProductionRequestDTO.Request request) {
