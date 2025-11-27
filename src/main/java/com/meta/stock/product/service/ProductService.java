@@ -93,7 +93,7 @@ public class ProductService {
         List<FixedProductEntity> getProducts = fixedProductRepository.findAll();
         List<ProductListDTO> list = new ArrayList<>();
         for (FixedProductEntity product : getProducts) {
-            list.add(new ProductListDTO(product.getFpId(), product.getName()));
+            list.add(new ProductListDTO(product.getSerialCode(), product.getName()));
         }
         return list;
     }

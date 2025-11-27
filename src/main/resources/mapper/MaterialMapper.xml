@@ -132,7 +132,7 @@
     <select id="getDateMaterialTotals" resultMap="parseMaterialCounts">
         select material_name, sum(qty) as total
         from materials m
-        left join lots l on m.lots_id = l.lot_id and to_date(shelf_life_days, 'YY/MM/DD') >= sysdate
+        left join lots l on m.lots_id = l.lot_id and l.shelf_life_days >= sysdate
         <where>
             <choose>
                 <when test="serialCode != null and serialCode != ''">
@@ -195,6 +195,10 @@
         (mr_id, fm_id, request_by, request_date, qty, unit, approved, approved_date, note)
         VALUES
         (SEQ_MATERIAL_REQUEST.NEXTVAL, #{fmId}, ${requestBy}, SYSDATE, #{qty}, 'g', 0, null, #{note})
+    </insert>
+
+    <insert id="materialSave" parameterType="com.meta.stock.materials.entity.MaterialEntity">
+        insert into materials values (SEQ_MATERIALS.NEXTVAL, #{materialName}, #{materialLoss}, #{lotsId}, #{mrId})
     </insert>
 
     <select id="getMaterialRequestById" resultMap="MaterialRequestMap">

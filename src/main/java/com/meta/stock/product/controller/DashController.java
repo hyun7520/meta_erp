@@ -34,7 +34,7 @@ public class DashController {
 
     private final int limit = 5;
 
-    @GetMapping("/dash")
+    @GetMapping(value = {"/dash", "/"})
     private String dashboard(HttpSession session) {
         if (session.getAttribute("employee") == null) {
             return "redirect:/login";
@@ -108,7 +108,7 @@ public class DashController {
     @GetMapping("/dash/loss")
     @ResponseBody
     public ResponseEntity<List<ProductLossBean>> productLoss() {
-        List<ProductLossBean> list = null;
+        List<ProductLossBean> list = graphService.getLossPerHumidity();
         return ResponseEntity.ok(list);
     }
 }

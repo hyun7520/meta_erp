@@ -122,13 +122,18 @@
             </div>
 
             <!-- 수주 완료 상태 -->
-            <div th:case="1">
+            <div th:case="1" th:with="availDelevery = ${currentProductStock < productRequest.targetQty}">
                 <button th:onclick="|shipOrder(${productRequest.prId})|"
                         class="btn btn-approve"
-                        th:disabled="${currentProductStock < productRequest.targetQty}">
+                        th:unless="${availDelevery}">
                     <i class="fas fa-shipping-fast"></i> 제품 출하
                 </button>
-                <span th:if="${currentProductStock < productRequest.targetQty}" style="color: #EF4444; font-size: 13px;">
+                <button th:onclick="|location.href='@{/product/form}'|"
+                        class="btn btn-approve"
+                        th:if="${availDelevery}">
+                    <i class="fa-solid fa-industry"></i></i> 제품 생산
+                </button>
+                <span th:if="${availDelevery}" style="color: #EF4444; font-size: 13px;">
                     ※ 재고 부족으로 출하 불가
                 </span>
             </div>

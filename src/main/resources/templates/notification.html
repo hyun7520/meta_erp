@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <title>스마트 알림 예시</title>
+  </head>
+  <body>
+  <!-- 알림창 HTML -->
+  <div th:fragment="notification" id="alert-box">
+      <div class="alert-header">
+          <h3>🚨 품질 위험 경보</h3>
+          <span style="font-size: 20px">⚠️</span>
+      </div>
+      <div class="alert-content">
+          <span class="ai-badge">✨ AI 분석</span>
+          <span class="weather-date" id="alert-date"></span>
+          <p class="ai-message" id="alert-text"></p>
+      </div>
+      <div class="alert-footer">
+          <label class="dont-show-label">
+<!--              <input type="checkbox" id="chk-hide" /> 오늘 하루 보지 않음-->
+          </label>
+          <button class="close-btn" onclick="closeAlert()">확인</button>
+      </div>
+      <script type="text/javascript" th:src="@{/script/notification.js}"></script>
+  </div>
+  </body>
+</html>

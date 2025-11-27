@@ -1,22 +1,22 @@
 package com.meta.stock.product.dto;
 
 public class ProductListDTO {
-    private long productId;
+    private String serialCode;
     private String productName;
 
     public ProductListDTO() {}
 
-    public ProductListDTO(long productId, String productName) {
-        this.productId = productId;
+    public ProductListDTO(String serialCode, String productName) {
+        this.serialCode = serialCode;
         this.productName = productName;
     }
 
-    public long getProductId() {
-        return productId;
+    public String getSerialCode() {
+        return serialCode;
     }
 
-    public void setProductId(long productId) {
-        this.productId = productId;
+    public void setSerialCode(String serialCode) {
+        this.serialCode = serialCode;
     }
 
     public String getProductName() {
@@ -28,10 +28,10 @@ public class ProductListDTO {
     }
 
     public static class Builder {
-        private long productId;
+        private String productId;
         private String productName;
 
-        public Builder productId(long productId) {
+        public Builder productId(String productId) {
             this.productId = productId;
             return this;
         }

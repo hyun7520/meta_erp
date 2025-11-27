@@ -58,14 +58,14 @@ public class ProductionRequestEntity {
     private String serialCode;
 
     // Getters and Setters는 그대로 유지
-    public long getPrId() { return prId; }
-    public void setPrId(long prId) { this.prId = prId; }
+    public Long getPrId() { return prId; }
+    public void setPrId(Long prId) { this.prId = prId; }
 
-    public long getManagementEmployee() { return managementEmployee; }
-    public void setManagementEmployee(long managementEmployee) { this.managementEmployee = managementEmployee; }
+    public Long getManagementEmployee() { return managementEmployee; }
+    public void setManagementEmployee(Long managementEmployee) { this.managementEmployee = managementEmployee; }
 
-    public long getProductionEmployee() { return productionEmployee; }
-    public void setProductionEmployee(long productionEmployee) { this.productionEmployee = productionEmployee; }
+    public Long getProductionEmployee() { return productionEmployee; }
+    public void setProductionEmployee(Long productionEmployee) { this.productionEmployee = productionEmployee; }
 
     public String getToCompany() { return toCompany; }
     public void setToCompany(String toCompany) { this.toCompany = toCompany; }
@@ -108,9 +108,9 @@ public class ProductionRequestEntity {
 
     // Builder는 그대로 유지
     public static class Builder {
-        private long prId;
-        private long managementEmployee;
-        private long productionEmployee;
+        private Long prId;
+        private Long managementEmployee;
+        private Long productionEmployee;
         private String toCompany;
         private int targetQty;
         private int plannedQty;
@@ -123,17 +123,17 @@ public class ProductionRequestEntity {
         private String note;
         private String serialCode;
 
-        public Builder prId(long prId) {
+        public Builder prId(Long prId) {
             this.prId = prId;
             return this;
         }
 
-        public Builder managementEmployee(long managementEmployee) {
+        public Builder managementEmployee(Long managementEmployee) {
             this.managementEmployee = managementEmployee;
             return this;
         }
 
-        public Builder productionEmployee(long productionEmployee) {
+        public Builder productionEmployee(Long productionEmployee) {
             this.productionEmployee = productionEmployee;
             return this;
         }

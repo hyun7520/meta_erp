@@ -1,9 +1,9 @@
 const MaterialModule = (function() {
     const API = {
-        ALL_REQUESTS: '/pro/material-requests',
-        PENDING_REQUESTS: '/pro/material-requests/pending',
-        APPROVE: '/pro/material-requests/approve',
-        REJECT: '/pro/material-requests/reject'
+        ALL_REQUESTS: '/pro/v2/material-requests',
+        PENDING_REQUESTS: '/pro/v2/material-requests/pending',
+        APPROVE: '/pro/v2/material-requests/approve',
+        REJECT: '/pro/v2/material-requests/reject'
     };
 
     let state = {
@@ -26,7 +26,7 @@ const MaterialModule = (function() {
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
         element.classList.add('active');
         state.currentTab = element.getAttribute('name');
-        loadData(currentTab);
+        loadData(state.currentTab);
     }
 
     async function loadData(tabName) {
@@ -77,7 +77,7 @@ const MaterialModule = (function() {
         const totalPages = Math.ceil(state.allData.length / state.itemsPerPage);
 
         renderTable(pageData);
-        renderPagination(currentPage, totalPages, goToPage);
+        renderPagination(state.currentPage, totalPages, goToPage);
     }
 
     function renderTable(data) {

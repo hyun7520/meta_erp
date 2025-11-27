@@ -19,7 +19,7 @@ public class ProductRequestDto {
     private String endDate;
     private String note;
 
-    public boolean isStockSufficient() {
+    public boolean getIsStockSufficient() {
         return getInStockQty() + getCompletedQty() >= getTargetQty();
     }
 
