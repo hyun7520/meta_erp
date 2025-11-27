@@ -1,5 +1,6 @@
 package com.meta.stock.product.service;
 
+import com.meta.stock.config.PythonParser;
 import com.meta.stock.product.dto.FixedProductDto;
 import com.meta.stock.product.dto.ProductDemandBean;
 import com.meta.stock.product.dto.ProductLossBean;
@@ -14,6 +15,7 @@ import java.io.IOException;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -24,6 +26,8 @@ public class GraphService {
     // 해당 파일은 Graph들을 그리기 위한 Class 파일
     @Autowired
     private ProductMapper productMapper;
+    @Autowired
+    private PythonParser parser;
 
     private String DEFAULT_ROOT = "src/main/resources/static/file/";
 
@@ -62,25 +66,21 @@ public class GraphService {
     }
 
     public List<ProductLossBean> getLossPerHumidity() {
-       List<FixedProductDto> fixedProducts = productMapper.getFixedProductWithStockQty();
-       List<ProductLossBean> list = new ArrayList<>();
+        List<FixedProductDto> fixedProducts = productMapper.getFixedProductWithStockQty(); // 각 제품 종류 출력
+        List<String> dates = parser.getLossDates();
+        List<ProductLossBean> list = new ArrayList<>();
 
-        YearMonth end = YearMonth.now();                 // 현재 년/월
-        YearMonth start = end.minusYears(1);             // 현재로부터 5년 전
+        Collections.sort(dates);
 
-        YearMonth current = start;
-
-        while (!current.isAfter(end)) {
-            String ym = current.toString();              // "YYYY-MM"
+        for (String date : dates) {
+            Map<String, List<String>> data = parser.getProductLossPerYearMonth(date);
+            String parseDate = date.substring(0, 4) + "-" + date.substring(4);
             for (FixedProductDto fp : fixedProducts) {
-                String caseName = fp.getName();
-
-                float percent = (float) (5 + (Math.random() * 45));
-                list.add(new ProductLossBean(caseName, "loss", ym, percent));
+                float lossPercent = Float.parseFloat(data.get(fp.getName()).get(0));
+                list.add(new ProductLossBean(fp.getName(), "loss", parseDate, lossPercent));
             }
-            list.add(new ProductLossBean("습도", "humidity", ym, (float) (5 + (Math.random() * 45))));
-
-            current = current.plusMonths(1);// 다음 달
+            float humidityPercent = Float.parseFloat(data.get(fixedProducts.get(0).getName()).get(1)); // 어느 값이나 모두 같기에 일괄 저장
+            list.add(new ProductLossBean("습도", "humidity", parseDate, humidityPercent));
         }
         return list;
     }

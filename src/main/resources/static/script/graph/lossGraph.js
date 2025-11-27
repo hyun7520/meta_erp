@@ -26,7 +26,7 @@ function convertToSeries(list) {
 
         const inputType = items[0].type;
         const seriesType = inputType === "humidity" ? "line" : "bar";
-        const yAxisIndex = inputType === "humidity" ? 0 : 1;
+        const yAxisIndex = inputType === "humidity" ? 1 : 0;
         const layer = inputType === "humidity"
             ? { zlevel: 1, z: 3 }
             : { zlevel: 0, z: 1 };
@@ -46,10 +46,10 @@ function convertToSeries(list) {
                     [
                         {
                             name: '습도 집중 관리 구간',
-                            yAxis: 30,
+                            yAxis: 50,
                             label: { position: 'top', color: '#C0392B', fontWeight: 'bold', fontSize: 13 }
                         },
-                        { yAxis: 70 }
+                        { yAxis: 85 }
                     ]
                 ]
             },
@@ -61,9 +61,16 @@ function convertToSeries(list) {
 }
 
 const drawChart = (series, xLabels) => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth() + 1;
+    const pastYear = year - 1;
+    const startIdx = xLabels.findIndex(item => item === `${pastYear}-${month}`) + 1;
+    const endIdx = xLabels.findIndex(item => item === `${year}-${month}`) + 1;
+
     const option = {
         title: {
-            text: '최근 1년간 습도 및 로스율',
+            text: '습도에 따른 로스율 변화 및 예측',
             left: 'center',
             top: 10
         },
@@ -85,7 +92,9 @@ const drawChart = (series, xLabels) => {
                 name: '예측 로스율 (%)',
                 position: 'left',
                 axisLine: { show: true, lineStyle: { color: '#333' } },
-                axisLabel: { formatter: '{value}%' }
+                axisLabel: { formatter: '{value}%' },
+                min: 0,
+                max: 10,
             },
             {
                 type: 'value',
@@ -94,13 +103,16 @@ const drawChart = (series, xLabels) => {
                 interval: 10,
                 axisLine: { show: true, lineStyle: { color: colors[4] } },
                 axisLabel: { formatter: '{value}%' },
-                max: 70,
+                min: 20,
+                max: 85,
             }
         ],
         dataZoom: [
             {
                 type: 'slider',
                 xAxisIndex: 'all',
+                start: (startIdx / (xLabels.length - 1)) * 100,
+                end: (endIdx / (xLabels.length - 1)) * 100,
                 left: '10%',
                 right: '10%',
                 bottom: 55,
@@ -110,6 +122,8 @@ const drawChart = (series, xLabels) => {
             {
                 type: 'inside',
                 xAxisIndex: 'all',
+                start: (startIdx / (xLabels.length - 1)) * 100,
+                end: (endIdx / (xLabels.length - 1)) * 100,
                 throttle: 120
             }
         ],

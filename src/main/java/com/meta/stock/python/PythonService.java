@@ -8,6 +8,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.CharsetDecoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -22,7 +23,8 @@ public class PythonService {
     @Value("${app.python.exec-path}")
     private String pythonExecPath; // yml에서 설정한 파이썬 실행 경로
 
-    public String runPythonScript() {
+    // 로스율 연산 python 실행
+    public String runLossPython() {
         try {
             // =========================================================
             // 1. 파이썬 실행 파일 경로 찾기 (절대 경로 변환)
@@ -78,7 +80,7 @@ public class PythonService {
             // =========================================================
             // 4. 결과 읽기
             // =========================================================
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream())); // 한글 깨짐 시 "EUC-KR" 추가 고려
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream(), "EUC-KR")); // 한글 깨짐 시 "EUC-KR" 추가 고려
             StringBuilder output = new StringBuilder();
             String line;
 

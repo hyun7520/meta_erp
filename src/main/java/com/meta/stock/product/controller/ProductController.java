@@ -5,7 +5,6 @@ import com.meta.stock.materials.dto.MaterialRequestDto;
 import com.meta.stock.materials.service.MaterialService;
 import com.meta.stock.product.dto.*;
 import com.meta.stock.product.service.ProductionRequestService;
-import com.meta.stock.product.service.PredictService;
 import com.meta.stock.product.service.ProductService;
 import com.meta.stock.python.PythonService;
 import com.meta.stock.user.employees.dto.EmployeeGetDto;
@@ -22,8 +21,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -39,8 +36,6 @@ public class ProductController {
     private MaterialService materialService;
     @Autowired
     private ProductionRequestService productionRequestService;
-    @Autowired
-    private PythonService pythonService;
 
     private final int limit = 3;
 
@@ -56,7 +51,6 @@ public class ProductController {
             }
         }
 
-        pythonService.runPythonScript();
         return "product/productionMain";
     }
 
