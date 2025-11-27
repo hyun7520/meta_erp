@@ -7,6 +7,7 @@ import com.meta.stock.product.dto.*;
 import com.meta.stock.product.service.ProductionRequestService;
 import com.meta.stock.product.service.PredictService;
 import com.meta.stock.product.service.ProductService;
+import com.meta.stock.python.PythonService;
 import com.meta.stock.user.employees.dto.EmployeeGetDto;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,13 +40,13 @@ public class ProductController {
     @Autowired
     private ProductionRequestService productionRequestService;
     @Autowired
-    private PredictService predictService;
+    private PythonService pythonService;
 
     private final int limit = 3;
 
     // 생산 페이지 로드
     @GetMapping("/product")
-    public String getProductsDash(HttpSession session) {
+    public String getProductsDash(HttpSession session) throws IOException {
         if (session.getAttribute("employee") == null) {
             return "redirect:/login";
         } else {
@@ -53,6 +55,8 @@ public class ProductController {
                 return "redirect:/dash";
             }
         }
+
+        pythonService.runPythonScript();
         return "product/productionMain";
     }
 
@@ -169,7 +173,7 @@ public class ProductController {
     @PostMapping("/product")
     public String beginProduction(Model model,
                                   @RequestParam List<Long> fpIds,
-                                  @RequestParam List<Integer> quantities) {
+                                  @RequestParam List<Integer> quantities){
 
         for (int i = 0; i < fpIds.size(); i++) {
             Long fpId = fpIds.get(i);

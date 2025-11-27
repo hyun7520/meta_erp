@@ -150,7 +150,7 @@ public class ProductService {
     private void readCsv() {
         content = new HashMap<>();
         String projectRoot = System.getProperty("user.dir");
-        File csv = new File(projectRoot + "/src/main/resources/file/future.csv");
+        File csv = new File(projectRoot + "/src/main/resources/file/future_material_date.csv");
         BufferedReader br = null;
         String line = "";
 
