@@ -46,7 +46,21 @@ const drawLine = (data, labels) => {
                 label: ['product', 'demand'],
                 itemName: 'date',
                 tooltip: ['demand']
-            }
+            },
+            markArea: {
+                silent: true,
+                itemStyle: { color: 'rgba(255, 173, 177, 0.4)' },
+                data: [
+                    [
+                        {
+                            name: '예측 구역',
+                            xAxis: '2025-12',
+                            label: { position: 'top', color: '#C0392B', fontWeight: 'bold', fontSize: 13 }
+                        },
+                        { xAxis: '2027-12' }
+                    ]
+                ]
+            },
         });
     });
 
@@ -60,7 +74,7 @@ const drawLine = (data, labels) => {
             ...datasetWithFilters
         ],
         title: {
-            text: '최근 5년간 제품 수요량 그래프'
+            text: '최근 5년간 제품 수요량 및 예측 그래프'
         },
         tooltip: {
             order: 'valueDesc',
@@ -71,7 +85,7 @@ const drawLine = (data, labels) => {
             nameLocation: 'middle'
         },
         yAxis: {
-            name: 'demand'
+            name: '수요량(Box)'
         },
         grid: {
             top: 100,

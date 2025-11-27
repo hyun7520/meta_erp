@@ -49,7 +49,7 @@ function convertToSeries(list) {
                             yAxis: 30,
                             label: { position: 'top', color: '#C0392B', fontWeight: 'bold', fontSize: 13 }
                         },
-                        { yAxis: 50 }
+                        { yAxis: 70 }
                     ]
                 ]
             },
@@ -93,7 +93,8 @@ const drawChart = (series, xLabels) => {
                 position: 'right',
                 interval: 10,
                 axisLine: { show: true, lineStyle: { color: colors[4] } },
-                axisLabel: { formatter: '{value}%' }
+                axisLabel: { formatter: '{value}%' },
+                max: 70,
             }
         ],
         dataZoom: [
