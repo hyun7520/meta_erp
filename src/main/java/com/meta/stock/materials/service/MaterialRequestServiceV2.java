@@ -115,12 +115,12 @@ public class MaterialRequestServiceV2 {
     }
 
     private MaterialRequestDto.Response convertToResponse(MaterialRequestEntity entity) {
-        EmployeeEntity requester = employeeRepository.findById((int) entity.getRequestBy()).orElse(null);
+        EmployeeEntity requester = employeeRepository.findById((int) entity.getRequestBy().intValue()).orElse(null);
         EmployeeEntity managementEmp = entity.getManagementEmployee() > 0
-                ? employeeRepository.findById((int) entity.getManagementEmployee()).orElse(null)
+                ? employeeRepository.findById((int) entity.getManagementEmployee().intValue()).orElse(null)
                 : null;
         EmployeeEntity productionEmp = entity.getProductionEmployee() > 0
-                ? employeeRepository.findById((int) entity.getProductionEmployee()).orElse(null)
+                ? employeeRepository.findById((int) entity.getProductionEmployee().intValue()).orElse(null)
                 : null;
 
         String requesterName = requester != null ? requester.getName() : String.valueOf(entity.getRequestBy());

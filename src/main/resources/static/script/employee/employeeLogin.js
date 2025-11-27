@@ -45,12 +45,16 @@ const login = (data) => {
         .then(({status, value}) => {
             alert(value);
             if (status === "login") {
-                const prevURL = new URL(document.referrer);
-                const loginURL = window.location;
-                if (prevURL.origin === loginURL.origin && prevURL.href !== loginURL.href) {
-                    location.replace(prevURL.pathname);
-                } else {
-                    location.replace("/dash");
+                try {
+                    const prevURL = new URL(document.referrer);
+                    const loginURL = window.location;
+                    if (prevURL.origin === loginURL.origin && prevURL.href !== loginURL.href) {
+                        location.replace(prevURL.pathname);
+                    } else {
+                        location.replace("/dash");
+                    }
+                } catch (error) {
+                    location.replace("/");
                 }
             } else {
                 resetInput(status);

@@ -22,9 +22,7 @@ function convertToSeries(list) {
         labelSet.add(date);
     }
 
-    const xLabels = [...labelSet].sort().concat(months);
-    const xIndex = {};
-    xLabels.forEach((x, idx) => xIndex[x] = idx);
+    const xLabels = [...labelSet].sort()
 
     const series = [];
     const now = new Date();
@@ -35,14 +33,11 @@ function convertToSeries(list) {
         const items = groups[name];
         items.sort((a, b) => (a.requestDate > b.requestDate ? 1 : -1));
 
-        const futureData = echarts_data[name] || [];
-        const finalData = items.map(v => v.demand).concat(futureData);
-
         series.push({
             name,
             type: "line",
             smooth: true,
-            data: finalData,
+            data: items.map(v => v.demand),
             markArea: {
                 silent: true,
                 itemStyle: { color: 'rgba(255, 173, 177, 0.4)' },
@@ -129,19 +124,3 @@ const drawDemandLineChart = () => {
         });
 
 }
-
-// sample data
-const months = [
-    '2025.11', '2025.12', '2026.01', '2026.02', '2026.03', '2026.04',
-    '2026.05', '2026.06', '2026.07', '2026.08', '2026.09', '2026.10',
-    '2026.11', '2026.12', '2027.01', '2027.02', '2027.03', '2027.04',
-    '2027.05', '2027.06', '2027.07', '2027.08', '2027.09', '2027.10',
-    '2027.11', '2027.12'
-];
-
-const echarts_data = {
-    '김치찌개': [1200, 1350, 1400, 1300, 1150, 1100, 1050, 1000, 1080, 1150, 1250, 1450, 1500, 1600, 1650, 1550, 1400, 1300, 1250, 1200, 1300, 1380, 1500, 1700, 1750, 1850],
-    '된장찌개': [1000, 1050, 1100, 1150, 1200, 1250, 1300, 1350, 1300, 1250, 1200, 1150, 1100, 1150, 1200, 1250, 1300, 1350, 1400, 1450, 1400, 1350, 1300, 1250, 1200, 1150],
-    '부대찌개': [1100, 1150, 1200, 1250, 1200, 1150, 1100, 1050, 1100, 1150, 1200, 1250, 1300, 1350, 1400, 1450, 1400, 1350, 1300, 1250, 1300, 1350, 1400, 1450, 1500, 1550],
-    '닭볶음탕': [950, 980, 1050, 1100, 1150, 1200, 1250, 1300, 1350, 1400, 1450, 1500, 1550, 1600, 1650, 1700, 1750, 1800, 1750, 1700, 1650, 1600, 1550, 1500, 1450, 1400]
-};

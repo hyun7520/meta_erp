@@ -1,9 +1,9 @@
 const MaterialModule = (function() {
     const API = {
-        ALL_REQUESTS: '/pro/material-requests',
-        PENDING_REQUESTS: '/pro/material-requests/pending',
-        APPROVE: '/pro/material-requests/approve',
-        REJECT: '/pro/material-requests/reject'
+        ALL_REQUESTS: '/pro/v2/material-requests',
+        PENDING_REQUESTS: '/pro/v2/material-requests/pending',
+        APPROVE: '/pro/v2/material-requests/approve',
+        REJECT: '/pro/v2/material-requests/reject'
     };
 
     let state = {
