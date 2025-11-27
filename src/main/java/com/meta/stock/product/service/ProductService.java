@@ -21,8 +21,10 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.*;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -40,6 +42,7 @@ public class ProductService {
     private ProductRepository productRepository;
     @Autowired
     private FixedProductRepository fixedProductRepository;
+    private Map<String, Map<String, List<String>>> content;
 
     public List<ProductStockDto> findTotalProductStock() {
         return productMapper.findTotalProductStock();
@@ -106,11 +109,21 @@ public class ProductService {
     @Transactional
     public void produceProduct(Long fpId, Integer qty) {
         FixedProductDto fDto = productMapper.getNameAndLifeTime(fpId);
-        lotsMapper.storeProduct(qty, fDto.getLifeTime());
+
+        LocalDate today = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMM");
+        String todayYM = today.format(formatter);
+        double lossRate = Double.parseDouble(content.get(todayYM).get("감자").get(3));
+        int lossQty = (int) Math.ceil((double) qty * lossRate / 50);
+        System.out.println("qty:" + qty);
+        System.out.println("lossRate:" + lossRate);
+        System.out.println("lossQty:" + lossQty);
+
+        lotsMapper.storeProduct(qty - lossQty, fDto.getLifeTime());
         Long lotsId = lotsMapper.getLatestLot();
         Long prId = productionRequestMapper.getPrId(fpId);
         prId = (prId == null) ? 0 : prId;
-        productMapper.produceProduct(fDto.getName(), 2, prId, lotsId);
+        productMapper.produceProduct(fDto.getName(), lossQty, prId, lotsId);
     }
 
     // 전체 제품 목록 조회
@@ -131,5 +144,52 @@ public class ProductService {
                 .prId(entity.getPrId())
                 .lotsId(entity.getLotsId())
                 .build();
+    }
+    
+    // 파일 읽어와서 Map에 저장
+    private void readCsv() {
+        content = new HashMap<>();
+        String projectRoot = System.getProperty("user.dir");
+        File csv = new File(projectRoot + "/src/main/resources/file/future.csv");
+        BufferedReader br = null;
+        String line = "";
+
+        try {
+            br = new BufferedReader(new FileReader(csv));
+            // 첫 번째 줄(헤더) 건너뛰기
+            line = br.readLine();
+            while((line = br.readLine()) != null) {
+                // CSV는 쉼표로 구분
+                String[] cols = line.split(",");
+                if(cols.length < 7) continue; // 데이터 검증
+                String yearMonth = cols[0].trim();  // 연월
+                String itemName = cols[5].trim();   // 품목명
+
+                // 나머지 값들 (평균기온, 강수량, 상대습도, 예상로스율, 예상기후분류)
+                List<String> values = Arrays.asList(
+                        cols[3].trim(),  // 상대습도
+                        cols[4].trim(),  // 예상_로스율_%
+                        cols[6].trim()   // 예상_기후_분류
+                );
+                // 연월 키가 없으면 새로 생성
+                content.computeIfAbsent(yearMonth, k -> new HashMap<>());
+                // 품목명을 키로 값 저장
+                content.get(yearMonth).put(itemName, values);
+            }
+        } catch(FileNotFoundException e) {
+            System.out.println("파일을 찾을 수 없었습니다.");
+            e.printStackTrace();
+        } catch (IOException e) {
+            System.out.println("파일 읽기 오류가 발생했습니다.");
+            e.printStackTrace();
+        } finally {
+            try {
+                if(br != null) {
+                    br.close();
+                }
+            } catch (IOException e) {
+                System.out.println("파일 닫기 오류가 발생했습니다.");
+            }
+        }
     }
 }

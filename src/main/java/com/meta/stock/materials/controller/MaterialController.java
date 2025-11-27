@@ -73,7 +73,8 @@ public class MaterialController {
             MaterialRequestDto dto = new MaterialRequestDto();
             dto.setFmId(fmIds.get(i));
             dto.setMaterialName(materialNames.get(i));
-            dto.setQty(Integer.parseInt(quantities.get(i)));
+            int qty = Integer.parseInt(quantities.get(i)) < 0 ? 0 : Integer.parseInt(quantities.get(i));
+            dto.setQty(qty);
             dto.setRequestBy(1);
             materialRequests.add(dto);
         }
