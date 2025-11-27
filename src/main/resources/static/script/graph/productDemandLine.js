@@ -8,102 +8,77 @@ document.addEventListener("DOMContentLoaded", () => {
     drawDemandLineChart();
 });
 
-function convertToSeries(list) {
-    const groups = {};
-    const labelSet = new Set();
+const drawLine = (data, labels) => {
+    const datasetWithFilters = [];
+    const seriesList = [];
 
-    for (const item of list) {
-        if (!groups[item.name]) groups[item.name] = [];
+    echarts.util.each(labels, function (label) {
+        const datasetId = 'dataset_' + label;
 
-        const date = item.requestDate.replace("-", ".");
-        item.requestDate = date;
-
-        groups[item.name].push(item);
-        labelSet.add(date);
-    }
-
-    const xLabels = [...labelSet].sort()
-
-    const series = [];
-    const now = new Date();
-    const startYear = now.getFullYear();
-    const endYear = startYear + 1;
-
-    for (const name in groups) {
-        const items = groups[name];
-        items.sort((a, b) => (a.requestDate > b.requestDate ? 1 : -1));
-
-        series.push({
-            name,
-            type: "line",
-            smooth: true,
-            data: items.map(v => v.demand),
-            markArea: {
-                silent: true,
-                itemStyle: { color: 'rgba(255, 173, 177, 0.4)' },
-                data: [
-                    [
-                        {
-                            name: '미래 2년 예측 수요량',
-                            xAxis: `${startYear}.${now.getMonth() + 1}`,
-                            label: { position: 'top', color: '#C0392B', fontWeight: 'bold', fontSize: 13 }
-                        },
-                        { xAxis: `${endYear}.${now.getMonth() + 1}` }
+        datasetWithFilters.push({
+            id: datasetId,
+            fromDatasetId: 'dataset_raw',
+            transform: {
+                type: 'filter',
+                config: {
+                    and: [
+                        { dimension: 'product', '=': label }
                     ]
-                ]
+                }
             }
         });
-    }
 
-    return { series, xLabels };
-}
-
-const drawLine = (data) => {
-    const {series, xLabels} = convertToSeries(data);
+        seriesList.push({
+            type: 'line',
+            datasetId: datasetId,
+            showSymbol: false,
+            name: label,
+            endLabel: {
+                show: true,
+                formatter: (params) => `${params.data.product}: ${params.data.demand}`
+            },
+            emphasis: {
+                focus: 'series'
+            },
+            encode: {
+                x: 'date',
+                y: 'demand',
+                label: ['product', 'demand'],
+                itemName: 'date',
+                tooltip: ['demand']
+            }
+        });
+    });
 
     const option = {
+        animationDuration: 5000,
+        dataset: [
+            {
+                id: 'dataset_raw',
+                source: data
+            },
+            ...datasetWithFilters
+        ],
         title: {
-            text: "최근 5년간 제품 수요량 그래프",
-            left: 'center',
-            top: '2%'
+            text: '최근 5년간 제품 수요량 그래프'
         },
         tooltip: {
-            trigger: 'axis',
-            formatter: function (params) {
-                var result = params[0].name + '<br/>';
-                params.forEach(function (item) {
-                    result += '<span style="display:inline-block;margin-right:5px;border-radius:10px;width:10px;height:10px;background-color:' + item.color + ';"></span>'
-                        + item.seriesName + ': ' + item.value.toLocaleString() + ' 건' + '<br/>';
-                });
-                return result;
-            }
-        },
-        legend: {
-            data: Object.keys(echarts_data),
-            bottom: '0%'
-        },
-        grid: {
-            left: '3%',
-            right: '4%',
-            bottom: '10%',
-            containLabel: true
+            order: 'valueDesc',
+            trigger: 'axis'
         },
         xAxis: {
             type: 'category',
-            boundaryGap: false,
-            data: xLabels
+            nameLocation: 'middle'
         },
         yAxis: {
-            type: 'value',
-            name: '판매량 (건)',
-            min: 900,
-            axisLabel: {
-                formatter: function(value) {
-                    return value.toLocaleString();
-                }
-            },
+            name: 'demand'
         },
-        series: series
+        grid: {
+            top: 100,
+            right: 100,
+            bottom: 0,
+        },
+        series: seriesList
     };
 
     lineChart.setOption(option);
@@ -115,8 +90,13 @@ const drawDemandLineChart = () => {
 
     fetch(`/dash/demands`, {method: 'GET'})
         .then(response => response.json())
-        .then(data => {
-            drawLine(data);
+        .then(json => {
+            const labels = new Set();
+            const data = json.map(({name, demand, requestDate}) => {
+                labels.add(name)
+                return {date: requestDate.split(" ")[0], product: name, demand: demand}
+            })
+            drawLine(data, [...labels]);
 
             const now = new Date();
             const drawTime = document.getElementById("product_demand_Line_time")
