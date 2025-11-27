@@ -5,7 +5,6 @@ import com.meta.stock.materials.dto.MaterialRequestDto;
 import com.meta.stock.materials.service.MaterialService;
 import com.meta.stock.product.dto.*;
 import com.meta.stock.product.service.ProductionRequestService;
-import com.meta.stock.product.service.PredictService;
 import com.meta.stock.product.service.ProductService;
 import com.meta.stock.python.PythonService;
 import com.meta.stock.user.employees.dto.EmployeeGetDto;
@@ -22,8 +21,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -57,6 +54,7 @@ public class ProductController {
         }
 
         pythonService.runPythonScript();
+        productService.readCsv();
         return "product/productionMain";
     }
 
@@ -87,6 +85,7 @@ public class ProductController {
 
         // 제품 이름과 제품 재고 수량 조회
         List<FixedProductDto> fpDto = productService.getFixedProductWithStockQty();
+        Map<String, String> productionLoss = productService.getLossPrediction();
 
         // 제품별 재료 조회
         for(FixedProductDto dto: fpDto) {
@@ -94,6 +93,7 @@ public class ProductController {
             dto.setRequiredMaterials(requiredMaterials);
         }
         model.addAttribute("fpDto", fpDto);
+        model.addAttribute("productionLoss", productionLoss);
 
         return "product/productionForm";
     }
@@ -178,16 +178,6 @@ public class ProductController {
         for (int i = 0; i < fpIds.size(); i++) {
             Long fpId = fpIds.get(i);
             Integer qty = quantities.get(i);
-
-            // 랜덤 제품 로스값 삽입
-            // double lossRate = Math.random() * 0.15;  // 0 ~ 15%
-
-            // 최소 0개, 최대 qty-1개까지 손실 (수량이 1개면 손실 0 보장)
-            // int loss = (int) Math.round(qty * lossRate);
-            // loss = Math.max(0, Math.min(loss, qty - 1));
-
-            // 모델로 loss율을 가져온다면 적용할 곳
-            // int loss = productService.getProductionLoss(fpId);
 
             // 수량이 0보다 큰 것만 생산
             if (qty != null && qty > 0) {

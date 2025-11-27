@@ -78,7 +78,9 @@ public class PythonService {
             // =========================================================
             // 4. 결과 읽기
             // =========================================================
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream())); // 한글 깨짐 시 "EUC-KR" 추가 고려
+            BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8) // 한글 깨짐 방지
+            );
             StringBuilder output = new StringBuilder();
             String line;
 

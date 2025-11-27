@@ -32,5 +32,5 @@ public interface ProductionRequestMapper {
 
     int countPending();
 
-    long getPrId(Long fpId);
+    Long getPrId(Long fpId);
 }

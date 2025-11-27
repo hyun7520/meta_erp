@@ -4,10 +4,7 @@ import com.meta.stock.lots.mapper.LotsMapper;
 import com.meta.stock.materials.dto.MaterialDto;
 import com.meta.stock.materials.dto.MaterialRequirementDto;
 import com.meta.stock.materials.mapper.MaterialMapper;
-import com.meta.stock.product.dto.FixedProductDto;
-import com.meta.stock.product.dto.ProductDTO;
-import com.meta.stock.product.dto.ProductListDTO;
-import com.meta.stock.product.dto.ProductStockDto;
+import com.meta.stock.product.dto.*;
 import com.meta.stock.product.entity.FixedProductEntity;
 import com.meta.stock.product.entity.ProductEntity;
 import com.meta.stock.product.mapper.ProductionRequestMapper;
@@ -42,7 +39,7 @@ public class ProductService {
     private ProductRepository productRepository;
     @Autowired
     private FixedProductRepository fixedProductRepository;
-    private Map<String, Map<String, List<String>>> content;
+    private Map<String, String> content;
 
     public List<ProductStockDto> findTotalProductStock() {
         return productMapper.findTotalProductStock();
@@ -110,10 +107,7 @@ public class ProductService {
     public void produceProduct(Long fpId, Integer qty) {
         FixedProductDto fDto = productMapper.getNameAndLifeTime(fpId);
 
-        LocalDate today = LocalDate.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMM");
-        String todayYM = today.format(formatter);
-        double lossRate = Double.parseDouble(content.get(todayYM).get("감자").get(3));
+        double lossRate = Double.parseDouble(content.get(fDto.getName()));
         int lossQty = (int) Math.ceil((double) qty * lossRate / 50);
         System.out.println("qty:" + qty);
         System.out.println("lossRate:" + lossRate);
@@ -145,36 +139,52 @@ public class ProductService {
                 .lotsId(entity.getLotsId())
                 .build();
     }
-    
+
     // 파일 읽어와서 Map에 저장
-    private void readCsv() {
+    public void readCsv() {
+
         content = new HashMap<>();
         String projectRoot = System.getProperty("user.dir");
-        File csv = new File(projectRoot + "/src/main/resources/file/future_material_date.csv");
+        File csv = new File(projectRoot + "/src/main/resources/file/final_result.csv");
+
+        LocalDate today = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMM");
+        String todayYM = today.format(formatter);
         BufferedReader br = null;
         String line = "";
 
         try {
             br = new BufferedReader(new FileReader(csv));
-            // 첫 번째 줄(헤더) 건너뛰기
-            line = br.readLine();
+            br.readLine();
+
+            String headerLine = br.readLine();
+            String[] headers = headerLine.replace("'", "").split(",");
+
             while((line = br.readLine()) != null) {
                 // CSV는 쉼표로 구분
                 String[] cols = line.split(",");
-                if(cols.length < 7) continue; // 데이터 검증
-                String yearMonth = cols[0].trim();  // 연월
-                String itemName = cols[5].trim();   // 품목명
+                if(cols.length < 1) continue;
 
-                // 나머지 값들 (평균기온, 강수량, 상대습도, 예상로스율, 예상기후분류)
-                List<String> values = Arrays.asList(
-                        cols[3].trim(),  // 상대습도
-                        cols[4].trim(),  // 예상_로스율_%
-                        cols[6].trim()   // 예상_기후_분류
-                );
-                // 연월 키가 없으면 새로 생성
-                content.computeIfAbsent(yearMonth, k -> new HashMap<>());
-                // 품목명을 키로 값 저장
-                content.get(yearMonth).put(itemName, values);
+                String yearMonth = cols[0].trim();  // 연월
+
+                if(yearMonth.equals(todayYM)) {
+
+                    for (int i = 1; i < cols.length; i++) {
+                        if (i >= headers.length) break;
+
+                        String itemName = headers[i].trim();
+                        String value = cols[i].trim();
+
+                        content.put(itemName, value);
+                    }
+
+                    break;
+                }
+            }
+            if(content.isEmpty()) {
+                System.out.println(todayYM + " 데이터가 없습니다.");
+            } else {
+                System.out.println("데이터 로드 완료: " + content.get(todayYM));
             }
         } catch(FileNotFoundException e) {
             System.out.println("파일을 찾을 수 없었습니다.");
@@ -191,5 +201,9 @@ public class ProductService {
                 System.out.println("파일 닫기 오류가 발생했습니다.");
             }
         }
+    }
+
+    public Map<String, String> getLossPrediction() {
+        return content;
     }
 }

@@ -176,7 +176,7 @@ const renderPRList = (pageData) => {
 
             tr.innerHTML = `
                 <td>${data.prId}1</td>
-                <td>${data.managementEmployee || "김경영"}</td>
+                <td>${data.managementEmployeeName || "김경영"}</td>
                 <td>${data.productName || "부대찌개"}</td>
                 <td>${data.toCompany || "거래처A"}</td>
                 <td><span class="qty-unit">${data.targetQty || 0}</span></td>

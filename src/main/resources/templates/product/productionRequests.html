@@ -175,7 +175,7 @@
                     </div>
 
                     <!-- 검색 및 정렬 폼 -->
-                    <form method="get" action="/pr">
+                    <form method="get" action="/pr" onsubmit="searchPR(); return false;">
                         <div class="form-row">
                             <div class="form-group">
                                 <input type="text" name="keyword" placeholder="제품명 또는 거래처 검색" th:value="${keyword}">

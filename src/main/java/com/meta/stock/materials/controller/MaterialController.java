@@ -18,10 +18,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Controller
 public class MaterialController {
@@ -58,10 +55,15 @@ public class MaterialController {
             @RequestParam(name = "quantities", required = false) List<String> quantities,
             @RequestParam(name = "units", required = false) List<String> units,
             Model model, HttpSession session) {
+
+        String requestByName;
+        int requestById;
         if (session.getAttribute("employee") == null) {
             return "redirect:/login";
         } else {
             EmployeeGetDto employee = (EmployeeGetDto) session.getAttribute("employee");
+            requestByName = employee.getName();
+            requestById = employee.getEmployeeId();
             if (employee.getDepartment().contains("경영") || employee.getRole().equals("사원")) {
                 return "redirect:/dash";
             }
@@ -74,17 +76,25 @@ public class MaterialController {
 
         // DTO 리스트로 변환
         List<MaterialRequestDto> materialRequests = new ArrayList<>();
+        Set<String> checkDupMaterial = new HashSet<>();
         for (int i = 0; i < materialNames.size(); i++) {
+            String materialName = materialNames.get(i);
+            if(checkDupMaterial.contains(materialName)) {
+                MaterialRequestDto materialRequestDto = materialRequests.stream().filter(mr -> mr.getMaterialName().equals(materialName)).findFirst().orElseThrow();
+                materialRequestDto.setQty(materialRequestDto.getQty() + Integer.parseInt(quantities.get(i)));
+                continue;
+            } else{
+                checkDupMaterial.add(materialName);
+            }
             MaterialRequestDto dto = new MaterialRequestDto();
             dto.setFmId(fmIds.get(i));
             dto.setMaterialName(materialNames.get(i));
             int qty = Math.max(Integer.parseInt(quantities.get(i)), 0);
             dto.setQty(qty);
-            dto.setRequestBy(1);
+            dto.setRequestBy(requestById);
             materialRequests.add(dto);
         }
 
-        String requestByName = materialService.getRequestByName(1L);
         model.addAttribute("requestByName", requestByName);
         model.addAttribute("materialRequests", materialRequests);
 
@@ -102,7 +112,9 @@ public class MaterialController {
         System.out.println("\n=== 재료 목록 ===");;
         for (MaterialRequestDto req : formData.getMaterialRequests()) {
             System.out.println(req);
-
+            if(req.getQty() <= 0) {
+                continue;
+            }
             // TODO: DB 저장 로직 수행
             materialService.save(req);
         }

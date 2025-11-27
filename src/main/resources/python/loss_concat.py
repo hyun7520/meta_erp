@@ -3,7 +3,7 @@ import os
 import sys
 
 # ----------------- 설정 -----------------
-
+sys.stdout.reconfigure(encoding='utf-8') # 한글 깨짐 방지
 # 파일 경로 (실제 업로드된 파일 이름을 사용)
 #erp-system\src\main\resources\static\file
 if len(sys.argv) < 4:
