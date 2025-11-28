@@ -52,6 +52,10 @@ public class ProductService {
         return productMapper.getFixedProductWithStockQty();
     }
 
+    public Map<String, String> getLossPrediction() {
+        return parser.getLossContents();
+    }
+
     public Page<ProductStockDto> findProductStockWithPaging(String keyword, Pageable pageable) {
         int offset = pageable.getPageNumber() * pageable.getPageSize();
         int limit = pageable.getPageSize();
