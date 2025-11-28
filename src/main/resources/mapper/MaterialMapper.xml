@@ -194,7 +194,7 @@
         INSERT INTO Material_Request
         (mr_id, fm_id, request_by, request_date, qty, unit, approved, approved_date, note)
         VALUES
-        (SEQ_MATERIAL_REQUEST.NEXTVAL, #{fmId}, ${requestBy}, SYSDATE, #{qty}, 'g', 0, null, #{note})
+        (SEQ_MATERIAL_REQUEST.NEXTVAL, #{fmId}, ${requestBy}, SYSDATE, #{qty}, 'BOX', 0, null, #{note})
     </insert>
 
     <insert id="materialSave" parameterType="com.meta.stock.materials.entity.MaterialEntity">
