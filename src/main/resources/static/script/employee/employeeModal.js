@@ -29,6 +29,7 @@ const openEmployeeModal = (employeeId = 0) => {
 }
 
 const closeEmployeeModal = () => {
+    updateEmployeeId = 0;
     document.getElementById('employee_modal').style.display = 'none';
 }
 
