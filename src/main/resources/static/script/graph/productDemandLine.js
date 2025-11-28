@@ -97,7 +97,7 @@ const drawLine = (data, labels) => {
         grid: {
             top: 100,
             right: 100,
-            bottom: 0,
+            bottom: 60,
         },
         dataZoom: [
             {
@@ -107,7 +107,7 @@ const drawLine = (data, labels) => {
                 end: (endIdx / (xLabels.length - 1)) * 100,
                 left: '10%',
                 right: '10%',
-                bottom: 55,
+                bottom: 10,
                 height: 20,
                 throttle: 120
             },
