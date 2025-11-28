@@ -11,6 +11,7 @@ import com.meta.stock.product.mapper.ProductionRequestMapper;
 import com.meta.stock.product.repository.FixedProductRepository;
 import com.meta.stock.product.repository.ProductRepository;
 import com.meta.stock.product.mapper.ProductMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -19,6 +20,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -39,6 +43,8 @@ public class ProductService {
     private ProductRepository productRepository;
     @Autowired
     private FixedProductRepository fixedProductRepository;
+    @Value("${app.output-path}")
+    private String outputPath;
     private Map<String, String> content;
 
     public List<ProductStockDto> findTotalProductStock() {
@@ -145,21 +151,27 @@ public class ProductService {
 
         content = new HashMap<>();
         String projectRoot = System.getProperty("user.dir");
-        File csv = new File(projectRoot + "/src/main/resources/file/final_result.csv");
+        // File csv = new File(projectRoot + "/src/main/resources/file/final_result.csv");
+
+        // aws 전용 파일 경로
+        File csv = new File(outputPath);
+
+        if (!csv.exists()) {
+            System.out.println("❌ 파일이 존재하지 않습니다: " + outputPath);
+            return;
+        }
 
         LocalDate today = LocalDate.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMM");
         String todayYM = today.format(formatter);
-        BufferedReader br = null;
-        String line = "";
 
-        try {
-            br = new BufferedReader(new FileReader(csv));
+        try (BufferedReader br = Files.newBufferedReader(Paths.get(outputPath), StandardCharsets.UTF_8)) {
             br.readLine();
 
             String headerLine = br.readLine();
             String[] headers = headerLine.replace("'", "").split(",");
 
+            String line;
             while((line = br.readLine()) != null) {
                 // CSV는 쉼표로 구분
                 String[] cols = line.split(",");
@@ -192,14 +204,6 @@ public class ProductService {
         } catch (IOException e) {
             System.out.println("파일 읽기 오류가 발생했습니다.");
             e.printStackTrace();
-        } finally {
-            try {
-                if(br != null) {
-                    br.close();
-                }
-            } catch (IOException e) {
-                System.out.println("파일 닫기 오류가 발생했습니다.");
-            }
         }
     }
 
