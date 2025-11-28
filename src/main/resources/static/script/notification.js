@@ -18,12 +18,12 @@ function checkAlert() {
 
             if (stat.includes("이상")) {
                 display = `
-                    습도가 ${humidity}로 예상되며 ${stat} 발생 예정 입니다.<br/>
+                    습도가 ${humidity}%로 예상되며 ${stat} 발생 예정 입니다.<br/>
                     ${advice} 하기에 주의하세요.
                 `;
             } else if (parseFloat(humidity.trim()) > 50) {
                 display = `
-                    ${stat} 이지만 습도가 ${humidity}로 예상됩니다. <br/>
+                    ${stat} 이지만 습도가 ${humidity}%로 예상됩니다. <br/>
                     평균 로스율이 높은 습도이니 주의하세요.
                 `;
             }

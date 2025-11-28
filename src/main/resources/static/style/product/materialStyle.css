@@ -47,7 +47,6 @@ table {
 th {
     padding: 10px 15px;
     font-size: 12px;
-    position: sticky;
     top: 0;
     background: #F8F9FA;
     z-index: 1;

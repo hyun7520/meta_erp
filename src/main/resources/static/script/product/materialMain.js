@@ -64,9 +64,9 @@ const renderMaterialRequestList = (pageData) => {
             } else if (data.approved === 1) {
                 trClass = "status-1"
                 approveBadge = `<span class="status-badge status-approved">승인</span>`;
-            } else if (data.approved === 2) {
+            } else if (data.approved === -1) {
                 trClass = "status-2"
-                approveBadge = `<span class="status-badge status-rejected">승인</span>`;
+                approveBadge = `<span class="status-badge status-rejected">반려</span>`;
             }
 
             tr.className = trClass;

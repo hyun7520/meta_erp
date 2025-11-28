@@ -64,7 +64,6 @@ table {
 th {
     padding: 8px 12px;
     font-size: 11px;
-    position: sticky;
     top: 0;
     background: #F8F9FA;
     z-index: 1;
