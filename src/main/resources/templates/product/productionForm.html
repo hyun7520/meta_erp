@@ -246,6 +246,7 @@
                                th:id="'qty-' + ${iterStat.index}"
                                name="quantities"
                                th:data-fp-id="${product.fpId}"
+                               th:data-fp-name="${product.name}"
                                th:data-card-index="${iterStat.index}"
                                value="0"
                                min="0"
@@ -436,6 +437,7 @@
             if (qty > 0) {
                 productions.push({
                     fpId: input.dataset.fpId,
+                    name: input.dataset.fpName,
                     qty: qty
                 });
             }
@@ -448,6 +450,10 @@
         }
 
         // 검증 2: 200개 초과
+        if (total === 0) {
+            alert('생산할 제품을 선택해주세요.');
+            return;
+        }
         if (total > 200) {
             alert('총 생산량이 200개를 초과할 수 없습니다.\n현재: ' + total + '개');
             return;
@@ -464,7 +470,6 @@
             );
 
             if (confirmed) {
-                // 부족한 재료 정보를 URL 파라미터로 전달
                 const params = new URLSearchParams();
                 insufficientMaterials.forEach(material => {
                     params.append('fmIds', material.fmId);
@@ -478,8 +483,23 @@
             return;
         }
 
+        let message = '=== 생산 요청 내역 ===\n\n';
+
+        productions.forEach(p => {
+            const displayName = p.name ? p.name : '제품번호 ' + p.fpId;
+            message += `- ${displayName} : ${p.qty}개\n`;
+        });
+
+        message += `\n--------------------\n`;
+        message += `총 생산량: ${total}개\n\n`;
+        message += `이대로 생산을 진행하시겠습니까?`;
+
         // 모든 검증 통과 → 제출
-        document.getElementById('productionForm').submit();
+        if (confirm(message)) {
+            document.getElementById('productionForm').submit();
+        } else {
+            return;
+        }
     }
 
     // 재료 충분성 확인
