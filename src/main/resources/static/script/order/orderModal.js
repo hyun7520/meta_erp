@@ -58,7 +58,7 @@ const fillModal = (data) => {
     orderId = data?.orderId || 0;
     document.getElementById('order_client_name').value = data?.requestBy || '';
     document.getElementById('order_qty').value = data?.qty || '';
-    document.getElementById('order_unit').value = data?.unit || '';
+    document.getElementById('order_unit').value = data?.unit || 'BOX';
     document.getElementById('order_due_date').value = data?.deadline || '';
 }
 
@@ -78,10 +78,9 @@ const checkOrderValidate = () => {
     const productId = document.getElementById('order_product_select').value;
     const clientName = document.getElementById('order_client_name').value;
     const quantity = document.getElementById('order_qty').value;
-    const unit = document.getElementById('order_unit').value;
     const dueDate = document.getElementById('order_due_date').value;
 
-    if (!productId || !clientName || !quantity || !unit || !dueDate) {
+    if (!productId || !clientName || !quantity || !dueDate) {
         alert('필수 항목을 모두 입력해주세요.');
         return false;
     }
@@ -109,7 +108,7 @@ const insertData = () => {
     const serialCode = document.getElementById('order_product_select').value;
     const clientName = document.getElementById('order_client_name').value;
     const quantity = document.getElementById('order_qty').value;
-    const unit = document.getElementById('order_unit').value;
+    const unit = document.getElementById('order_unit').value || "BOX";
     const dueDate = document.getElementById('order_due_date').value;
 
     return {
