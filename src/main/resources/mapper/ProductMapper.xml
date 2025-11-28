@@ -78,6 +78,7 @@
         GROUP BY p.product_name
         ) st
         ON fp.name = st.product_name
+        ORDER BY fp_id
     </select>
 
     <!-- 특정 제품 재고 조회 (productId로) -->

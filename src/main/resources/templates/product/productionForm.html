@@ -224,6 +224,10 @@
                         <div class="product-stock">
                             현재 재고: <span class="qty-unit" th:text="${product.currentStock}">150</span>개
                         </div>
+                        <div class="product-loss">
+                            <i class="fas fa-chart-line"></i> 금월 예상 로스:
+                            <span class="loss-value" th:text="|${productionLoss[product.name] ?: '0'}%|">0%</span>
+                        </div>
                     </div>
                 </div>
 
@@ -453,7 +457,7 @@
         const insufficientMaterials = checkMaterialSufficiency(productions);
 
         if (insufficientMaterials.length > 0) {
-            const materialNames = insufficientMaterials.map(m => m.name).join(', ');
+            const materialNames = [...new Set(insufficientMaterials.map(m => m.name))].join(', ');
             const confirmed = confirm(
                 '다음 재료가 부족합니다:\n' + materialNames +
                 '\n\n재료 발주 페이지로 이동하시겠습니까?'

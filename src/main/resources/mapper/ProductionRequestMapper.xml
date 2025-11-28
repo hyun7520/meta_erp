@@ -13,6 +13,7 @@
     <!-- OrderDto 매핑 + ProductDTO 포함 -->
     <resultMap id="ProductRequestMap" type="com.meta.stock.product.dto.ProductRequestDto">
         <id property="prId" column="PR_ID"/>
+        <result property="managementEmployeeName" column="NAME"/>
         <result property="managementEmployee" column="MANAGEMENT_EMPLOYEE"/>
         <result property="productionEmployee" column="PRODUCTION_EMPLOYEEE"/>
         <result property="serialCode" column="SERIAL_CODE"/>
@@ -113,6 +114,7 @@
     <select id="findAllRequestsWithPaging" resultMap="ProductRequestMap">
         SELECT
         pr.pr_id,
+        e.name,
         pr.management_employee,
         pr.production_employee,
         fp.name as product_name,
@@ -130,6 +132,7 @@
         END AS complete
         FROM Production_Request pr
         LEFT JOIN Fixed_Product fp ON pr.serial_code = fp.serial_code
+        LEFT JOIN Employees e on pr.MANAGEMENT_EMPLOYEE = e.EMPLOYEE_ID
         WHERE 1=1
         <if test="keyword != null and keyword != ''">
             AND (fp.name LIKE '%' || #{keyword} || '%'

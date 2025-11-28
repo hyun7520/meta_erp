@@ -130,7 +130,7 @@ const searchOngoingList = () => {
     const main = document.getElementById("product_ongoing_list");
     const keyword = main.querySelector("input[name='prKeyword']").value;
 
-    productsParam.search = keyword;
+    productsParam.keyword = keyword;
     loadOngoingProductList(productsParam);
 }
 
@@ -281,7 +281,7 @@ const searchReadyTable = () => {
     const main = document.getElementById("product_material_ready");
     const keyword = main.querySelector("input[name='mrKeyword']").value;
 
-    materialsParam.search = keyword;
+    materialsParam.keyword = keyword;
     loadRequestReadyMaterials(materialsParam);
 }
 

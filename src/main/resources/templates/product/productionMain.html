@@ -30,7 +30,7 @@
                     </div>
 
                     <!-- 검색 및 정렬 폼 -->
-                    <form method="get" action="/product">
+                    <form method="get" action="/product" onsubmit="searchOngoingList(); return false;">
                         <div class="form-row">
                             <div class="form-group">
                                 <input type="text" name="prKeyword" placeholder="제품명 검색">
@@ -95,7 +95,7 @@
                     </div>
 
                     <!-- 검색 및 정렬 폼 -->
-                    <form>
+                    <form onsubmit="searchReadyTable(); return false;">
                         <div class="form-row">
                             <div class="form-group">
                                 <input type="text" name="mrKeyword" placeholder="재료명 검색">
