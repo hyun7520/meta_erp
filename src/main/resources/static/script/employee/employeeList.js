@@ -48,7 +48,7 @@ const renderEmployeeTable = (list) => {
     list.forEach(element => {
         const row = document.createElement('tr');
 
-        for (let key of role) {
+        for (let key of keyList) {
             const td = document.createElement("td");
             if (key === 'hireDate') {
                 td.innerHTML = calcDrawDate(new Date(element[key])).split(" ")[0];
