@@ -118,7 +118,8 @@ public class ProductService {
         FixedProductDto fDto = productMapper.getNameAndLifeTime(fpId);
 
         int lossQty = parser.getLossPerProductAndYearMonth(fDto.getName(), qty);
-        lotsMapper.storeProduct(qty - lossQty, fDto.getLifeTime());
+        int createdQty = (qty - lossQty) <= 0 ? 1 : (qty - lossQty);
+        lotsMapper.storeProduct(createdQty, fDto.getLifeTime());
         Long lotsId = lotsMapper.getLatestLot();
         Long prId = productionRequestMapper.getPrId(fpId);
         prId = (prId == null) ? 0 : prId;

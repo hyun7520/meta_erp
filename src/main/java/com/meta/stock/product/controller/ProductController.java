@@ -20,6 +20,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -167,9 +168,11 @@ public class ProductController {
     }
 
     @PostMapping("/product")
-    public String beginProduction(Model model,
+    public String beginProduction(RedirectAttributes redirectAttributes,
                                   @RequestParam List<Long> fpIds,
                                   @RequestParam List<Integer> quantities){
+
+        boolean isProduced = false;
 
         for (int i = 0; i < fpIds.size(); i++) {
             Long fpId = fpIds.get(i);
@@ -179,7 +182,14 @@ public class ProductController {
             if (qty != null && qty > 0) {
                 productService.produceProduct(fpId, qty);
                 materialService.decreaseMaterial(fpId, qty);
+                isProduced = true;
             }
+        }
+
+        if(isProduced) {
+            redirectAttributes.addFlashAttribute("message", "생산 요청이 완료되었습니다.");
+        } else {
+            redirectAttributes.addFlashAttribute("message", "생산할 수량이 없습니다.");
         }
 
         return "redirect:/product";
