@@ -18,7 +18,7 @@
                 (select count(*) from production_request where production_employee is null) as order_request,
                 (select count(*) from material_request where approved is null or approved = 0) as metrial_request,
                 (select count(*) from production_request where production_start_date is not null and end_date is null) as metrial_request_clear,
-                (select count(*) from production_request where production_start_date is not null and end_date is not null and trunc(end_date) <= trunc(sysdate))) as production_ready,
+                (select count(*) from production_request where production_start_date is not null and end_date is not null and trunc(end_date) <= trunc(sysdate)) as production_ready,
                 (select count(*) from production_request where trunc(end_date) = trunc(sysdate)) as today_delivered
             from dual
         ]]>
