@@ -36,8 +36,6 @@ public class ProductController {
     private MaterialService materialService;
     @Autowired
     private ProductionRequestService productionRequestService;
-    @Autowired
-    private PythonService pythonService;
 
     private final int limit = 3;
 
@@ -53,8 +51,6 @@ public class ProductController {
             }
         }
 
-        pythonService.runPythonScript();
-        productService.readCsv();
         return "product/productionMain";
     }
 

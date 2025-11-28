@@ -1,6 +1,6 @@
 package com.meta.stock.materials.service;
 
-import com.meta.stock.lots.entity.LotsEntity;
+import com.meta.stock.config.PythonParser;
 import com.meta.stock.lots.mapper.LotsMapper;
 import com.meta.stock.materials.dto.MaterialRequestDto;
 import com.meta.stock.materials.entity.MaterialEntity;
@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -33,6 +34,8 @@ public class MaterialRequestServiceV2 {
     private final LotsMapper lotsMapper;
     @Autowired
     private final MaterialMapper materialMapper;
+    @Autowired
+    private PythonParser parser;
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private static final DateTimeFormatter DATETIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -189,7 +192,9 @@ public class MaterialRequestServiceV2 {
         MaterialEntity material = new MaterialEntity();
         material.setLotsId(lotsId);
         material.setMaterialName(fixedMaterial.getName());
-        material.setMaterialLoss(fixedMaterial.getLifeTime()); // 원자재 로스율(가져와 insert)
+
+        int lossQty = parser.getLossPerProductAndYearMonth(fixedMaterial.getName(), request.getQty());
+        material.setMaterialLoss(lossQty); // 원자재 로스율(가져와 insert)
         material.setMrId(request.getMrId());
         materialMapper.materialSave(material);
     }

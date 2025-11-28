@@ -1,34 +1,36 @@
 window.onload = checkAlert;
 function checkAlert() {
-    const offset = 1000 * 60 * 60 * 9;
-    const today = new Date(new Date().getTime() + offset)
-        .toISOString()
-        .split("T")[0];
-    const hiddenDate = localStorage.getItem("hideAlertDate");
-    if (hiddenDate === today) return; // 오늘 안 보기 체크했으면 종료
+    // const offset = 1000 * 60 * 60 * 9;
+    // const today = new Date(new Date().getTime() + offset)
+    //     .toISOString()
+    //     .split("T")[0];
+    // const hiddenDate = localStorage.getItem("hideAlertDate");
+    // if (hiddenDate === today) return; // 오늘 안 보기 체크했으면 종료
     // 실제로는 fetch('forecast_alert_v2.json') 사용
     // 여기서는 테스트를 위해 가짜 데이터를 사용합니다.
-    const mockData = {
-        alert_status: "DANGER",
-        forecast: [
-            {
-                date: "2025-11-25 (화)",
-                status: "DANGER",
-                advice:
-                    "습도가 90%에 육박합니다. 로스율 상승 가능성이 높으니 주의하세요.",
-            },
-        ],
-    };
 
-    if (mockData.alert_status === "DANGER") {
-        // 가장 먼저 도래하는 위험한 날의 정보를 띄움
-        const dangerDay = mockData.forecast.find(({status}) => status === "DANGER");
-        if (dangerDay) {
-            document.getElementById("alert-date").innerText = dangerDay.date + " 예보";
-            document.getElementById("alert-text").innerHTML = dangerDay.advice.replace(".", "<br/>");
+    fetch("/noti", {method: "GET"})
+        .then(response => response.json())
+        .then(data => {
+            const {date, humidity, status} = data;
+            const [stat, advice] = status.replace(")", "").split(" (");
+            display = "";
+
+            if (stat.includes("이상")) {
+                display = `
+                    습도가 ${humidity}로 예상되며 ${stat} 발생 예정 입니다.<br/>
+                    ${advice} 하기에 주의하세요.
+                `;
+            } else if (parseFloat(humidity.trim()) > 50) {
+                display = `
+                    ${stat} 이지만 습도가 ${humidity}로 예상됩니다. <br/>
+                    평균 로스율이 높은 습도이니 주의하세요.
+                `;
+            }
+            document.getElementById("alert-date").innerText = date + " 예보";
+            document.getElementById("alert-text").innerHTML = display
             document.getElementById("alert-box").style.display = "block";
-        }
-    }
+        });
 }
 
 function closeAlert() {

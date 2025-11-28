@@ -1,5 +1,6 @@
 package com.meta.stock.product.service;
 
+import com.meta.stock.config.PythonParser;
 import com.meta.stock.lots.mapper.LotsMapper;
 import com.meta.stock.materials.dto.MaterialDto;
 import com.meta.stock.materials.dto.MaterialRequirementDto;
@@ -20,9 +21,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -43,9 +41,8 @@ public class ProductService {
     private ProductRepository productRepository;
     @Autowired
     private FixedProductRepository fixedProductRepository;
-    @Value("${app.output-path}")
-    private String outputPath;
-    private Map<String, String> content;
+    @Autowired
+    private PythonParser parser;
 
     public List<ProductStockDto> findTotalProductStock() {
         return productMapper.findTotalProductStock();
@@ -113,12 +110,7 @@ public class ProductService {
     public void produceProduct(Long fpId, Integer qty) {
         FixedProductDto fDto = productMapper.getNameAndLifeTime(fpId);
 
-        double lossRate = Double.parseDouble(content.get(fDto.getName()));
-        int lossQty = (int) Math.ceil((double) qty * lossRate / 50);
-        System.out.println("qty:" + qty);
-        System.out.println("lossRate:" + lossRate);
-        System.out.println("lossQty:" + lossQty);
-
+        int lossQty = parser.getLossPerProductAndYearMonth(fDto.getName(), qty);
         lotsMapper.storeProduct(qty - lossQty, fDto.getLifeTime());
         Long lotsId = lotsMapper.getLatestLot();
         Long prId = productionRequestMapper.getPrId(fpId);
@@ -144,70 +136,5 @@ public class ProductService {
                 .prId(entity.getPrId())
                 .lotsId(entity.getLotsId())
                 .build();
-    }
-
-    // 파일 읽어와서 Map에 저장
-    public void readCsv() {
-
-        content = new HashMap<>();
-        String projectRoot = System.getProperty("user.dir");
-        // File csv = new File(projectRoot + "/src/main/resources/file/final_result.csv");
-
-        // aws 전용 파일 경로
-        File csv = new File(outputPath);
-
-        if (!csv.exists()) {
-            System.out.println("❌ 파일이 존재하지 않습니다: " + outputPath);
-            return;
-        }
-
-        LocalDate today = LocalDate.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMM");
-        String todayYM = today.format(formatter);
-
-        try (BufferedReader br = Files.newBufferedReader(Paths.get(outputPath), StandardCharsets.UTF_8)) {
-            br.readLine();
-
-            String headerLine = br.readLine();
-            String[] headers = headerLine.replace("'", "").split(",");
-
-            String line;
-            while((line = br.readLine()) != null) {
-                // CSV는 쉼표로 구분
-                String[] cols = line.split(",");
-                if(cols.length < 1) continue;
-
-                String yearMonth = cols[0].trim();  // 연월
-
-                if(yearMonth.equals(todayYM)) {
-
-                    for (int i = 1; i < cols.length; i++) {
-                        if (i >= headers.length) break;
-
-                        String itemName = headers[i].trim();
-                        String value = cols[i].trim();
-
-                        content.put(itemName, value);
-                    }
-
-                    break;
-                }
-            }
-            if(content.isEmpty()) {
-                System.out.println(todayYM + " 데이터가 없습니다.");
-            } else {
-                System.out.println("데이터 로드 완료: " + content.get(todayYM));
-            }
-        } catch(FileNotFoundException e) {
-            System.out.println("파일을 찾을 수 없었습니다.");
-            e.printStackTrace();
-        } catch (IOException e) {
-            System.out.println("파일 읽기 오류가 발생했습니다.");
-            e.printStackTrace();
-        }
-    }
-
-    public Map<String, String> getLossPrediction() {
-        return content;
     }
 }

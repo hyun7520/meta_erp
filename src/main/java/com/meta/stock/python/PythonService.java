@@ -8,6 +8,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.CharsetDecoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -26,26 +27,60 @@ public class PythonService {
     @Value("${app.output-path}")
     private String outputPath;
 
-    public String runPythonScript() {
+    private File renderPythonFile() {
+        // =========================================================
+        // 1. 파이썬 실행 파일 경로 찾기 (절대 경로 변환)
+        // =========================================================
+        File pythonFile;
+        File potentialPath = new File(pythonExecPath);
+        if (potentialPath.isAbsolute()) {
+            pythonFile = potentialPath;
+        } else {
+            String projectRoot = System.getProperty("user.dir");
+            pythonFile = Paths.get(projectRoot, pythonExecPath).toFile();
+        }
+
+        if (!pythonFile.exists()) {
+            throw new RuntimeException("파이썬 실행 파일을 찾을 수 없습니다: " + pythonFile.getAbsolutePath());
+        }
+        System.out.println("✅ 파이썬 실행 경로: " + pythonFile.getAbsolutePath());
+        return pythonFile;
+    }
+
+
+    // 수요량 예측 연산 python 실행
+    public String runDemandsPython() {
         try {
+            File pythonFile = renderPythonFile();
             // =========================================================
-            // 1. 파이썬 실행 파일 경로 찾기 (절대 경로 변환)
+            // 2. 리소스 파일들을 임시 폴더로 복사 (Script + CSV)
             // =========================================================
-            File pythonFile;
-            File potentialPath = new File(pythonExecPath);
 
-            if (potentialPath.isAbsolute()) {
-                pythonFile = potentialPath;
-            } else {
-                String projectRoot = System.getProperty("user.dir");
-                pythonFile = Paths.get(projectRoot, pythonExecPath).toFile();
-            }
+            // (1) 파이썬 스크립트 복사 (src/main/resources/python/predict_demand.py)
+            File scriptFile = copyResourceToTemp("python/predict_demand.py", "predict_demand", ".py");
 
-            if (!pythonFile.exists()) {
-                throw new RuntimeException("파이썬 실행 파일을 찾을 수 없습니다: " + pythonFile.getAbsolutePath());
-            }
-            System.out.println("✅ 파이썬 실행 경로: " + pythonFile.getAbsolutePath());
+            // (2) CSV 파일 복사 (src/main/resources/file/폴더 안에 있는 파일명 입력)
+            // ★주의: 실제 파일명이 'data.csv'라면 아래 이름을 그에 맞게 수정하세요!
+            File csvFile = copyResourceToTemp("file/product_demands.csv", "demand_data", ".csv");
+            // 만약 파일이 여러 개라면 위와 같이 계속 추가해서 복사하면 됩니다.
+            // File csvFile2 = copyResourceToTemp("file/다른파일.csv", "other", ".csv");
 
+            List<String> command = new ArrayList<>();
+            command.add(pythonFile.getAbsolutePath());
+            command.add(scriptFile.getAbsolutePath());
+            command.add(csvFile.getAbsolutePath()); // sys.argv[1]로 전달됨
+            // command.add(csvFile2.getAbsolutePath()); // 파일이 더 있다면 추가
+            return saveFile(command, "result_demand.csv");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Error: " + e.getMessage();
+        }
+    }
+
+    // 로스율 연산 python 실행
+    public String runLossPython() {
+        try {
+            File pythonFile = renderPythonFile();
             // =========================================================
             // 2. 리소스 파일들을 임시 폴더로 복사 (Script + CSV)
             // =========================================================
@@ -73,57 +108,7 @@ public class PythonService {
             command.add(csvFile2.getAbsolutePath()); // sys.argv[1]로 전달됨
             command.add(csvFile3.getAbsolutePath()); // sys.argv[1]로 전달됨
             // command.add(csvFile2.getAbsolutePath()); // 파일이 더 있다면 추가
-
-            ProcessBuilder pb = new ProcessBuilder(command);
-            pb.redirectErrorStream(true);
-
-            Process process = pb.start();
-
-            // =========================================================
-            // 4. 결과 읽기
-            // =========================================================
-            BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8) // 한글 깨짐 방지
-            );
-            StringBuilder output = new StringBuilder();
-            String line;
-
-            while ((line = reader.readLine()) != null) {
-                // System.out.println("[Python] " + line);
-                output.append(line).append("\n");
-            }
-
-            int exitCode = process.waitFor();
-            System.out.println("Python Process 종료 코드: " + exitCode);
-
-            if (exitCode != 0) {
-                return "Error (Exit Code " + exitCode + ")";
-            }
-
-            String csvResult = output.toString();
-            try {
-                // [수정 2] 하드코딩 제거하고 properties에서 가져온 outputPath 사용
-                Path filePath = Paths.get(outputPath);
-                Path parentDir = filePath.getParent();
-
-                // 저장할 폴더가 없으면 생성 (EC2: /home/ec2-user/metateamproject/output 생성됨)
-                if (parentDir != null && !Files.exists(parentDir)) {
-                    Files.createDirectories(parentDir);
-                    System.out.println("✅ 폴더 생성됨: " + parentDir);
-                }
-
-                // 파일 저장 (BOM 추가 + UTF-8)
-                String contentWithBOM = "\uFEFF" + csvResult;
-                Files.write(filePath, contentWithBOM.getBytes(StandardCharsets.UTF_8));
-                System.out.println("✅ 결과 파일 저장 완료: " + filePath);
-
-            } catch (IOException e) {
-                System.out.println("❌ 파일 저장 실패: " + e.getMessage());
-                // 파일 저장은 실패했지만, 웹 화면에는 결과를 보여주기 위해 에러를 던지진 않음
-            }
-
-            return csvResult;
-
+            return saveFile(command, "final_result.csv");
         } catch (Exception e) {
             e.printStackTrace();
             return "Error: " + e.getMessage();
@@ -152,4 +137,58 @@ public class PythonService {
         return tempPath.toFile();
     }
 
+    private String saveFile(List<String> command, String saveRoot) throws IOException, InterruptedException {
+        // =========================================================
+        // 3. ProcessBuilder 실행
+        // =========================================================
+        // 명령어 구성: [python.exe] [스크립트경로] [CSV경로]
+        ProcessBuilder pb = new ProcessBuilder(command);
+        pb.redirectErrorStream(true);
+
+        Process process = pb.start();
+
+        // =========================================================
+        // 4. 결과 읽기
+        // =========================================================
+        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8)); // 한글 깨짐 시 "EUC-KR" 추가 고려
+        StringBuilder output = new StringBuilder();
+        String line;
+
+        while ((line = reader.readLine()) != null) {
+//            System.out.println("[Python] " + line);
+            output.append(line).append("\n");
+        }
+        reader.close();
+
+        int exitCode = process.waitFor();
+        System.out.println("Python Process 종료 코드: " + exitCode);
+
+        if (exitCode != 0) {
+            return "Error (Exit Code " + exitCode + ")";
+        }
+
+        String csvResult = output.toString();
+        try {
+            // [수정 2] 하드코딩 제거하고 properties에서 가져온 outputPath 사용
+            Path filePath = Paths.get(outputPath);
+            Path parentDir = filePath.getParent();
+
+            // 저장할 폴더가 없으면 생성 (EC2: /home/ec2-user/metateamproject/output 생성됨)
+            if (parentDir != null && !Files.exists(parentDir)) {
+                Files.createDirectories(parentDir);
+                System.out.println("✅ 폴더 생성됨: " + parentDir);
+            }
+
+            // 파일 저장 (BOM 추가 + UTF-8)
+            String contentWithBOM = "\uFEFF" + csvResult;
+            Files.write(filePath, contentWithBOM.getBytes(StandardCharsets.UTF_8));
+            System.out.println("✅ 결과 파일 저장 완료: " + filePath);
+
+        } catch (IOException e) {
+            System.out.println("❌ 파일 저장 실패: " + e.getMessage());
+            // 파일 저장은 실패했지만, 웹 화면에는 결과를 보여주기 위해 에러를 던지진 않음
+        }
+
+        return csvResult;
+    }
 }
