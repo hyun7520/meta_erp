@@ -23,27 +23,31 @@ public class PythonService {
     @Value("${app.python.exec-path}")
     private String pythonExecPath; // yml에서 설정한 파이썬 실행 경로
 
+    private File renderPythonFile() {
+        // =========================================================
+        // 1. 파이썬 실행 파일 경로 찾기 (절대 경로 변환)
+        // =========================================================
+        File pythonFile;
+        File potentialPath = new File(pythonExecPath);
+        if (potentialPath.isAbsolute()) {
+            pythonFile = potentialPath;
+        } else {
+            String projectRoot = System.getProperty("user.dir");
+            pythonFile = Paths.get(projectRoot, pythonExecPath).toFile();
+        }
+
+        if (!pythonFile.exists()) {
+            throw new RuntimeException("파이썬 실행 파일을 찾을 수 없습니다: " + pythonFile.getAbsolutePath());
+        }
+        System.out.println("✅ 파이썬 실행 경로: " + pythonFile.getAbsolutePath());
+        return pythonFile;
+    }
+
+
     // 수요량 예측 연산 python 실행
     public String runDemandsPython() {
         try {
-            // =========================================================
-            // 1. 파이썬 실행 파일 경로 찾기 (절대 경로 변환)
-            // =========================================================
-            File pythonFile;
-            File potentialPath = new File(pythonExecPath);
-
-            if (potentialPath.isAbsolute()) {
-                pythonFile = potentialPath;
-            } else {
-                String projectRoot = System.getProperty("user.dir");
-                pythonFile = Paths.get(projectRoot, pythonExecPath).toFile();
-            }
-
-            if (!pythonFile.exists()) {
-                throw new RuntimeException("파이썬 실행 파일을 찾을 수 없습니다: " + pythonFile.getAbsolutePath());
-            }
-            System.out.println("✅ 파이썬 실행 경로: " + pythonFile.getAbsolutePath());
-
+            File pythonFile = renderPythonFile();
             // =========================================================
             // 2. 리소스 파일들을 임시 폴더로 복사 (Script + CSV)
             // =========================================================
@@ -57,10 +61,6 @@ public class PythonService {
             // 만약 파일이 여러 개라면 위와 같이 계속 추가해서 복사하면 됩니다.
             // File csvFile2 = copyResourceToTemp("file/다른파일.csv", "other", ".csv");
 
-            // =========================================================
-            // 3. ProcessBuilder 실행
-            // =========================================================
-            // 명령어 구성: [python.exe] [스크립트경로] [CSV경로]
             List<String> command = new ArrayList<>();
             command.add(pythonFile.getAbsolutePath());
             command.add(scriptFile.getAbsolutePath());
@@ -76,24 +76,7 @@ public class PythonService {
     // 로스율 연산 python 실행
     public String runLossPython() {
         try {
-            // =========================================================
-            // 1. 파이썬 실행 파일 경로 찾기 (절대 경로 변환)
-            // =========================================================
-            File pythonFile;
-            File potentialPath = new File(pythonExecPath);
-
-            if (potentialPath.isAbsolute()) {
-                pythonFile = potentialPath;
-            } else {
-                String projectRoot = System.getProperty("user.dir");
-                pythonFile = Paths.get(projectRoot, pythonExecPath).toFile();
-            }
-
-            if (!pythonFile.exists()) {
-                throw new RuntimeException("파이썬 실행 파일을 찾을 수 없습니다: " + pythonFile.getAbsolutePath());
-            }
-            System.out.println("✅ 파이썬 실행 경로: " + pythonFile.getAbsolutePath());
-
+            File pythonFile = renderPythonFile();
             // =========================================================
             // 2. 리소스 파일들을 임시 폴더로 복사 (Script + CSV)
             // =========================================================
@@ -151,6 +134,10 @@ public class PythonService {
     }
 
     private String saveFile(List<String> command, String saveRoot) throws IOException, InterruptedException {
+        // =========================================================
+        // 3. ProcessBuilder 실행
+        // =========================================================
+        // 명령어 구성: [python.exe] [스크립트경로] [CSV경로]
         ProcessBuilder pb = new ProcessBuilder(command);
         pb.redirectErrorStream(true);
 
@@ -167,6 +154,7 @@ public class PythonService {
             System.out.println("[Python] " + line);
             output.append(line).append("\n");
         }
+        reader.close();
 
         int exitCode = process.waitFor();
         System.out.println("Python Process 종료 코드: " + exitCode);
@@ -193,7 +181,6 @@ public class PythonService {
             } catch (IOException e) {
                 System.out.println("❌ 파일 저장 실패: " + e.getMessage());
             }
-
             return csvResult; // 컨트롤러나 서비스에는 텍스트로 반환
         }
 

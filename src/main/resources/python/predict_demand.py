@@ -25,7 +25,7 @@ def load_data(file_path):
 
 df = load_data(FILE_PATH_PRODUCT)
 
-if df is not None:
+if df is None:
     print("error: 파일 로드 실패")
 else:
     df['연월'] = pd.to_datetime(df['연월'])

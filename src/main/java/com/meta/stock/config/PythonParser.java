@@ -24,17 +24,21 @@ public class PythonParser {
     private PythonService pythonService;
 
     private Map<String, Map<String, List<String>>> content;
+    private Map<String, Map<String, String>> demands;
     private String projectRoot = System.getProperty("user.dir");
 
     @PostConstruct
     public void init() {
         pythonService.runLossPython(); // 로스율 저장
-        readCsv();
         pythonService.runDemandsPython(); // 수요량 저장
+        readCsv();
     }
 
     public Map<String, Map<String, List<String>>> getLossContents() {
         return content;
+    }
+    public Map<String, Map<String, String>> getDemandsContents() {
+        return demands;
     }
 
     public List<String> getLossDates() {
@@ -56,10 +60,13 @@ public class PythonParser {
     // Loss & 습도 & 기후_분류 데이터 파일 읽어와서 Map에 저장
     private void readCsv() {
         content = new HashMap<>();
+        demands = new HashMap<>();
         try {
             readLossCsv(); // 로스율 연산 결과 저장된 CSV 읽기
             readPastWeatherCsv(); // 과거 날씨 데이터 Get
             readFutureWeatherCsv(); // 미래 날씨 데이터 Get
+            readPashDemandsCsv(); // 기존 수요량 CSV 읽기
+            readDemandsCsv(); // 수요량 예측
         } catch(FileNotFoundException e) {
             System.out.println("파일을 찾을 수 없었습니다.");
             e.printStackTrace();
@@ -158,6 +165,69 @@ public class PythonParser {
                 values.set(1, cols[3].trim()); // 상대습도
                 values.set(2, cols[6].trim()); // 기후_분류
                 content.get(yearMonth).put(itemName, values);
+            }
+        }
+
+        try {
+            br.close();
+        } catch (IOException e) {
+            System.out.println("파일 닫기 오류가 발생했습니다.");
+        }
+    }
+
+    private void readPashDemandsCsv() throws IOException {
+        File csv = new File(projectRoot + "/src/main/resources/file/product_demands.csv");
+        BufferedReader br = null;
+        String line = "";
+
+        br = new BufferedReader(new FileReader(csv));
+        // 첫 번째 줄(헤더)
+        String[] headers = br.readLine().split(","); // 품목명
+
+        while((line = br.readLine()) != null) {
+            // CSV는 쉼표로 구분
+            String[] cols = line.split(",");
+            if(cols.length < headers.length) continue; // 데이터 검증
+            String yearMonth = cols[0].trim();  // 연월
+
+            for (int index = 1; index < headers.length; index++) {
+                String itemName = headers[index];   // 품목명
+                demands.computeIfAbsent(yearMonth, k -> new HashMap<>());
+                demands.get(yearMonth).put(itemName, cols[index].trim()); // 수요량
+            }
+        }
+
+        try {
+            br.close();
+        } catch (IOException e) {
+            System.out.println("파일 닫기 오류가 발생했습니다.");
+        }
+    }
+
+    private void readDemandsCsv() throws IOException {
+        File csv = new File(projectRoot + "/src/main/resources/file/result_demand.csv");
+        BufferedReader br = null;
+        String line = "";
+
+        br = new BufferedReader(new FileReader(csv));
+        // 첫 번째 줄(헤더)
+        while ((line = br.readLine()) != null) {
+            if (line.contains("ds,")) {
+                break;
+            }
+        }
+        String[] headers = line.split(","); // 품목명
+
+        while((line = br.readLine()) != null) {
+            // CSV는 쉼표로 구분
+            String[] cols = line.split(",");
+            if(cols.length < headers.length) continue; // 데이터 검증
+            String yearMonth = cols[0].trim();  // 연월
+
+            for (int index = 1; index < headers.length; index++) {
+                String itemName = headers[index];   // 품목명
+                demands.computeIfAbsent(yearMonth, k -> new HashMap<>());
+                demands.get(yearMonth).put(itemName, cols[index].trim()); // 수요량
             }
         }
 
