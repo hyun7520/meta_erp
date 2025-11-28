@@ -11,13 +11,14 @@
         <result property="todayDelivered" column="today_delivered" />
     </resultMap>
 
+    <!-- 생산요청 / 발주요청 / 생산대기(수주 상태) / 생산중 / 당일 출고 건수 -->
     <select id="getRequestFlow" resultMap="parseRequestFlow">
         <![CDATA[
             select
                 (select count(*) from production_request where production_employee is null) as order_request,
                 (select count(*) from material_request where approved is null or approved = 0) as metrial_request,
-                (select count(*) from production_request where production_employee is not null and production_start_date is null and end_date is null) as metrial_request_clear,
-                (select count(*) from production_request where production_start_date is not null and end_date is null) as production_ready,
+                (select count(*) from production_request where production_start_date is not null and end_date is null) as metrial_request_clear,
+                (select count(*) from production_request where production_start_date is not null and end_date is not null and trunc(end_date) <= trunc(sysdate))) as production_ready,
                 (select count(*) from production_request where trunc(end_date) = trunc(sysdate)) as today_delivered
             from dual
         ]]>
