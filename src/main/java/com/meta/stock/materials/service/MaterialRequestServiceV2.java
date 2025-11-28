@@ -186,14 +186,15 @@ public class MaterialRequestServiceV2 {
 
     private void saveMaterial(MaterialRequestEntity request) {
         FixedMaterialEntity fixedMaterial = fixedMaterialRepository.findById(request.getFmId()).orElseThrow();
-        lotsMapper.storeProduct(request.getQty(), fixedMaterial.getLifeTime());
+        int lossQty = parser.getLossPerProductAndYearMonth(fixedMaterial.getName(), request.getQty());
+        int createdQty = (request.getQty() - lossQty) <= 0 ? 1 : (request.getQty() - lossQty);
+        lotsMapper.storeProduct(createdQty, fixedMaterial.getLifeTime());
         Long lotsId = lotsMapper.getLatestLot();
 
         MaterialEntity material = new MaterialEntity();
         material.setLotsId(lotsId);
         material.setMaterialName(fixedMaterial.getName());
 
-        int lossQty = parser.getLossPerProductAndYearMonth(fixedMaterial.getName(), request.getQty());
         material.setMaterialLoss(lossQty); // 원자재 로스율(가져와 insert)
         material.setMrId(request.getMrId());
         materialMapper.materialSave(material);
