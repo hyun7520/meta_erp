@@ -34,9 +34,6 @@ public class PythonParser {
         readCsv();
     }
 
-    public Map<String, Map<String, List<String>>> getLossContents() {
-        return content;
-    }
     public Map<String, Map<String, String>> getDemandsContents() {
         return demands;
     }
@@ -47,6 +44,16 @@ public class PythonParser {
 
     public Map<String, List<String>> getProductLossPerYearMonth(String yearMonth) {
         return content.get(yearMonth);
+    }
+
+    public Map<String, String> getLossContents(String yearMonth) {
+        Map<String, List<String>> map = content.get(yearMonth);
+        Map<String, String> reuslt = new HashMap<>();
+        for (String product : map.keySet()) {
+            reuslt.put(product, map.get(product).get(0));
+        }
+
+        return reuslt;
     }
 
     public int getLossPerProductAndYearMonth(String name, int qty) {

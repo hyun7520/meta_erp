@@ -22,6 +22,9 @@ public class PythonService {
 
     @Value("${app.python.exec-path}")
     private String pythonExecPath; // yml에서 설정한 파이썬 실행 경로
+    // ec2 환경 전용 csv 파일 저장 경로
+    @Value("${app.output-path}")
+    private String outputPath;
 
     private File renderPythonFile() {
         // =========================================================
@@ -146,7 +149,7 @@ public class PythonService {
         // =========================================================
         // 4. 결과 읽기
         // =========================================================
-        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream(), "EUC-KR")); // 한글 깨짐 시 "EUC-KR" 추가 고려
+        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8)); // 한글 깨짐 시 "EUC-KR" 추가 고려
         StringBuilder output = new StringBuilder();
         String line;
 
@@ -163,27 +166,27 @@ public class PythonService {
             return "Error (Exit Code " + exitCode + ")";
         }
 
-        if (exitCode == 0) {
-            String csvResult = output.toString();
+        String csvResult = output.toString();
+        try {
+            // [수정 2] 하드코딩 제거하고 properties에서 가져온 outputPath 사용
+            Path filePath = Paths.get(outputPath);
+            Path parentDir = filePath.getParent();
 
-            String projectRoot = System.getProperty("user.dir");
-
-            // 2. 저장할 파일의 상대 경로를 설정합니다.
-            String relativePath = "src/main/resources/file/" + saveRoot;
-
-            // 3. 절대 경로를 생성합니다.
-            String savePath = Paths.get(projectRoot, relativePath).toString();
-
-            try {
-                // 파일로 저장
-                Files.write(Paths.get(savePath), csvResult.getBytes(StandardCharsets.UTF_8));
-                System.out.println("✅ 결과 파일이 저장되었습니다: " + savePath);
-            } catch (IOException e) {
-                System.out.println("❌ 파일 저장 실패: " + e.getMessage());
+            // 저장할 폴더가 없으면 생성 (EC2: /home/ec2-user/metateamproject/output 생성됨)
+            if (parentDir != null && !Files.exists(parentDir)) {
+                Files.createDirectories(parentDir);
+                System.out.println("✅ 폴더 생성됨: " + parentDir);
             }
-            return csvResult; // 컨트롤러나 서비스에는 텍스트로 반환
-        }
 
-        return "Success";
+            // 파일 저장 (BOM 추가 + UTF-8)
+            String contentWithBOM = "\uFEFF" + csvResult;
+            Files.write(filePath, contentWithBOM.getBytes(StandardCharsets.UTF_8));
+            System.out.println("✅ 결과 파일 저장 완료: " + filePath);
+
+        } catch (IOException e) {
+            System.out.println("❌ 파일 저장 실패: " + e.getMessage());
+            // 파일 저장은 실패했지만, 웹 화면에는 결과를 보여주기 위해 에러를 던지진 않음
+        }
+        return csvResult; // 컨트롤러나 서비스에는 텍스트로 반환
     }
 }
