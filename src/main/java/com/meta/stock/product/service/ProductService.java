@@ -53,7 +53,10 @@ public class ProductService {
     }
 
     public Map<String, String> getLossPrediction() {
-        return parser.getLossContents();
+        LocalDate today = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMM");
+        String todayYM = today.format(formatter);
+        return parser.getLossContents(todayYM);
     }
 
     public Page<ProductStockDto> findProductStockWithPaging(String keyword, Pageable pageable) {
