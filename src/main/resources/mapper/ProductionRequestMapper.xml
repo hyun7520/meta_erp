@@ -86,7 +86,7 @@
         </if>
         ORDER BY
         <choose>
-            <when test="sortBy == 'requestDate'">pr.request_date</when>
+            <when test="sortBy == 'prId'">pr.prId</when>
             <when test="sortBy == 'deadline'">pr.deadline</when>
             <when test="sortBy == 'productName'">fp.name</when>
             <otherwise>pr.request_date</otherwise>
