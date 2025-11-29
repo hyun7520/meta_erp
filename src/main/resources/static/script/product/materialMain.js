@@ -71,10 +71,10 @@ const renderMaterialRequestList = (pageData) => {
 
             tr.className = trClass;
             tr.innerHTML = `
-                <td>${data.mrId || 1}</td>
                 <td>${data.materialName || '햄'}</td>
                 <td><span class="qty-unit">${data.qty || 0}</span></td>
                 <td>${data.requestDate || '2025-11-05'}</td>
+                <td>${data.note || "-"}</td>
                 <td>${approveBadge}</td>
             `;
 
