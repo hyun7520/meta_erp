@@ -71,7 +71,7 @@
 
     <insert id="storeProduct">
         INSERT INTO Lots (lot_id, qty, unit, storage_date, shelf_life_days)
-        VALUES (SEQ_LOTS.NEXTVAL, #{qty}, '개', SYSDATE, SYSDATE + #{lifeTime})
+        VALUES (SEQ_LOTS.NEXTVAL, #{qty}, 'Box', SYSDATE, SYSDATE + #{lifeTime})
     </insert>
 
     <select id="getLatestLot">
