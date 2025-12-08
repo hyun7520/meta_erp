@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>완제품 목록</title>
+</head>
+<body>
+    <div th:fragment="productsTable" class="content">
+        <form>
+            <div class="search-group">
+                <div class="form-group">
+                    <select name="column">
+                        <option value="">검색 조건 선택</option>
+                        <option value="product_name">제품 명</option>
+                        <option value="serial_code">제품 코드</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <input type="text" name="search"/>
+                </div>
+                <div class="form-group label_form_group">
+                    <label>제조일 :</label>
+                    <input type="date" name="start_date" />
+                </div>
+                <button type="button" class="btn btn-approve" onclick="dashSearch()">검색</button>
+                <button type="button" class="btn btn-cancel" onclick="resetDash()">초기화</button>
+            </div>
+        </form>
+        <table>
+            <thead>
+                <tr>
+                    <th>제품 코드</th>
+                    <th>상품 명</th>
+                    <th name="qty" class="sortable" onclick="dashSort(this)">제품 갯수</th>
+                    <th>제품 상태</th>
+                    <th name="storage_date" class="sortable" onclick="dashSort(this)">제조일</th>
+                    <th name="shelf_life_days" class="sortable" onclick="dashSort(this)">유효기한</th>
+                 </tr>
+            </thead>
+            <tbody id="dash_table_body"></tbody>
+        </table>
+        <div class="pagination" id="pagination"></div>
+        <div class="refresh-area">
+            <span class="refresh-time" id="products_table_refresh_time"></span>
+            <button class="refresh-btn" onclick="resetDash()">
+                <i class="fa-solid fa-rotate-right"></i>
+            </button>
+        </div>
+
+        <script type="text/javascript" th:src="@{/script/dashTable.js}"></script>
+    </div>
+</body>
+</html>

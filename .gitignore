@@ -31,3 +31,8 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### application.properties 설정파일 ###
+/src/main/resources/application.properties
+
+/venv

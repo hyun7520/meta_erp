@@ -1,0 +1,65 @@
+.row {
+    display: flex;
+}
+
+table {
+    margin-top: 20px;
+}
+
+td {
+    font-size: 13px;
+}
+
+.chart {
+    width: 95%;
+    height: 300px;
+}
+
+.content form {
+    margin-top: 15px;
+}
+
+/* Refresh 영역 */
+.refresh-area {
+    width: 95%;
+    max-width: 1400px;
+    margin-top: 1rem;
+    display: flex;
+    gap: 1rem;
+    justify-content: end;
+    align-items: center;
+}
+
+.refresh-btn {
+    background: none;
+    color: black;
+    border:none;
+    padding:.5rem 1rem;
+    border-radius:4px;
+    cursor:pointer;
+}
+
+/* refresh 아이콘 기본 상태 */
+@keyframes rotateIcon {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+[id$="_time"] { color:#777; }
+
+.label_form_group {
+    display: flex;
+    align-items: baseline;
+}
+
+.label_form_group label {
+    width: 80px;
+    padding-right: 10px;
+}
+
+.flex-center {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: baseline;
+}

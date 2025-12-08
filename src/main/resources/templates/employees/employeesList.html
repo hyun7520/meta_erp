@@ -1,0 +1,55 @@
+    <!DOCTYPE html>
+    <html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>사원 관리</title>
+        <link rel="stylesheet" type="text/css" th:href="@{/style/BaseStyle.css}" />
+        <script type="text/javascript" th:src="@{/script/baseJS.js}"></script>
+    </head>
+    <body>
+    <div class="container">
+        <div th:insert="~{navbar :: navbar('사원목록', '경영팀 관리 : 사원 관리')}"></div>
+        <div class="content-wrapper">
+            <div class="flex-right">
+                <button type="button" class="btn btn-approve" onclick="openEmployeeModal(0)">➕ 사원 추가</button>
+            </div>
+            <form id="employee_search">
+                <div class="search-group">
+                    <div class="form-group">
+                        <select name="whatColumn">
+                            <option value="all">전체검색</option>
+                            <option value="name">이름</option>
+                            <option value="department_name">부서</option>
+                            <option value="role_name">직책</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" name="keyword">
+                    </div>
+                    <button type="button" class="btn btn-approve" onclick="onSearchEmployees()">검색</button>
+                    <button type="button" class="btn btn-cancel" onclick="resetSearchEmployees()">초기화</button>
+                </div>
+            </form>
+            <table>
+                <thead>
+                <tr>
+                    <th name="employee_id" class="sortable" onclick="sortEmployees(this)">ID</th>
+                    <th>이름</th>
+                    <th name="email" class="sortable" onclick="sortEmployees(this)">이메일</th>
+                    <th name="hire_date" class="sortable" onclick="sortEmployees(this)">입사일</th>
+                    <th>부서</th>
+                    <th>직책</th>
+                    <th>수정</th>
+                    <th>삭제</th>
+                </tr>
+                </thead>
+                <tbody id="employees_tbody"></table>
+            <div class="pagination" id="pagination"></div>
+        </div>
+        <div th:insert="~{employees/employeeModal :: employeeModal}"></div>
+        <div th:insert="~{employees/employeeDeleteModal :: employeeDeleteModal}"></div>
+        <script type="text/javascript" th:src="@{/script/employee/employeeList.js}"></script>
+        <script type="text/javascript" th:src="@{/script/employee/employeeModal.js}"></script>
+    </div>
+    </body>
+    </html>

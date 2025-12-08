@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>재료 발주 요청 수정</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/style/BaseStyle.css}" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script type="text/javascript" th:src="@{/script/baseJS.js}"></script>
+</head>
+<body>
+<div class="container">
+    <div th:insert="~{navbar :: navbar('재료 관리', '')}"></div>
+    <!-- 메인 컨텐츠 -->
+    <div class="content-wrapper">
+        <!-- 액션바 -->
+        <div class="action-bar">
+            <h2>
+                <i class="fas fa-edit"></i> 재료 발주 요청 수정
+                <span class="status-badge status-pending" th:if="${materialRequest.approved == 0}">미승인</span>
+            </h2>
+            <div>
+                <a href="javascript:history.back()" class="btn btn-cancel">
+                    <i class="fas fa-arrow-left"></i> 이전으로
+                </a>
+            </div>
+        </div>
+
+        <!-- 수정 폼 -->
+        <form th:action="@{/material/update-req/{mrId}(mrId=${materialRequest.mrId})}" method="post">
+            <!-- 기본 정보 (읽기 전용) -->
+            <div class="fragement-box">
+                <h3 style="margin-bottom: 16px; color: #374151; font-size: 16px; font-weight: 600;">
+                    <i class="fas fa-info-circle"></i> 발주 요청 정보
+                </h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>발주 요청 ID</label>
+                        <input type="text" th:value="${materialRequest.mrId}" readonly style="background: #F3F4F6;" />
+                    </div>
+                    <div class="form-group">
+                        <label>재료명</label>
+                        <input type="text" th:value="${materialRequest.materialName}" readonly style="background: #F3F4F6;" />
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>요청일</label>
+                        <input type="date" th:value="${materialRequest.requestDate}" readonly style="background: #F3F4F6;" />
+                    </div>
+                    <div class="form-group">
+                        <label>요청자</label>
+                        <input type="text" th:value="${requestBy}" readonly style="background: #F3F4F6;" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- 수정 가능한 정보 -->
+            <div class="fragement-box">
+                <h3 style="margin-bottom: 16px; color: #374151; font-size: 16px; font-weight: 600;">
+                    <i class="fas fa-edit"></i> 수정 가능 항목
+                </h3>
+
+                <div class="form-group">
+                    <label>
+                        <i class="fas fa-box"></i> 발주 수량
+                        <span class="required">*</span>
+                    </label>
+                    <input type="number"
+                           name="qty"
+                           th:value="${materialRequest.qty}"
+                           min="1"
+                           placeholder="수량을 입력하세요"
+                           required />
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <i class="fas fa-sticky-note"></i> 비고
+                    </label>
+                    <textarea name="note"
+                              th:text="${materialRequest.note}"
+                              placeholder="특이사항이나 요청사항을 입력하세요"></textarea>
+                </div>
+            </div>
+
+            <!-- 승인 상태 경고 -->
+            <div th:if="${materialRequest.approved != 0}"
+                 style="background: #FEE2E2; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #EF4444;">
+                <p style="margin: 0; color: #991B1B; font-weight: 600;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    이 발주 요청은 이미
+                    <span th:if="${materialRequest.approved == 1}">승인</span>
+                    <span th:if="${materialRequest.approved == 2}">반려</span>
+                    되어 수정할 수 없습니다.
+                </p>
+            </div>
+
+            <!-- 제출 버튼 -->
+            <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px;">
+                <button type="button" onclick="history.back()" class="btn btn-cancel">
+                    <i class="fas fa-times"></i> 취소
+                </button>
+                <button type="submit"
+                        class="btn btn-confirm"
+                        th:disabled="${materialRequest.approved != 0}">
+                    <i class="fas fa-save"></i> 수정 완료
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        updateTime();
+        setInterval(updateTime, 1000);
+    });
+    // 폼 제출 전 확인
+    document.querySelector('form').addEventListener('submit', function(e) {
+        if (!confirm('발주 요청을 수정하시겠습니까?')) {
+            e.preventDefault();
+        }
+    });
+</script>
+</body>
+</html>

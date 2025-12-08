@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>완제품 발주 요청</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/style/BaseStyle.css}" />
+    <script type="text/javascript" th:src="@{/script/baseJS.js}"></script>
+</head>
+<body>
+<div class="container">
+    <div th:insert="~{navbar :: navbar('완제품 발주 요청', '고객사 주문 : 완제품 발주 관리')}"></div>
+    <div class="content-wrapper">
+        <div class="action-bar">
+            <h2>📋 발주 요청 목록</h2>
+            <div style="display: flex; gap: 12px;">
+                <button class="btn-delete-selected" id="btnDeleteSelected" onclick="deleteSelectedOrders()">
+                    🗑️ 선택 삭제
+                </button>
+            <button class="btn-new-order" onclick="openOrderModal(0)">
+                ➕ 새 발주 요청
+            </button>
+        </div>
+        </div>
+
+        <div class="tabs">
+            <button name="pending" class="tab active" onclick="showTab(this)">
+                대기중 <span class="tab-count" id="pendingCount">0</span>
+            </button>
+            <button name="in-progress" class="tab" onclick="showTab(this)">
+                생산시작 <span class="tab-count" id="inProgressCount">0</span>
+            </button>
+            <button name="completed" class="tab" onclick="showTab(this)">
+                생산완료 <span class="tab-count" id="completedCount">0</span>
+            </button>
+            <button name="all" class="tab" onclick="showTab(this)">
+                전체 <span class="tab-count" id="allCount">0</span>
+            </button>
+        </div>
+
+        <div id="loading" class="loading">
+            데이터를 불러오는 중입니다
+        </div>
+
+        <div id="content" style="display: none;">
+            <table>
+                <thead>
+                <tr>
+                    <th>번호</th>
+                    <th>제품코드</th>
+                    <th>고객사</th>
+                    <th>수량</th>
+                    <th>요청일</th>
+                    <th>납기일</th>
+                    <th>상태</th>
+                    <th>작업</th>
+                </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+            <div class="pagination" id="pagination"></div>
+        </div>
+
+        <div id="empty" class="empty" style="display: none;">
+            발주 요청이 없습니다
+        </div>
+    </div>
+    <div th:insert="~{order/orderModal :: orderModal}"></div>
+    <script type="text/javascript" th:src="@{/script/order/orderMain.js}"></script>
+    <script type="text/javascript" th:src="@{/script/order/orderModal.js}"></script>
+</div>
+</body>
+</html>
