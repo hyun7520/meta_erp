@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>재료 관리</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/style/BaseStyle.css}" />
+    <link rel="stylesheet" type="text/css" th:href="@{/style/product/materialStyle.css}" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script type="text/javascript" th:src="@{/script/baseJS.js}"></script>
+</head>
+<body>
+<div class="container">
+    <!-- 네비게이션 바 -->
+    <div th:insert="~{navbar :: navbar('재료 관리', '')}"></div>
+
+    <div class="content-wrapper">
+        <div class="row">
+            <!-- 좌측: 재료 발주 요청 목록 (60%) -->
+            <div class="left-section">
+                <div class="fragement-box" id="material_request_list">
+                    <div class="action-bar">
+                        <h2>
+                            <i class="fas fa-clipboard-list"></i>
+                            재료 발주 요청 현황
+                            <span class="tab-count"></span>
+                        </h2>
+                        <button type="button" class="btn btn-cancel" th:onclick="|location.href='@{/product}'|">
+                            <i class="fas fa-arrow-left"></i> 대시보드로
+                        </button>
+                    </div>
+
+                    <!-- 검색 및 정렬 폼 -->
+                    <form onsubmit="searchMR(); return false;">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <input type="text" name="keyword" placeholder="재료명 또는 비고 검색">
+                            </div>
+                            <div class="form-group">
+                                <button type="button" class="btn btn-confirm" onclick="searchMR()">검색</button>
+                            </div>
+                        </div>
+                    </form>
+
+                    <!-- 발주 요청 테이블 -->
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th name="materialName" class="sortable" onclick="sortMr(this)">재료명</th>
+                                <th name="qty" class="sortable" onclick="sortMr(this)">요청수량</th>
+                                <th name="requestDate" class="sortable" onclick="sortMr(this)">요청일</th>
+                                <th>비고</th>
+                                <th name="approved" class="sortable" onclick="sortMr(this)">상태</th>
+                                <th>수정</th>
+                            </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+
+                    <!-- 페이지네이션 -->
+                    <div class="pagination" id="pagination"></div>
+                </div>
+            </div>
+
+            <!-- 우측: 통계 및 재료 재고 (40%) -->
+            <div class="right-section">
+                <!-- 상단: 발주 요청 통계 -->
+                <div class="fragement-box" style="flex: 0 0 auto; height: auto; margin-bottom: 20px;">
+                    <h3 style="font-size: 16px; color: #374151; margin-bottom: 15px; font-weight: 600;">
+                        <i class="fas fa-chart-bar"></i> 발주 요청 통계
+                    </h3>
+                    <div class="stats-grid">
+                        <div class="stat-item pending">
+                            <div class="stat-number" th:text="${requestStats != null ? requestStats.pending : 0}">4</div>
+                            <div class="stat-label">확인중</div>
+                        </div>
+                        <div class="stat-item approved">
+                            <div class="stat-number" th:text="${requestStats != null ? requestStats.approved : 0}">2</div>
+                            <div class="stat-label">승인</div>
+                        </div>
+                        <div class="stat-item completed">
+                            <div class="stat-number" th:text="${requestStats != null ? requestStats.completed : 0}">6</div>
+                            <div class="stat-label">완료</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 하단: 현재 재료 재고 -->
+                <div id="material_progress" class="fragement-box" style="flex: 1;">
+                    <h3 style="font-size: 16px; color: #374151; margin-bottom: 15px; font-weight: 600;">
+                        <i class="fas fa-warehouse"></i> 현재 재료 재고
+                    </h3>
+                    <div class="material-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" th:src="@{/script/product/materialMain.js}"></script>
+</div>
+</body>
+</html>

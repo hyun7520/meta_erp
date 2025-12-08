@@ -12,6 +12,13 @@ const drawLine = (data, labels) => {
     const datasetWithFilters = [];
     const seriesList = [];
 
+    const xLabels = data.map(({date}) => date).sort((a, b) => (a > b ? 1 : -1));
+    const now = new Date();
+    const year = now.getFullYear();
+    const pastYear = year - 1;
+    const startIdx = xLabels.findIndex(item => item === `${pastYear}-${now.getMonth() + 1}`) + 1;
+    const endIdx = xLabels.findIndex(item => item === `${year}-${now.getMonth() + 1}`) + 1;
+
     echarts.util.each(labels, function (label) {
         const datasetId = 'dataset_' + label;
 
@@ -46,7 +53,21 @@ const drawLine = (data, labels) => {
                 label: ['product', 'demand'],
                 itemName: 'date',
                 tooltip: ['demand']
-            }
+            },
+            markArea: {
+                silent: true,
+                itemStyle: { color: 'rgba(255, 173, 177, 0.4)' },
+                data: [
+                    [
+                        {
+                            name: '예측 구역',
+                            xAxis: '2025-12',
+                            label: { position: 'top', color: '#C0392B', fontWeight: 'bold', fontSize: 13 }
+                        },
+                        { xAxis: '2027-12' }
+                    ]
+                ]
+            },
         });
     });
 
@@ -60,7 +81,7 @@ const drawLine = (data, labels) => {
             ...datasetWithFilters
         ],
         title: {
-            text: '최근 5년간 제품 수요량 그래프'
+            text: '최근 5년간 제품 수요량 및 예측 그래프'
         },
         tooltip: {
             order: 'valueDesc',
@@ -71,13 +92,33 @@ const drawLine = (data, labels) => {
             nameLocation: 'middle'
         },
         yAxis: {
-            name: 'demand'
+            name: '수요량(Box)'
         },
         grid: {
             top: 100,
             right: 100,
-            bottom: 0,
+            bottom: 60,
         },
+        dataZoom: [
+            {
+                type: 'slider',
+                xAxisIndex: 'all',
+                start: (startIdx / (xLabels.length - 1)) * 100,
+                end: (endIdx / (xLabels.length - 1)) * 100,
+                left: '10%',
+                right: '10%',
+                bottom: 10,
+                height: 20,
+                throttle: 120
+            },
+            {
+                type: 'inside',
+                xAxisIndex: 'all',
+                start: (startIdx / (xLabels.length - 1)) * 100,
+                end: (endIdx / (xLabels.length - 1)) * 100,
+                throttle: 120
+            }
+        ],
         series: seriesList
     };
 

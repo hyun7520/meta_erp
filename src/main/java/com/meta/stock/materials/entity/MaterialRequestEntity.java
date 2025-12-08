@@ -1,7 +1,7 @@
 package com.meta.stock.materials.entity;
 
+import com.meta.stock.config.DateStringConverter;
 import jakarta.persistence.*;
-import lombok.Builder;
 
 // 재료 요청서 
 @Entity
@@ -12,18 +12,19 @@ public class MaterialRequestEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "mr_seq")
     @SequenceGenerator(name = "mr_seq", sequenceName = "SEQ_MATERIAL_REQUEST", allocationSize = 1)
     @Column(name = "MR_ID")
-    private long mrId;
+    private Long mrId;
 
     @Column(name = "REQUEST_BY")
-    private long requestBy; // 요청자 Employee ID
+    private Long requestBy; // 요청자 Employee ID
 
     @Column(name = "MANAGEMENT_EMPLOYEE")
-    private long managementEmployee; // 경영 담당자 Employee ID
+    private Long managementEmployee; // 경영 담당자 Employee ID
 
     @Column(name = "PRODUCTION_EMPLOYEE")
-    private long productionEmployee; // 생산 담당자 Employee ID
+    private Long productionEmployee; // 생산 담당자 Employee ID
 
     @Column(name = "REQUEST_DATE")
+    @Convert(converter = DateStringConverter.class)
     private String requestDate;
 
     @Column(name = "QTY")
@@ -36,24 +37,28 @@ public class MaterialRequestEntity {
     private int approved; // 0: 미승인, 1: 승인, -1: 반려
 
     @Column(name = "APPROVED_DATE")
+    @Convert(converter = DateStringConverter.class)
     private String approvedDate;
 
     @Column(name = "NOTE", length = 255)
     private String note;
 
-    public long getMrId() {
+    @Column(name = "fm_id")
+    private Long fmId;
+
+    public Long getMrId() {
         return mrId;
     }
 
-    public long getRequestBy() {
+    public Long getRequestBy() {
         return requestBy;
     }
 
-    public long getManagementEmployee() {
+    public Long getManagementEmployee() {
         return managementEmployee;
     }
 
-    public long getProductionEmployee() {
+    public Long getProductionEmployee() {
         return productionEmployee;
     }
 
@@ -81,20 +86,23 @@ public class MaterialRequestEntity {
         return note;
     }
 
+    public Long getFmId() {
+        return fmId;
+    }
 
-    public void setMrId(long mrId) {
+    public void setMrId(Long mrId) {
         this.mrId = mrId;
     }
 
-    public void setRequestBy(long requestBy) {
+    public void setRequestBy(Long requestBy) {
         this.requestBy = requestBy;
     }
 
-    public void setManagementEmployee(long managementEmployee) {
+    public void setManagementEmployee(Long managementEmployee) {
         this.managementEmployee = managementEmployee;
     }
 
-    public void setProductionEmployee(long productionEmployee) {
+    public void setProductionEmployee(Long productionEmployee) {
         this.productionEmployee = productionEmployee;
     }
 
@@ -122,4 +130,7 @@ public class MaterialRequestEntity {
         this.note = note;
     }
 
+    public void setFmId(Long fmId) {
+        this.fmId = fmId;
+    }
 }

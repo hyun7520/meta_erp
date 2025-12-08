@@ -6,6 +6,8 @@
 |- 생산
 |- 직원관리
 ```
+## application.properties 추가
+app.python.exec-path=venv/Scripts/python.exe
 
 ## 오류 로그
 #### DB SQL 실행 오류

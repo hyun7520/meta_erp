@@ -24,7 +24,7 @@
 
     <insert id="insertEmployee">
         insert into Employees
-        values(#{employee_id},#{name},#{email},#{password},#{hire_date},#{department_id},#{role_id})
+        values(SEQ_EMPLOYEES.nextval,#{name},#{email},#{password},#{hire_date},#{department_id},#{role_id})
     </insert>
 
     <select id="selectEmployeeById">

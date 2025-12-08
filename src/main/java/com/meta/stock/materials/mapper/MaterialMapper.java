@@ -1,6 +1,7 @@
 package com.meta.stock.materials.mapper;
 
 import com.meta.stock.materials.dto.*;
+import com.meta.stock.materials.entity.MaterialEntity;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -29,7 +30,9 @@ public interface MaterialMapper {
 
     String getRequestByName(Long id);
 
-    void save(MaterialRequestDto req);
+    void save(MaterialRequestDto req); // 원자재 '요청'용
+
+    void materialSave(MaterialEntity entity); // 원자재 '저장'용
 
     MaterialRequestDto getMaterialRequestById(Long mrId);
 

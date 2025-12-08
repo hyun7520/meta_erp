@@ -2,9 +2,10 @@ package com.meta.stock.product.dto;
 
 public class ProductRequestDto {
 
-    private Long prId;
-    private Long managementEmployee;
-    private Long productionEmployee;
+    private long prId;
+    private String managementEmployeeName;
+    private long managementEmployee;
+    private long productionEmployee;
     private String serialCode;
     private String productName;  // Fixed_Product의 name
     private String toCompany;
@@ -19,7 +20,7 @@ public class ProductRequestDto {
     private String endDate;
     private String note;
 
-    public boolean isStockSufficient() {
+    public boolean getIsStockSufficient() {
         return getInStockQty() + getCompletedQty() >= getTargetQty();
     }
 
@@ -34,6 +35,7 @@ public class ProductRequestDto {
     }
 
     public long getPrId() {return prId;}
+    public String getManagementEmployeeName() {return managementEmployeeName;}
     public long getManagementEmployee() {return managementEmployee;}
     public long getProductionEmployee() {return productionEmployee;}
     public String getSerialCode() {return serialCode;}
@@ -43,7 +45,7 @@ public class ProductRequestDto {
     public Integer getPlannedQty() {return plannedQty != null ? plannedQty : 0;}
     public Integer getCompletedQty() {return completedQty != null ? completedQty : 0;}
 
-    public Integer getInStockQty() {return inStockQty;}
+    public Integer getInStockQty() {return inStockQty != null ? inStockQty : 0;}
     public String getUnit() {return unit;}
     public String getRequestDate() {return requestDate;}
     public String getProductionStartDate() {return productionStartDate;}
@@ -52,6 +54,7 @@ public class ProductRequestDto {
     public String getNote() {return note;}
 
     public void setPrId(long prId) {this.prId = prId;}
+    public void setManagementEmployeeName(String managementEmployeeName) {this.managementEmployeeName = managementEmployeeName;}
     public void setManagementEmployee(long managementEmployee) {this.managementEmployee = managementEmployee;}
     public void setProductionEmployee(long productionEmployee) {this.productionEmployee = productionEmployee;}
     public void setSerialCode(String serialCode) {this.serialCode = serialCode;}

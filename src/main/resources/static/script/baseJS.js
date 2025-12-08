@@ -18,8 +18,8 @@ const logout = () => {
     location.href = "/logout";
 }
 
-const renderPagination = (currentPage, totalPage, callback) => {
-    const pagination = document.getElementById('pagination');
+const renderPagination = (currentPage, totalPage, callback, id = "pagination") => {
+    const pagination = document.getElementById(id);
     pagination.innerHTML = '';
 
     if (totalPage <= 1) return;

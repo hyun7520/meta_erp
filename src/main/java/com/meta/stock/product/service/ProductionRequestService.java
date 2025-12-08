@@ -5,10 +5,11 @@ import com.meta.stock.lots.dto.LotStockDto;
 import com.meta.stock.lots.mapper.LotsMapper;
 import com.meta.stock.product.dto.ProductRequestDto;
 import com.meta.stock.product.dto.ProductionRequestDTO;
+import com.meta.stock.product.entity.FixedProductEntity;
 import com.meta.stock.product.entity.ProductionRequestEntity;
-import com.meta.stock.product.entity.ProductEntity;
 import com.meta.stock.product.mapper.ProductMapper;
 import com.meta.stock.product.mapper.ProductionRequestMapper;
+import com.meta.stock.product.repository.FixedProductRepository;
 import com.meta.stock.product.repository.ProductionRequestRepository;
 import com.meta.stock.product.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +45,8 @@ public class ProductionRequestService {
     private ProductService productService;
     @Autowired
     private ProductRepository productRepository;
+    @Autowired
+    private FixedProductRepository fixedProductRepository;
     @Autowired
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
@@ -214,9 +216,9 @@ public class ProductionRequestService {
     public ProductionRequestDTO.Response createProductionRequest(ProductionRequestDTO.Request request) {
         String serialCode = null;
         if (request.getProductId() != null) {
-            ProductEntity product = productRepository.findById(request.getProductId())
+            FixedProductEntity fixedProduct = fixedProductRepository.findById(request.getProductId().intValue())
                     .orElseThrow(() -> new IllegalArgumentException("제품을 찾을 수 없습니다. ID: " + request.getProductId()));
-            serialCode = product.getProductName();
+            serialCode = fixedProduct.getSerialCode();
         } else if (request.getSerialCode() != null) {
             serialCode = request.getSerialCode();
         } else {
@@ -225,8 +227,8 @@ public class ProductionRequestService {
 
         ProductionRequestEntity entity = ProductionRequestEntity.builder()
                 .serialCode(serialCode)
-                .managementEmployee(0)
-                .productionEmployee(0)
+                .managementEmployee(0L)
+                .productionEmployee(null)
                 .toCompany(request.getRequestBy())
                 .targetQty(request.getQty())
                 .plannedQty(0)
@@ -417,7 +419,7 @@ public class ProductionRequestService {
 
         // Serial Code 업데이트
         if (request.getProductId() != null) {
-            String serialCode = productRepository.findProductNameById(request.getProductId())
+            String serialCode = productRepository.findSerialCodeById(request.getProductId())
                     .orElseThrow(() -> new IllegalArgumentException("제품을 찾을 수 없습니다. ID: " + request.getProductId()));
             entity.setSerialCode(serialCode);
         } else if (request.getSerialCode() != null && !request.getSerialCode().isEmpty()) {

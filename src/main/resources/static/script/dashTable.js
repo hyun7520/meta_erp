@@ -10,7 +10,7 @@ let params = {
 };
 
 window.addEventListener("load", () => {
-    renderDashTable(params);
+    renderDashTable();
 });
 
 const renderTable = (list) => {
@@ -55,9 +55,8 @@ const movePage = (pageNum) => {
     renderDashTable(params);
 }
 
-const renderDashTable = (parameters) => {
-    const {page, column, search, date, sort, order} = parameters;
-    const parseParams = `page=${page}&column=${column}&search=${search}&start_date=${date}&sort=${sort}&order=${order}`;
+const renderDashTable = ({page, column, search, date, sort, order} = params) => {
+    const parseParams = `page=${page || 1}&column=${column || ''}&search=${search || ''}&start_date=${date || ''}&sort=${sort || 'product_id'}&order=${order || 'asc'}`;
     const getLink = GET_TABLE_API + "?" + parseParams;
     fetch(getLink, {method: 'GET'})
         .then(response => response.json())

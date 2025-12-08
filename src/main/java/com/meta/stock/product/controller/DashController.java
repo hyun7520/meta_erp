@@ -34,7 +34,7 @@ public class DashController {
 
     private final int limit = 5;
 
-    @GetMapping("/dash")
+    @GetMapping(value = {"/dash", "/"})
     private String dashboard(HttpSession session) {
         if (session.getAttribute("employee") == null) {
             return "redirect:/login";
@@ -88,6 +88,11 @@ public class DashController {
         return ResponseEntity.ok(productsService.getFixedProducts());
     }
 
+    @GetMapping("/noti")
+    public ResponseEntity<Map<String, String>> getNotification() {
+        return ResponseEntity.ok(graphService.getNotification());
+    }
+
     @GetMapping("/dash/flow")
     public ResponseEntity<DashFlowBean> dashFlow() {
         return ResponseEntity.ok(dashService.getDashFlowBean());
@@ -108,7 +113,7 @@ public class DashController {
     @GetMapping("/dash/loss")
     @ResponseBody
     public ResponseEntity<List<ProductLossBean>> productLoss() {
-        List<ProductLossBean> list = null;
+        List<ProductLossBean> list = graphService.getLossPerHumidity();
         return ResponseEntity.ok(list);
     }
 }

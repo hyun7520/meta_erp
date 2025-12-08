@@ -5,6 +5,8 @@ import com.meta.stock.product.dto.ProductRequestDto;
 import com.meta.stock.product.dto.ProductionRequestDTO;
 import com.meta.stock.product.service.ProductionRequestService;
 import com.meta.stock.product.service.ProductService;
+import com.meta.stock.user.employees.dto.EmployeeGetDto;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -29,29 +31,20 @@ public class ProductRequestController {
 
     // 주문 조회
     @GetMapping("/pr")
-    public String getAllOrders(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "6") int size,
-            @RequestParam(required = false) String keyword,
-            @RequestParam(defaultValue = "prId") String sortBy,
-            @RequestParam(defaultValue = "ASC") String sortDir,
-            Model model) {
-
-        Pageable pageable = PageRequest.of(page, size,
-                Sort.by(Sort.Direction.fromString(sortDir), sortBy));
-
-        Page<ProductRequestDto> productRequests =
-                productionRequestService.findAllProductRequests(keyword, pageable);
+    public String getAllOrders(Model model, HttpSession session) {
+        if (session.getAttribute("employee") == null) {
+            return "redirect:/login";
+        } else {
+            EmployeeGetDto employee = (EmployeeGetDto) session.getAttribute("employee");
+            if (employee.getDepartment().contains("경영") || employee.getRole().equals("사원")) {
+                return "redirect:/dash";
+            }
+        }
 
         Map<String, Integer> statusStats = productionRequestService.getStatusStatistics();
 
         model.addAttribute("statusStats", statusStats);
-        model.addAttribute("productRequests", productRequests);
-        model.addAttribute("sortBy", sortBy);
-        model.addAttribute("sortDir", sortDir);
-        model.addAttribute("keyword", keyword);
-
-        return "productionRequests";
+        return "product/productionRequests";
     }
 
     @GetMapping("/pr/{id}")
@@ -79,9 +72,31 @@ public class ProductRequestController {
         model.addAttribute("productRequest", productRequest);
         model.addAttribute("currentProductStock", currentProductStock);
 
-        return "productionRequestsDetail :: content";
+        return "product/productionRequestsDetail :: content";
     }
 
+    @GetMapping("/pr/list")
+    public ResponseEntity<Map<String, Object>> getProductRequestList(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(defaultValue = "prId") String sortBy,
+            @RequestParam(defaultValue = "ASC") String sortDir
+    ) {
+
+        Pageable pageable = PageRequest.of(page, size,
+                Sort.by(Sort.Direction.fromString(sortDir), sortBy));
+
+        Page<ProductRequestDto> productRequests =
+                productionRequestService.findAllProductRequests(keyword, pageable);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("pRequests", productRequests);
+        result.put("sortBy", sortBy);
+        result.put("sortDir", sortDir);
+        result.put("keyword", keyword);
+        return ResponseEntity.ok(result);
+    }
 
     // 주문수주
     @PostMapping("/pr/accept/{prId}")
@@ -171,7 +186,7 @@ public class ProductRequestController {
         return ResponseEntity.noContent().build();
     }
     // 12. 생산 요청 수정 (PUT)
-    @PutMapping("/pro/{prId}")
+    @PostMapping("/pro/{prId}")
     public ResponseEntity<ProductionRequestDTO.Response> updateProductionRequest(
             @PathVariable long prId,
             @RequestBody ProductionRequestDTO.Request request) {

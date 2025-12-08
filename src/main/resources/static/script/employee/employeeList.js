@@ -33,6 +33,7 @@ const deleteEmployee = (element) => {
     fetch("/employee/delete/" + employeeId, {method: "GET"})
         .then(() => {
             alert("사원 정보가 삭제되었습니다.")
+            closeDeleteModal();
             renderEmployeeList(params);
         }).catch(error => {
         console.error('Error:', error);
@@ -43,12 +44,12 @@ const deleteEmployee = (element) => {
 const renderEmployeeTable = (list) => {
     const tbody = document.getElementById("employees_tbody");
     tbody.innerHTML = '';
+    const keyList = ['employeeId', 'name', 'email', 'hireDate', 'department', 'role'];
     list.forEach(element => {
         const row = document.createElement('tr');
 
-        for (let key in element) {
+        for (let key of keyList) {
             const td = document.createElement("td");
-            if (key === "password") continue;
             if (key === 'hireDate') {
                 td.innerHTML = calcDrawDate(new Date(element[key])).split(" ")[0];
             } else {

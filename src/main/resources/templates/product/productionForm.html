@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>생산 계획</title>
-    <link rel="stylesheet" type="text/css" th:href="@{/style/product/BaseStyle.css}" />
+    <link rel="stylesheet" type="text/css" th:href="@{/style/BaseStyle.css}" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script type="text/javascript" th:src="@{/script/baseJS.js}"></script>
     <style>
@@ -224,6 +224,10 @@
                         <div class="product-stock">
                             현재 재고: <span class="qty-unit" th:text="${product.currentStock}">150</span>개
                         </div>
+                        <div class="product-loss">
+                            <i class="fas fa-chart-line"></i> 금월 예상 로스:
+                            <span class="loss-value" th:text="|${productionLoss[product.name] ?: '0'}%|">0%</span>
+                        </div>
                     </div>
                 </div>
 
@@ -242,6 +246,7 @@
                                th:id="'qty-' + ${iterStat.index}"
                                name="quantities"
                                th:data-fp-id="${product.fpId}"
+                               th:data-fp-name="${product.name}"
                                th:data-card-index="${iterStat.index}"
                                value="0"
                                min="0"
@@ -432,6 +437,7 @@
             if (qty > 0) {
                 productions.push({
                     fpId: input.dataset.fpId,
+                    name: input.dataset.fpName,
                     qty: qty
                 });
             }
@@ -444,6 +450,10 @@
         }
 
         // 검증 2: 200개 초과
+        if (total === 0) {
+            alert('생산할 제품을 선택해주세요.');
+            return;
+        }
         if (total > 200) {
             alert('총 생산량이 200개를 초과할 수 없습니다.\n현재: ' + total + '개');
             return;
@@ -453,14 +463,13 @@
         const insufficientMaterials = checkMaterialSufficiency(productions);
 
         if (insufficientMaterials.length > 0) {
-            const materialNames = insufficientMaterials.map(m => m.name).join(', ');
+            const materialNames = [...new Set(insufficientMaterials.map(m => m.name))].join(', ');
             const confirmed = confirm(
                 '다음 재료가 부족합니다:\n' + materialNames +
                 '\n\n재료 발주 페이지로 이동하시겠습니까?'
             );
 
             if (confirmed) {
-                // 부족한 재료 정보를 URL 파라미터로 전달
                 const params = new URLSearchParams();
                 insufficientMaterials.forEach(material => {
                     params.append('fmIds', material.fmId);
@@ -474,8 +483,23 @@
             return;
         }
 
+        let message = '=== 생산 요청 내역 ===\n\n';
+
+        productions.forEach(p => {
+            const displayName = p.name ? p.name : '제품번호 ' + p.fpId;
+            message += `- ${displayName} : ${p.qty}개\n`;
+        });
+
+        message += `\n--------------------\n`;
+        message += `총 생산량: ${total}개\n\n`;
+        message += `이대로 생산을 진행하시겠습니까?`;
+
         // 모든 검증 통과 → 제출
-        document.getElementById('productionForm').submit();
+        if (confirm(message)) {
+            document.getElementById('productionForm').submit();
+        } else {
+            return;
+        }
     }
 
     // 재료 충분성 확인
@@ -534,6 +558,8 @@
 
     // 페이지 로드 시 초기화
     document.addEventListener('DOMContentLoaded', function() {
+        updateTime();
+        setInterval(updateTime, 1000);
         updateTotal();
 
         // 모든 제품의 재료 필요량 초기화 (0개 기준)

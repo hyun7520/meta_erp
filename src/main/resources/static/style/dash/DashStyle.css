@@ -2,6 +2,14 @@
     display: flex;
 }
 
+table {
+    margin-top: 20px;
+}
+
+td {
+    font-size: 13px;
+}
+
 .chart {
     width: 95%;
     height: 300px;
